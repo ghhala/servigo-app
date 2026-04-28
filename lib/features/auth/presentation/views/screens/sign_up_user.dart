@@ -1,0 +1,168 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/utils/assets.dart';
+import 'package:servi_go_app/core/utils/styles.dart';
+import 'package:servi_go_app/core/widgets/app_background.dart';
+import 'package:servi_go_app/core/widgets/custom_button.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
+
+class SignUpUser extends StatelessWidget {
+  SignUpUser({super.key});
+  final formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: AppBackground(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 42),
+                  child: SvgPicture.asset(Assets.logo),
+                ),
+                Gap(28.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 45),
+                  child: Row(
+                    children: [
+                      Icon(Icons.arrow_back_ios),
+                      Text(
+                        "Create a user account",
+                        style: TextStyles.font18BlackW500,
+                      ),
+                      Gap(16.w),
+                      SvgPicture.asset("assets/images/userIcon.svg"),
+                    ],
+                  ),
+                ),
+                Gap(11.h),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 45),
+
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Welcome ! \n",
+                            style: TextStyles.font24PrimaryColorW800,
+                          ),
+                          TextSpan(text: "Create Account At ServiGo"),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Gap(16.h),
+                SocialAuthButton(
+                  title: "Continue with Google",
+                  image: Assets.googleIcon,
+                  onPressed: () {},
+                ),
+                Gap(20.h),
+                SocialAuthButton(
+                  title: "Continue with apple",
+                  image: Assets.appleIcon,
+                  onPressed: () {},
+                ),
+                Gap(20.h),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: OrDivider(),
+                ),
+                Gap(20.h),
+                Column(
+                  children: [
+                    CustomTextFormFiled(
+                      validator: Validators.fullName,
+                      hintText: 'Full Name',
+
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: SvgPicture.asset("assets/images/name_icon.svg"),
+                      ),
+                      textInputType: TextInputType.name,
+                    ),
+                    Gap(20.h),
+                    CustomTextFormFiled(
+                      validator: Validators.phone,
+                      hintText: 'Phone Number',
+
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: SvgPicture.asset("assets/images/phone_icon.svg"),
+                      ),
+                      textInputType: TextInputType.number,
+                    ),
+                    Gap(20.h),
+                    CustomTextFormFiled(
+                      validator: Validators.email,
+                      hintText: 'Email Address',
+
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: SvgPicture.asset("assets/images/iconEmail.svg"),
+                      ),
+                      textInputType: TextInputType.emailAddress,
+                    ),
+                    Gap(20.h),
+
+                    CustomTextFormFiled(
+                      validator: Validators.password,
+                      hintText: 'Password',
+
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(11.w),
+                        child: SvgPicture.asset(
+                          "assets/images/password_icon.svg",
+                        ),
+                      ),
+                      textInputType: TextInputType.number,
+                    ),
+                    Gap(20.h),
+                    CustomTextFormFiled(
+                      hintText: 'Confirm Password',
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(11.w),
+                        child: SvgPicture.asset(
+                          "assets/images/password_icon.svg",
+                        ),
+                      ),
+                      textInputType: TextInputType.number,
+                    ),
+                    Gap(25.h),
+                    TermsAndConditionsWidget(onChanged: (bool value) {}),
+                    Gap(56.h),
+                    CustomButton(
+                      title: "Sign up",
+                      textstyle: TextStyles.font20White800,
+                      width: MediaQuery.sizeOf(context).width * 0.88,
+                      height: 52.h,
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {}
+                      },
+                    ),
+                    Gap(30.h),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
