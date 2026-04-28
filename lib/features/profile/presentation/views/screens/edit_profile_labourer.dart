@@ -84,7 +84,7 @@ class EditProfileLabourer extends StatelessWidget {
                             ),
                           ),
                           Gap(20),
-                          Text(
+                          Text( 
                             "Location ",
                             style: TextStyles.font16PrimaryColorW600,
                           ),
