@@ -4,12 +4,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppBackground extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
+  final Widget? bottomNavigationBar;
 
-  const AppBackground({super.key, required this.child, this.padding});
+  const AppBackground({
+    super.key,
+    required this.child,
+    this.padding,
+    this.bottomNavigationBar,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      bottomNavigationBar: bottomNavigationBar,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
@@ -21,7 +29,10 @@ class AppBackground extends StatelessWidget {
           Positioned(
             top: 0,
             left: 16.w,
-            child: Image.asset('assets/images/Vector(2).png'),
+            child: Image.asset(
+              'assets/images/Vector(2).png',
+              fit: BoxFit.cover,
+            ),
           ),
 
           Align(
@@ -43,7 +54,7 @@ class AppBackground extends StatelessWidget {
 
           SafeArea(
             child: Padding(
-              padding:padding?? EdgeInsets.only(top: 136.h),
+              padding: padding ?? EdgeInsets.only(top: 136.h),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 keyboardDismissBehavior:

@@ -82,4 +82,19 @@ class TextStyles {
     fontWeight: FontWeight.w700,
     color: AppColors.primaryColor,
   );
+  static final font12PrimaryColorW600 = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primaryColor,
+  );
+  static final font8PrimaryColorW700 = TextStyle(
+    fontSize: 8,
+    fontWeight: FontWeight.w700,
+    color: AppColors.primaryColor,
+  );
+  static final font11BlackW400 = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    color: Colors.black,
+  );
 }

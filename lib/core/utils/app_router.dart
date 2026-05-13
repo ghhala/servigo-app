@@ -8,9 +8,13 @@ import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_%2
 import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_user.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/user_type_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/verviciton_view.dart';
+import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
+import 'package:servi_go_app/features/profile/presentation/views/screens/edit_profile_labourer.dart';
+import 'package:servi_go_app/features/profile/presentation/views/screens/profile_labourer_view.dart';
+import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/splash/presentation/views/widgets/splash_view.dart';
 
 abstract class AppRouter {
@@ -26,7 +30,12 @@ abstract class AppRouter {
   static const kresetpassword = '/reset_password_view';
   static const kuserlabourer = '/user_labourer_view';
   static final kVerviciton = '/Verviciton_View';
-  static final kkLocation='/Location_View';
+  static final kkLocation = '/Location_View';
+  static final kSettings = '/settings';
+  static const kHome = '/home';
+  static const kEditeProfile = '/edit_profile';
+  static const kProfileLabourer = '/profile_labourer';
+
   static final router = GoRouter(
     routes: [
       GoRoute(path: '/', builder: (context, state) => const SplashView()),
@@ -46,11 +55,8 @@ abstract class AppRouter {
         path: kusertypeview,
         builder: (context, state) => const UserTypeView(),
       ),
-      GoRoute(
-        path: ksignupuser,
-        builder: (context, state) =>  SignUpUser(),
-      ),
-      GoRoute(path: klogIn, builder: (context, state) =>  LogIn()),
+      GoRoute(path: ksignupuser, builder: (context, state) => SignUpUser()),
+      GoRoute(path: klogIn, builder: (context, state) => LogIn()),
       GoRoute(
         path: kforgetPassword,
         builder: (context, state) => const ForgetPasswordView(),
@@ -64,15 +70,31 @@ abstract class AppRouter {
         path: kuserlabourer,
         builder: (context, state) => const SignUplabourerView(),
       ),
-       GoRoute(
+      GoRoute(
         path: kVerviciton,
         builder: (context, state) => const VervicitonView(),
       ),
-      
+
       GoRoute(
         path: kkLocation,
         builder: (context, state) => const CustomLocation(),
       ),
+      GoRoute(
+        path: AppRouter.kSettings,
+        builder: (context, state) => const SettingsView(),
+      ),
+      GoRoute(
+        path: AppRouter.kHome,
+        builder: (context, state) => const HomeBody(),
+      ),
+      GoRoute(
+        path: AppRouter.kEditeProfile,
+        builder: (context, state) => const EditProfileLabourer(),
+      ),
+      GoRoute(
+        path: AppRouter.kProfileLabourer,
+        builder: (context, state) => const ProfileLabourerView(),
+      )
     ],
   );
 }

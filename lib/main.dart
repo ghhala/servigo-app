@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:servi_go_app/features/profile/presentation/views/screens/edit_profile_labourer.dart';
-import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
-import 'package:servi_go_app/features/user_profile/presentation/views/edit%20_profile_user.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -16,24 +16,24 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(393, 852),
       minTextAdapt: true,
-      // child: MaterialApp.router(
-      //   //         theme: ThemeData.dark().copyWith(
-      //   //           textTheme: GoogleFonts.poppinsTextTheme(),
-      //   //           colorScheme:  ColorScheme.dark(
-      //   //   onSurface: Colors.white,
-      //   //   secondary:AppColors.grey,
-      //   // ),
+      child: MaterialApp.router(
+        //         theme: ThemeData.dark().copyWith(
+        //           textTheme: GoogleFonts.poppinsTextTheme(),
+        //           colorScheme:  ColorScheme.dark(
+        //   onSurface: Colors.white,
+        //   secondary:AppColors.grey,
+        // ),
 
-      //   //         ),
-      //   theme: ThemeData.light().copyWith(
-      //     textTheme: GoogleFonts.poppinsTextTheme(),
-      //   ),
+        //         ),
+        theme: ThemeData.light().copyWith(
+          textTheme: GoogleFonts.poppinsTextTheme(),
+        ),
 
-      //   // darkTheme: ThemeData.dark(),
-      //   routerConfig: AppRouter.router,
-      //   debugShowCheckedModeBanner: false,
-      // ),
-      child: MaterialApp(home: EditProfileLabourer()),
+        // darkTheme: ThemeData.dark(),
+        routerConfig: AppRouter.router,
+        debugShowCheckedModeBanner: false,
+      ),
+     //  child: MaterialApp(home: HomeView()),
     );
   }
 }

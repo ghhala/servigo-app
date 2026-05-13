@@ -10,6 +10,8 @@ class CustomTextFormFiled extends StatelessWidget {
     this.textInputType,
     this.validator,
     this.controller,
+    this.width,
+    this.height,
 
     /// 🔽 Dropdown props
     this.isDropdown = false,
@@ -19,6 +21,7 @@ class CustomTextFormFiled extends StatelessWidget {
     this.readOnly,
     this.borderRadius,
     this.borderSide,
+    this.fillColor, this.hintStyle,
   });
 
   final String hintText;
@@ -29,7 +32,10 @@ class CustomTextFormFiled extends StatelessWidget {
   final BorderRadius? borderRadius;
   final BorderSide? borderSide;
   final bool? readOnly;
-
+  final double? width;
+  final double? height;
+  final Color? fillColor;
+final TextStyle? hintStyle;
   /// 🔽 Dropdown
   final bool isDropdown;
   final List<String>? items;
@@ -39,8 +45,8 @@ class CustomTextFormFiled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.sizeOf(context).width * 0.88,
-      height: 42.h,
+      width: width ?? MediaQuery.sizeOf(context).width * 0.88,
+      height: height ?? 42.h,
 
       ///Dropdown
       child: isDropdown
@@ -61,8 +67,8 @@ class CustomTextFormFiled extends StatelessWidget {
                 hintText: hintText,
                 hintStyle: TextStyles.font16PrimaryColorW400,
 
-                filled: true,
-                fillColor: Colors.white,
+                filled:  true,
+                fillColor:  Colors.white,
                 border: buildBorder(),
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),
@@ -85,10 +91,10 @@ class CustomTextFormFiled extends StatelessWidget {
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
-                hintStyle: TextStyles.font16PrimaryColorW400,
+                hintStyle:  hintStyle??TextStyles.font16PrimaryColorW400,
 
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: fillColor ?? Colors.white,
                 border: buildBorder(),
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),
