@@ -10,6 +10,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 
 class SignUpUser extends StatelessWidget {
@@ -152,7 +153,9 @@ class SignUpUser extends StatelessWidget {
                       width: MediaQuery.sizeOf(context).width * 0.88,
                       height: 52.h,
                       onTap: () {
-                        if (formKey.currentState!.validate()) {}
+                        if (formKey.currentState!.validate()) {
+                          SuccessPopUp.show(context);
+                        }
                       },
                     ),
                     Gap(30.h),

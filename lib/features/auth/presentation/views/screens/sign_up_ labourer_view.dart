@@ -13,6 +13,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_tex
 import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
+import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 
 class SignUplabourerView extends StatefulWidget {
   const SignUplabourerView({super.key});
@@ -22,13 +23,19 @@ class SignUplabourerView extends StatefulWidget {
 }
 
 class _SignUplabourerViewState extends State<SignUplabourerView> {
+  final formKey = GlobalKey<FormState>();
+  final TextEditingController locationController = TextEditingController();
+  String? selectedRegion;
+  String? selectedService;
+
+  @override
+  void dispose() {
+    locationController.dispose(); // ← مهم
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>();
-    final TextEditingController locationController = TextEditingController();
-
-    String? selectedRegion;
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
 
@@ -50,18 +57,16 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                   Gap(28.h),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30.w),
-                    child: Expanded(
-                      child: Row(
-                        children: [
-                          Icon(Icons.arrow_back_ios),
-                          Text(
-                            "Create a labourer account ",
-                            style: TextStyles.font18BlackW500,
-                          ),
-                          Gap(10.w),
-                          SvgPicture.asset("assets/images/labourer_icon.svg"),
-                        ],
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.arrow_back_ios),
+                        Text(
+                          "Create a labourer account ",
+                          style: TextStyles.font18BlackW500,
+                        ),
+                        Gap(5.w),
+                        SvgPicture.asset("assets/images/labourer_icon.svg"),
+                      ],
                     ),
                   ),
                   Gap(11.h),
@@ -143,34 +148,38 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         ),
                         textInputType: TextInputType.emailAddress,
                       ),
-                      Gap(20.h),
+                      SizedBox(height: 20.h),
                       GestureDetector(
                         onTap: () async {
-                          final result = await GoRouter.of(
-                            context,
-                          ).push(AppRouter.kkLocation);
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const CustomLocation(),
+                            ),
+                          );
 
-                          // استقبال البيانات الراجعة من شاشة الخريطة
+                          debugPrint("Result received: $result");
+
                           if (result != null && result is Map) {
-                            setState(() {
-                              locationController.text =
-                                  result['name']; // اسم المكان
-                            });
+                            // تأكد أن الـ widget لا يزال موجوداً
+                            if (mounted) {
+                              setState(() {
+                                locationController.text = result['name'] ?? '';
+                              });
+                            }
                           }
                         },
                         child: AbsorbPointer(
                           child: CustomTextFormFiled(
                             controller: locationController,
-                            hintText: 'Lacation',
+                            hintText: 'Location',
                             readOnly: true,
-
                             prefixIcon: Padding(
                               padding: EdgeInsets.all(11.w),
                               child: SvgPicture.asset(
                                 "assets/images/location_icon.svg",
                               ),
                             ),
-                            textInputType: TextInputType.number,
+                            textInputType: TextInputType.text,
                           ),
                         ),
                       ),
@@ -184,14 +193,16 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           ),
                         ),
                         isDropdown: true,
-                        value: selectedRegion,
+                        value: selectedService,
                         items: ['Professional', 'Academic'],
                         onChanged: (value) {
-                          selectedRegion = value;
+                          setState(() {
+                            selectedService = value;
+                          });
                         },
                         validator: (value) {
                           if (value == null) {
-                            return "Please select region";
+                            return "Please select service";
                           }
                           return null;
                         },
@@ -210,7 +221,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         value: selectedRegion,
                         items: ['Fixed', 'Variable'],
                         onChanged: (value) {
-                          selectedRegion = value;
+                          setState(() {
+                            selectedRegion = value;
+                          });
                         },
                         validator: (value) {
                           if (value == null) {

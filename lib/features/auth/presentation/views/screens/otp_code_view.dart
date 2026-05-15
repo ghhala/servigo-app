@@ -9,10 +9,18 @@ import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
 
 class OtpCodeView extends StatelessWidget {
-  const OtpCodeView({super.key});
+  final String receivedOtp;
+  final String userEmail;
+  const OtpCodeView({
+    super.key,
+    required this.receivedOtp,
+    required this.userEmail,
+  });
 
   @override
   Widget build(BuildContext context) {
+    String enteredOtp = "";
+
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -48,7 +56,7 @@ class OtpCodeView extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: "aaa@gmail.com",
+                      text: userEmail,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 12.sp,
                       ),
@@ -63,7 +71,12 @@ class OtpCodeView extends StatelessWidget {
                 ),
               ),
               Gap(21.h),
-              OtpFields(),
+              OtpFields(
+                onCompleted: (value) {
+                  enteredOtp =
+                      value; // سيتم تحديث هذه القيمة تلقائياً كلما كتب المستخدم حرفاً
+                },
+              ),
               Gap(26.h),
               CustomButton(
                 title: "Verify Code",
@@ -71,9 +84,13 @@ class OtpCodeView extends StatelessWidget {
                 width: MediaQuery.sizeOf(context).width * 0.88,
                 height: 52.h,
                 onTap: () {
-                  GoRouter.of(
-                    context,
-                  ).pushReplacement(AppRouter.kresetpassword);
+                  if (enteredOtp == receivedOtp) {
+                    GoRouter.of(
+                      context,
+                    ).pushReplacement(AppRouter.kresetpassword);
+                  } else {
+                    // إظهار خطأ
+                  }
                 },
               ),
               Gap(16.h),

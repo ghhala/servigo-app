@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OtpFields extends StatefulWidget {
-  const OtpFields({super.key});
+  final Function(String) onCompleted;
+  const OtpFields({super.key, required this.onCompleted});
 
   @override
   State<OtpFields> createState() => _OtpFieldsState();
@@ -10,6 +11,8 @@ class OtpFields extends StatefulWidget {
 
 class _OtpFieldsState extends State<OtpFields> {
   final int length = 6;
+    final TextEditingController otpController = TextEditingController();
+
   late List<TextEditingController> controllers;
   late List<FocusNode> focusNodes;
 
@@ -41,11 +44,11 @@ class _OtpFieldsState extends State<OtpFields> {
         FocusScope.of(context).requestFocus(focusNodes[index - 1]);
       }
     }
+    String currentOtp = controllers.map((e) => e.text).join();
+    widget.onCompleted(currentOtp);
   }
 
-  String getOtp() {
-    return controllers.map((e) => e.text).join();
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +60,7 @@ class _OtpFieldsState extends State<OtpFields> {
           height: 55.h,
           child: TextField(
             controller: controllers[index],
+
             focusNode: focusNodes[index],
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,

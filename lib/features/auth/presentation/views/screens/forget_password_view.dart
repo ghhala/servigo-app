@@ -3,10 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 
@@ -16,6 +18,8 @@ class ForgetPasswordView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final emailController = TextEditingController();
+    final authVM = Provider.of<AuthViewModel>(context, listen: false);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -53,6 +57,7 @@ class ForgetPasswordView extends StatelessWidget {
                 Gap(50.h),
                 CustomTextFormFiled(
                   validator: Validators.email,
+                  controller: emailController,
                   hintText: 'Email Address',
                   prefixIcon: Padding(
                     padding: EdgeInsets.all(10.w),
@@ -66,9 +71,36 @@ class ForgetPasswordView extends StatelessWidget {
                   textstyle: TextStyles.font20White800,
                   width: MediaQuery.sizeOf(context).width * 0.88,
                   height: 52.h,
-                  onTap: () {
+                  onTap: () async {
+                    // 1. التحقق من صحة الحقول
                     if (formKey.currentState!.validate()) {
-                      GoRouter.of(context).pushReplacement(AppRouter.kotpcode);
+                      // 2. إرسال الرمز عبر الـ ViewModel
+                      // نمرر الإيميل من الـ controller وننتظر النتيجة
+                      bool isSent = await authVM.sendOtpToUser(
+                        emailController.text.trim(),
+                      );
+
+                      if (isSent) {
+                        // 3. النجاح: الانتقال لشاشة الـ OTP
+                        // نمرر الرمز والإيميل لكي نستخدمهم في الشاشة التالية للتحقق
+                        GoRouter.of(context).pushReplacement(
+                          AppRouter.kotpcode,
+                          extra: {
+                            'otp': authVM.generatedOtp,
+                            'email': emailController.text.trim(),
+                          },
+                        );
+                      } else {
+                        // 4. الفشل: إظهار رسالة خطأ للمستخدم
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "فشل إرسال رمز التحقق، يرجى المحاولة لاحقاً",
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     }
                   },
                 ),

@@ -61,7 +61,16 @@ abstract class AppRouter {
         path: kforgetPassword,
         builder: (context, state) => const ForgetPasswordView(),
       ),
-      GoRoute(path: kotpcode, builder: (context, state) => const OtpCodeView()),
+      GoRoute(
+        path: kotpcode,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>; // استقبال البيانات
+          return OtpCodeView(
+            receivedOtp: data['otp'],
+            userEmail: data['email'],
+          );
+        },
+      ),
       GoRoute(
         path: kresetpassword,
         builder: (context, state) => const ResetPasswordView(),
@@ -94,7 +103,7 @@ abstract class AppRouter {
       GoRoute(
         path: AppRouter.kProfileLabourer,
         builder: (context, state) => const ProfileLabourerView(),
-      )
+      ),
     ],
   );
 }

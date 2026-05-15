@@ -93,16 +93,11 @@ class _CustomLocationState extends State<CustomLocation>
         debugPrint("Nominatim response: $data");
 
         final address = data['address'];
-
-        // final name = [
-        //   address['neighbourhood'],
-        //   address['suburb'],
-        //   address['quarter'],
-        //   address['road'],
-        //   address['city'] ?? address['town'] ?? address['village'],
-        //   address['country'],
-        // ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
         final name = [
+          address['amenity'],
+          address['building'],
+          address['shop'],
+          address['leisure'],
           address['road'],
           address['neighbourhood'] ?? address['suburb'] ?? address['quarter'],
           address['city'] ?? address['town'] ?? address['village'],
@@ -144,6 +139,7 @@ class _CustomLocationState extends State<CustomLocation>
                     initialCenter: initialLocation!,
                     initialZoom: 15,
                     onTap: (tapPosition, point) async {
+                      debugPrint("Map tapped: $point"); // ← أضف
                       if (mounted) {
                         setState(() {
                           selectedLocation = point;
@@ -151,6 +147,10 @@ class _CustomLocationState extends State<CustomLocation>
                         });
                       }
                       await _getPlaceName(point);
+                      debugPrint(
+                        "selectedLocation: $selectedLocation",
+                      ); // ← أضف
+                      debugPrint("placeName after fetch: $placeName"); // ← أضف
                     },
                   ),
                   children: [
@@ -177,7 +177,6 @@ class _CustomLocationState extends State<CustomLocation>
                   ],
                 ),
 
-                // عرض اسم المكان
                 if (placeName != null)
                   Positioned(
                     top: 20,
@@ -215,6 +214,29 @@ class _CustomLocationState extends State<CustomLocation>
                   ),
 
                 // زر التأكيد
+                // Positioned(
+                //   bottom: 20,
+                //   left: 20,
+                //   right: 20,
+                //   child: CustomButton(
+                //     width: double.infinity,
+                //     height: 50.h,
+                //     textstyle: TextStyles.font15WhiteColorW500,
+                //     title: "Confirmation",
+                //     onTap:
+                //         (selectedLocation != null &&
+                //             placeName != null &&
+                //             placeName != "جارٍ تحديد الموقع...")
+                //         ? () {
+                //             Navigator.pop(context, {
+                //               "lat": selectedLocation!.latitude,
+                //               "lng": selectedLocation!.longitude,
+                //               "name": placeName,
+                //             });
+                //           }
+                //         : null,
+                //   ),
+                // ),
                 Positioned(
                   bottom: 20,
                   left: 20,
@@ -225,6 +247,10 @@ class _CustomLocationState extends State<CustomLocation>
                             placeName != null &&
                             placeName != "جارٍ تحديد الموقع...")
                         ? () {
+                            debugPrint("Button pressed!");
+                            debugPrint("selectedLocation: $selectedLocation");
+                            debugPrint("placeName: $placeName");
+                            debugPrint("Sending back: $placeName"); // ← للتأكد
                             Navigator.pop(context, {
                               "lat": selectedLocation!.latitude,
                               "lng": selectedLocation!.longitude,
