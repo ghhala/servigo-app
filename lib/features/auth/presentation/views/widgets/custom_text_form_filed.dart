@@ -21,7 +21,8 @@ class CustomTextFormFiled extends StatelessWidget {
     this.readOnly,
     this.borderRadius,
     this.borderSide,
-    this.fillColor, this.hintStyle,
+    this.fillColor,
+    this.hintStyle,
   });
 
   final String hintText;
@@ -35,7 +36,8 @@ class CustomTextFormFiled extends StatelessWidget {
   final double? width;
   final double? height;
   final Color? fillColor;
-final TextStyle? hintStyle;
+  final TextStyle? hintStyle;
+
   /// 🔽 Dropdown
   final bool isDropdown;
   final List<String>? items;
@@ -67,8 +69,8 @@ final TextStyle? hintStyle;
                 hintText: hintText,
                 hintStyle: TextStyles.font16PrimaryColorW400,
 
-                filled:  true,
-                fillColor:  Colors.white,
+                filled: true,
+                fillColor: Colors.white,
                 border: buildBorder(),
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),
@@ -91,7 +93,7 @@ final TextStyle? hintStyle;
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
-                hintStyle:  hintStyle??TextStyles.font16PrimaryColorW400,
+                hintStyle: hintStyle ?? TextStyles.font16PrimaryColorW400,
 
                 filled: true,
                 fillColor: fillColor ?? Colors.white,
@@ -99,7 +101,8 @@ final TextStyle? hintStyle;
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),
                 errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(3),
+
                   borderSide: const BorderSide(width: 1, color: Colors.red),
                 ),
               ),

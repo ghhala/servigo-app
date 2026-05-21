@@ -15,38 +15,44 @@ class ChatView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
 
       body: AppBackground(
+        withScaffold: false,
         padding: EdgeInsets.only(top: 100.h),
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 80.h,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 135, 93, 143),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(radius: 25.r, backgroundImage: AssetImage("")),
-                  Gap(10.w),
-                  Text("Ahmed Khaled", style: TextStyles.font11WhiteW500),
-                ],
-              ),
-            ),
-            Gap(10),
-            ListView(
-              children: [
-                ChatBubble(
-                  message: "Hello, When do you need me to start ?",
-                  isMe: false,
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height - 100.h,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: 80.h,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 135, 93, 143),
                 ),
-                ChatBubble(
-                  message: "Hi, I need you today at 3 PM.",
-                  isMe: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(radius: 25.r, backgroundImage: AssetImage("")),
+                    Gap(10.w),
+                    Text("Ahmed Khaled", style: TextStyles.font11WhiteW500),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              Gap(10),
+              Expanded(
+                child: ListView(
+                  children: [
+                    ChatBubble(
+                      message: "Hello, When do you need me to start ?",
+                      isMe: false,
+                    ),
+                    ChatBubble(
+                      message: "Hi, I need you today at 3 PM.",
+                      isMe: true,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(

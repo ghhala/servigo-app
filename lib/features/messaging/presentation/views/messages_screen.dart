@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
+import 'package:servi_go_app/features/messaging/chat_room/presentation/views/chat_view.dart';
 import 'package:servi_go_app/features/messaging/presentation/views/widgets/chat_tile.dart';
 import 'package:servi_go_app/features/messaging/presentation/views/widgets/custom_tab.dart';
 
@@ -20,7 +21,9 @@ class MessagesScreen extends StatelessWidget {
             child: Column(
               children: [
                 Row(
-                  children: [Text("Messages", style: TextStyles.font16BlackW700)],
+                  children: [
+                    Text("Messages", style: TextStyles.font16BlackW700),
+                  ],
                 ),
                 Gap(16.h),
                 Row(
@@ -31,7 +34,15 @@ class MessagesScreen extends StatelessWidget {
                   ],
                 ),
                 Gap(26),
-                ChatTile(),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ChatView()),
+                    );
+                  },
+                  child: ChatTile(),
+                ),
                 Gap(10),
                 ChatTile(),
                 Gap(10),

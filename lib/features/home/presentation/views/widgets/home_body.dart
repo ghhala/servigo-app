@@ -15,7 +15,8 @@ class HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBackground(
-      padding: EdgeInsets.only(left: 14.w, top: 50.h),
+      withScaffold: false,
+      padding: EdgeInsets.only(left: 9.w, top: 50.h),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,8 +38,8 @@ class HomeBody extends StatelessWidget {
             ),
             Gap(40),
             Container(
-              width: 353.w,
-              height: 110.h,
+              width: 390.w,
+              height: 115.h,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(13.r),
@@ -53,8 +54,9 @@ class HomeBody extends StatelessWidget {
               child: Row(
                 children: [
                   Image.asset(Assets.onBoardingView2),
-                  Gap(20),
+                  Gap(5),
                   Text(
+                    overflow: TextOverflow.ellipsis,
                     "High Quality and Competitive\n Prices For Your Home Services \nHigh Quality and Competitive\n Prices For Your Home Services ",
                     style: TextStyles.font12PrimaryColorW600,
                   ),
@@ -82,11 +84,13 @@ class HomeBody extends StatelessWidget {
                 ],
               ),
               child: ListView.builder(
+                shrinkWrap: true,
+                physics: const ClampingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 itemCount: 4,
                 itemBuilder: (context, index) {
                   return ServiceCategoryCard(
-                    name: 'Plumbing',
+                    name: 'Cleaning',
                     image: "assets/images/test.png",
                   );
                 },
@@ -118,7 +122,7 @@ class HomeBody extends StatelessWidget {
             Gap(20),
             Container(
               width: 353.w,
-              height: 180.h,
+              height: 200.h,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(13.r),
@@ -130,39 +134,42 @@ class HomeBody extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 15.w,
-                      vertical: 20.h,
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Painting Advertisement",
-                          style: TextStyles.font25Blackw700.copyWith(
-                            fontSize: 14.sp,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 15.w,
+                        vertical: 20.h,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Painting Advertisement",
+                            style: TextStyles.font25Blackw700.copyWith(
+                              fontSize: 14.sp,
+                            ),
                           ),
-                        ),
-                        Gap(14),
-                        Text(
-                          "House Painting with High \n Professionalism  \nAffordable prices – guaranteed\nquality – fast execution",
-                          style: TextStyles.font12PrimaryColorW600,
-                        ),
-                        Gap(18),
-                        CustomButton(
-                          height: 23.h,
-                          width: 92.w,
-                          title: "Go To Profile  ",
-                          textstyle: TextStyles.font11WhiteW500,
-                          onTap: () {},
-                        ),
-                      ],
+                          Gap(14),
+                          Text(
+                            "House Painting with High \n Professionalism  \nAffordable prices – guaranteed\nquality – fast execution",
+                            style: TextStyles.font12PrimaryColorW600,
+                          ),
+                          Gap(20),
+                          CustomButton(
+                            height: 23.h,
+                            width: 92.w,
+                            title: "Go To Profile  ",
+                            textstyle: TextStyles.font11WhiteW500,
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Image.asset("assets/images/test2.png"),
-                ],
+                    Image.asset("assets/images/test2.png"),
+                  ],
+                ),
               ),
             ),
           ],

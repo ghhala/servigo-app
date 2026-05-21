@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -55,7 +57,9 @@ class UserProfileView extends StatelessWidget {
               height: 30.h,
               textstyle: TextStyles.font11WhiteW500.copyWith(fontSize: 15.sp),
               title: "edit profile",
-              onTap: () {},
+              onTap: () {
+                GoRouter.of(context).push(AppRouter.kEditeProfile);
+              },
             ),
           ],
         ),

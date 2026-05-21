@@ -3,13 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 
 class VervicitonView extends StatefulWidget {
-  const VervicitonView({super.key});
+  final String userType;
+  final Map<String, dynamic> userData;
+
+  const VervicitonView({
+    super.key,
+    required this.userData,
+    required this.userType,
+  });
 
   @override
   State<VervicitonView> createState() => _VervicitonViewState();
@@ -33,7 +42,6 @@ class _VervicitonViewState extends State<VervicitonView> {
     }
   }
 
- 
   void showImageSourceActionSheet(BuildContext context, bool isFront) {
     showModalBottomSheet(
       context: context,
@@ -129,7 +137,13 @@ class _VervicitonViewState extends State<VervicitonView> {
                       width: MediaQuery.sizeOf(context).width * 0.60,
                       height: 52.h,
                       onTap: () {
-                        
+                        GoRouter.of(
+                          context,
+                        ).push(AppRouter.kCompliteProfile, extra: {
+                          "userType": widget.userType,
+                          "userData": widget.userData
+                       
+                        });
                       },
                     ),
                   ],
@@ -142,7 +156,6 @@ class _VervicitonViewState extends State<VervicitonView> {
     );
   }
 
-  
   Widget _buildImagePlaceHolder(File? imageFile) {
     return Container(
       width: 100.w,

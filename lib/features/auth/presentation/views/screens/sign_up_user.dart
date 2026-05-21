@@ -14,7 +14,8 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/success_po
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 
 class SignUpUser extends StatelessWidget {
-  SignUpUser({super.key});
+  final String userType;
+  SignUpUser({super.key, required this.userType});
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -154,7 +155,7 @@ class SignUpUser extends StatelessWidget {
                       height: 52.h,
                       onTap: () {
                         if (formKey.currentState!.validate()) {
-                          SuccessPopUp.show(context);
+                          SuccessPopUp.show(context, userType);
                         }
                       },
                     ),

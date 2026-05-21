@@ -14,14 +14,16 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 
 class LogIn extends StatelessWidget {
-  LogIn({super.key});
+  final String userType;
+  LogIn({super.key, required this.userType});
 
   final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    print("The userType inside LogIn Screen is: $userType");
     return Scaffold(
-            resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,
 
       body: AppBackground(
         child: Padding(
@@ -74,7 +76,7 @@ class LogIn extends StatelessWidget {
                   Gap(16.h),
                   CustomTextFormFiled(
                     hintText: 'Phone Number',
-                    validator:Validators.phone,
+                    validator: Validators.phone,
 
                     prefixIcon: Padding(
                       padding: EdgeInsets.all(10.w),
@@ -84,9 +86,8 @@ class LogIn extends StatelessWidget {
                   ),
                   Gap(16.h),
                   CustomTextFormFiled(
-                    
                     hintText: 'Password',
-                    validator:Validators.password,
+                    validator: Validators.password,
 
                     prefixIcon: Padding(
                       padding: EdgeInsets.all(11.w),
@@ -116,7 +117,11 @@ class LogIn extends StatelessWidget {
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
                     onTap: () {
-                      if (formKey.currentState!.validate()) {}
+                      if (formKey.currentState!.validate()) {
+                        GoRouter.of(
+                          context,
+                        ).go(AppRouter.kHome, extra: userType);
+                      }
                     },
                   ),
                   Gap(10),
@@ -130,7 +135,15 @@ class LogIn extends StatelessWidget {
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          userType == 'labourer'
+                              ? GoRouter.of(
+                                  context,
+                                ).push(AppRouter.kuserlabourer, extra: userType)
+                              : GoRouter.of(
+                                  context,
+                                ).push(AppRouter.ksignupuser, extra: userType);
+                        },
                         child: Text(
                           "Sign Up",
                           style: TextStyles.font16PrimaryColorW400.copyWith(

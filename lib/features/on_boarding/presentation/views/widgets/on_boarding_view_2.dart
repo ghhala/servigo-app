@@ -38,7 +38,7 @@ class OnBoardingView2 extends StatelessWidget {
               onTap: () {
                 GoRouter.of(
                   context,
-                ).pushReplacement(AppRouter.kauthlandingview);
+                ).pushReplacement(AppRouter.kusertypeview);
               },
             ),
           ],

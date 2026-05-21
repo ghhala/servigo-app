@@ -71,7 +71,8 @@ class UserTypeView extends StatelessWidget {
                           onTap: () {
                             GoRouter.of(
                               context,
-                            ).pushReplacement(AppRouter.ksignupuser);
+                            ).pushReplacement(AppRouter.kauthlandingview,
+                             extra: 'user', );
                           },
                           child: SvgPicture.asset("assets/images/user.svg"),
                         ),
@@ -80,7 +81,8 @@ class UserTypeView extends StatelessWidget {
                           onTap: () {
                             GoRouter.of(
                               context,
-                            ).pushReplacement(AppRouter.kuserlabourer);
+                            ).pushReplacement(AppRouter.kauthlandingview,
+                             extra: 'labourer', );
                           },
                           child: SvgPicture.asset("assets/images/labourer.svg"),
                         ),

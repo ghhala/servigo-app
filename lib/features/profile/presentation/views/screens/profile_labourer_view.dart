@@ -60,27 +60,32 @@ class ProfileLabourerView extends StatelessWidget {
                         ),
                       ),
                       Gap(24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ContainerWidget(
-                            image: "assets/images/star_icon.png",
-                            text: "Reviews",
-                            number: 4.5,
-                          ),
-                          Gap(10),
-                          ContainerWidget(
-                            image: "assets/images/visits_Icon.png",
-                            text: "Visits",
-                            number: 140,
-                          ),
-                          Gap(10),
-                          ContainerWidget(
-                            image: "assets/images/Experince_icon.png",
-                            text: "Experiance",
-                            number: 5,
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ContainerWidget(
+                              image: "assets/images/star_icon.png",
+                              text: "Reviews",
+                              number: 4.5,
+                            ),
+                            Gap(10),
+                            ContainerWidget(
+                              image: "assets/images/visits_Icon.png",
+                              text: "Visits",
+                              number: 140,
+                            ),
+                            Gap(10),
+                            Expanded(
+                              child: ContainerWidget(
+                                image: "assets/images/Experince_icon.png",
+                                text: "Experiance",
+                                number: 5,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -122,47 +127,49 @@ class ProfileLabourerView extends StatelessWidget {
                 height: 106.h,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Working Hours and Days",
-                        style: TextStyles.font12PrimaryColorW600,
-                      ),
-                      Gap(12),
-                      Row(
-                        children: [
-                          Icon(Icons.circle, size: 14.sp),
-                          Gap(5),
-                          Text(
-                            "Saturday _ Thursday",
-                            style: TextStyles.font12BlackW400,
-                          ),
-                        ],
-                      ),
-                      Gap(7),
-                      Row(
-                        children: [
-                          Icon(Icons.circle, size: 14.sp),
-                          Gap(5),
-                          Text(
-                            "9 AM - 6 PM",
-                            style: TextStyles.font12BlackW400,
-                          ),
-                        ],
-                      ),
-                      Gap(7),
-                      Row(
-                        children: [
-                          Icon(Icons.circle, size: 14.sp),
-                          Gap(5),
-                          Text(
-                            "20,000 SYP - 30,000 SYP",
-                            style: TextStyles.font12BlackW400,
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Working Hours and Days",
+                          style: TextStyles.font12PrimaryColorW600,
+                        ),
+                        Gap(12),
+                        Row(
+                          children: [
+                            Icon(Icons.circle, size: 14.sp),
+                            Gap(5),
+                            Text(
+                              "Saturday _ Thursday",
+                              style: TextStyles.font12BlackW400,
+                            ),
+                          ],
+                        ),
+                        Gap(7),
+                        Row(
+                          children: [
+                            Icon(Icons.circle, size: 14.sp),
+                            Gap(5),
+                            Text(
+                              "9 AM - 6 PM",
+                              style: TextStyles.font12BlackW400,
+                            ),
+                          ],
+                        ),
+                        Gap(7),
+                        Row(
+                          children: [
+                            Icon(Icons.circle, size: 14.sp),
+                            Gap(5),
+                            Text(
+                              "20,000 SYP - 30,000 SYP",
+                              style: TextStyles.font12BlackW400,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

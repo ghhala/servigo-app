@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 
 class CompliteProfileView extends StatelessWidget {
-  const CompliteProfileView({super.key});
+  final String userType;
+  final Map<String, dynamic>? userData;
+  const CompliteProfileView({super.key, this.userData, required this.userType});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 100.h),
           child: Container(
             width: 353.w,
             height: 239.h,
@@ -57,7 +61,16 @@ class CompliteProfileView extends StatelessWidget {
                     ),
                     width: 280.w,
                     height: 40.h,
-                    onTap: () {},
+                    onTap: () {
+                      GoRouter.of(
+                        context,
+                      ).push(AppRouter.kEditProfileLabourer,
+                      extra: {
+                        'userType': userType,
+                        'userData': userData,
+                      },
+                       );
+                    },
                   ),
                 ],
               ),

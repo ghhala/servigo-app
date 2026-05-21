@@ -9,7 +9,8 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 
 class AuthLandingView extends StatelessWidget {
-  const AuthLandingView({super.key});
+  final String userType;
+  const AuthLandingView({super.key, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +58,15 @@ class AuthLandingView extends StatelessWidget {
                     title: "Sign Up",
                     width: 250.w,
                     onTap: () {
-                      GoRouter.of(context).push(AppRouter.kusertypeview);
+                      userType == 'user'
+                          ? GoRouter.of(context).pushReplacement(
+                              AppRouter.ksignupuser,
+                              extra: 'user',
+                            )
+                          : GoRouter.of(context).pushReplacement(
+                              AppRouter.kuserlabourer,
+                              extra: 'labourer',
+                            );
                     },
                   ),
                   Gap(96.h),
@@ -70,7 +79,9 @@ class AuthLandingView extends StatelessWidget {
                     title: "Log In",
                     width: 250.w,
                     onTap: () {
-                      GoRouter.of(context).push(AppRouter.klogIn);
+                      GoRouter.of(
+                        context,
+                      ).pushReplacement(AppRouter.klogIn, extra: userType);
                     },
                   ),
                 ],

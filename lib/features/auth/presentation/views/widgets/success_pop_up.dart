@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 
 class SuccessPopUp extends StatelessWidget {
-  static Future<void> show(BuildContext context) {
+  static Future<void> show(BuildContext context,String userType) {
     return showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.45),
-      builder: (_) => const SuccessPopUp(),
+      builder: (_) =>  SuccessPopUp(userType: userType),
     );
   }
-
-  const SuccessPopUp({super.key});
+final String userType;
+  const SuccessPopUp({super.key, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,10 @@ class SuccessPopUp extends StatelessWidget {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    GoRouter.of(context).push(AppRouter.kHome, extra: userType);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4F6EF7),
                     foregroundColor: Colors.white,

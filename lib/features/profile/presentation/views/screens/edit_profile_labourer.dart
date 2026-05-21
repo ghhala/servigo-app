@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -12,7 +14,9 @@ import 'package:servi_go_app/features/profile/presentation/views/widgets/sub_cat
 import 'package:servi_go_app/features/profile/presentation/views/widgets/working_hours_picker.dart';
 
 class EditProfileLabourer extends StatelessWidget {
-  const EditProfileLabourer({super.key});
+  final String userType;
+  final Map<String, dynamic>? userData;
+  const EditProfileLabourer({super.key, this.userData, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +57,8 @@ class EditProfileLabourer extends StatelessWidget {
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "hh",
+                                hintText:
+                                    userData?['full_name'] as String? ?? "hala",
                                 borderSide: BorderSide(
                                   width: 0.1,
                                   color: Colors.white,
@@ -68,7 +73,7 @@ class EditProfileLabourer extends StatelessWidget {
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "hh",
+                                hintText: userData?['email'] as String? ?? "",
                                 borderSide: BorderSide(
                                   width: 0.1,
                                   color: Colors.white,
@@ -83,7 +88,7 @@ class EditProfileLabourer extends StatelessWidget {
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "hh",
+                                hintText: userData?['phone'] as String? ?? "",
                                 borderSide: BorderSide(
                                   width: 0.1,
                                   color: Colors.white,
@@ -98,7 +103,8 @@ class EditProfileLabourer extends StatelessWidget {
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "hh",
+                                hintText:
+                                    userData?['location'] as String? ?? "",
                                 borderSide: BorderSide(
                                   width: 0.1,
                                   color: Colors.white,
@@ -187,7 +193,12 @@ class EditProfileLabourer extends StatelessWidget {
                   textstyle: TextStyles.font20White800.copyWith(
                     fontSize: 17.sp,
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    GoRouter.of(context).push(
+                      AppRouter.kHome,
+                      extra: {"userType": userType, "userData": userData},
+                    );
+                  },
                 ),
               ],
             ),
