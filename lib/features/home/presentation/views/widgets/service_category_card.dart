@@ -13,15 +13,15 @@ class ServiceCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
-      child: Container(
-        width: 100.w,
-        height: 120.h,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(13.r),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+        child: Container(
+          width: 100.w,
+          height: 120.h,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(13.r),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -33,8 +33,9 @@ class ServiceCategoryCard extends StatelessWidget {
             Gap(16),
             Text(
               name,
-              style: TextStyles.font14PrimaryColorW700.copyWith(
-                fontSize: 12.sp,
+              style: TextStyles.onCard(
+                context,
+                TextStyles.font14PrimaryColorW700.copyWith(fontSize: 12.sp),
               ),
             ),
           ],

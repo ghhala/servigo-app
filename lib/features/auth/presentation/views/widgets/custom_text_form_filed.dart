@@ -46,6 +46,10 @@ class CustomTextFormFiled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle resolvedHintStyle = TextStyles.onCard(
+      context,
+      hintStyle ?? TextStyles.font16PrimaryColorW400,
+    );
     return SizedBox(
       width: width ?? MediaQuery.sizeOf(context).width * 0.88,
       height: height ?? 42.h,
@@ -67,10 +71,10 @@ class CustomTextFormFiled extends StatelessWidget {
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
-                hintStyle: TextStyles.font16PrimaryColorW400,
+                hintStyle: resolvedHintStyle,
 
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).cardColor,
                 border: buildBorder(),
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),
@@ -93,10 +97,10 @@ class CustomTextFormFiled extends StatelessWidget {
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
-                hintStyle: hintStyle ?? TextStyles.font16PrimaryColorW400,
+                hintStyle: resolvedHintStyle,
 
                 filled: true,
-                fillColor: fillColor ?? Colors.white,
+                fillColor: fillColor ?? Theme.of(context).cardColor,
                 border: buildBorder(),
                 enabledBorder: buildBorder(),
                 focusedBorder: buildBorder(),

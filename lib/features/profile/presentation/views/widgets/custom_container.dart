@@ -16,15 +16,15 @@ class CustomContainer extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.r),
-     ) ,
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 5,
+                offset: Offset(0, 2),
+              ),
+            ],
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(15.r),
+ ) ,
      child:child ,
      )
      ;

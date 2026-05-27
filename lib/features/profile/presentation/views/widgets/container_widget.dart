@@ -20,7 +20,7 @@ class ContainerWidget extends StatelessWidget {
       width: 106.w,
       height: 48.h,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10.r),
         border: Border.all(color: Colors.grey.shade300),
         boxShadow: [
@@ -38,15 +38,24 @@ class ContainerWidget extends StatelessWidget {
           children: [
             Image.asset(image),
             Gap(5),
-            Column(
-              children: [
-                Text(
-                  text,
-                  style: TextStyles.font16BlackW700.copyWith(fontSize: 13.sp),
+                Column(
+                  children: [
+                    Text(
+                      text,
+                      style: TextStyles.onCard(
+                        context,
+                        TextStyles.font16BlackW700.copyWith(fontSize: 13.sp),
+                      ),
+                    ),
+                    Text(
+                      number.toString(),
+                      style: TextStyles.onCard(
+                        context,
+                        TextStyles.font11BlackW400,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(number.toString(), style: TextStyles.font11BlackW400),
-              ],
-            ),
           ],
         ),
       ),

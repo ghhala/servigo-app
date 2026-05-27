@@ -185,7 +185,7 @@ class _CustomLocationState extends State<CustomLocation>
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(blurRadius: 5, color: Colors.black26),

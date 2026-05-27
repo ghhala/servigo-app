@@ -24,7 +24,7 @@ class ProviderRatingCard extends StatelessWidget {
         width: 130.w,
         height: 128.h,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(13.r),
           boxShadow: [
             BoxShadow(
@@ -42,30 +42,19 @@ class ProviderRatingCard extends StatelessWidget {
               Gap(6),
               Row(
                 children: [
-                  Text("Name:", style: TextStyles.font8PrimaryColorW700),
+                  Text(
+                    "Name:",
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font8PrimaryColorW700,
+                    ),
+                  ),
 
                   Text(
                     providerName,
-                    style: TextStyles.font8PrimaryColorW700.copyWith(
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-              Gap(3),
-              Row(
-                children: [
-                  Text(
-                    "Type of service :",
-                    style: TextStyles.font8PrimaryColorW700,
-                  ),
-
-                  Expanded(
-                    child: Text(
-                      overflow: TextOverflow.visible,
-                      maxLines: 1,
-                      serviceType,
-                      style: TextStyles.font8PrimaryColorW700.copyWith(
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font8PrimaryColorW700.copyWith(
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -75,12 +64,47 @@ class ProviderRatingCard extends StatelessWidget {
               Gap(3),
               Row(
                 children: [
-                  Text("Evaluation", style: TextStyles.font8PrimaryColorW700),
+                  Text(
+                    "Type of service :",
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font8PrimaryColorW700,
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Text(
+                      overflow: TextOverflow.visible,
+                      maxLines: 1,
+                      serviceType,
+                      style: TextStyles.onCard(
+                        context,
+                        TextStyles.font8PrimaryColorW700.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Gap(3),
+              Row(
+                children: [
+                  Text(
+                    "Evaluation",
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font8PrimaryColorW700,
+                    ),
+                  ),
 
                   Text(
                     rating.toString(),
-                    style: TextStyles.font8PrimaryColorW700.copyWith(
-                      fontWeight: FontWeight.w400,
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font8PrimaryColorW700.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],

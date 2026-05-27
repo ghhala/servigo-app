@@ -8,6 +8,8 @@ class ChatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color onSurface = Theme.of(context).colorScheme.onSurface;
     return Container(
       width: 353.w,
       height: 80.h,
@@ -20,7 +22,7 @@ class ChatTile extends StatelessWidget {
             offset: Offset(0, 3), // changes position of shadow
           ),
         ],
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.all(Radius.circular(10.r)),
       ),
       child: Padding(
@@ -38,11 +40,17 @@ class ChatTile extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text("John ", style: TextStyles.font18BlackW500),
+                      Text(
+                        "John ",
+                        style: TextStyles.onCard(
+                          context,
+                          TextStyles.font18BlackW500,
+                        ),
+                      ),
                       Gap(200),
                       Icon(
                         Icons.keyboard_arrow_right,
-                        color: Colors.black,
+                        color: isDark ? onSurface : Colors.black,
                         size: 20.r,
                       ),
                     ],
@@ -50,7 +58,10 @@ class ChatTile extends StatelessWidget {
                   Gap(7),
                   Text(
                     "When are you coming ?",
-                    style: TextStyles.font12BlackW400,
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font12BlackW400,
+                    ),
                   ),
                 ],
               ),

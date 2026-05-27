@@ -10,7 +10,7 @@ class ProtfolioWidget extends StatelessWidget {
       width: 353.w,
       height: 308.h,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18.r),
       ),
       child:Column(

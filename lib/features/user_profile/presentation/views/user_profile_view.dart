@@ -24,7 +24,7 @@ class UserProfileView extends StatelessWidget {
               child: Container(
                 width: 435.w,
                 height: 250.h,
-                decoration: BoxDecoration(color: Colors.white),
+                decoration: BoxDecoration(color: Theme.of(context).cardColor),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
