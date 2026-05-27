@@ -19,6 +19,8 @@ class CustomRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle baseStyle = style ?? TextStyles.font16PrimaryColorW600;
+    final TextStyle resolvedStyle = TextStyles.onCard(context, baseStyle);
     return Column(
       children: [
         Padding(
@@ -28,7 +30,7 @@ class CustomRowWidget extends StatelessWidget {
               Gap(20),
               SvgPicture.asset(iconPath),
               Gap(20),
-              Text(text, style: style ?? TextStyles.font16PrimaryColorW600),
+              Text(text, style: resolvedStyle),
               Spacer(),
               GestureDetector(
                 onTap: () {

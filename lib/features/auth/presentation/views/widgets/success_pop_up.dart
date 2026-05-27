@@ -19,11 +19,13 @@ final String userType;
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color onSurface = Theme.of(context).colorScheme.onSurface;
     return AppBackground(
       child: Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.white,
-        shadowColor: Colors.white.withOpacity(0.4),
+        backgroundColor: Theme.of(context).cardColor,
+        shadowColor: Theme.of(context).shadowColor,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 50.h),
           child: Column(
@@ -41,24 +43,24 @@ final String userType;
 
               Gap(24.h),
 
-              const Text(
+              Text(
                 'S u c c e s s !',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF4F6EF7),
+                  color: isDark ? onSurface : const Color(0xFF4F6EF7),
                   letterSpacing: 2,
                 ),
               ),
 
               Gap(12.h),
 
-              const Text(
+              Text(
                 'The account has been\ncreated successfully',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
-                  color: Color(0xFF4F6EF7),
+                  color: isDark ? onSurface : const Color(0xFF4F6EF7),
                   height: 1.6,
                 ),
               ),

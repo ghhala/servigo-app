@@ -36,7 +36,7 @@ class SettingsView extends StatelessWidget {
                       offset: Offset(0, 5.h),
                     ),
                   ],
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(13.r),
                 ),
                 child: Padding(

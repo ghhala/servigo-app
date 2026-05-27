@@ -41,7 +41,7 @@ class HomeBody extends StatelessWidget {
               width: 390.w,
               height: 115.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(13.r),
                 boxShadow: [
                   BoxShadow(
@@ -58,7 +58,10 @@ class HomeBody extends StatelessWidget {
                   Text(
                     overflow: TextOverflow.ellipsis,
                     "High Quality and Competitive\n Prices For Your Home Services \nHigh Quality and Competitive\n Prices For Your Home Services ",
-                    style: TextStyles.font12PrimaryColorW600,
+                    style: TextStyles.onCard(
+                      context,
+                      TextStyles.font12PrimaryColorW600,
+                    ),
                   ),
                 ],
               ),
@@ -73,7 +76,7 @@ class HomeBody extends StatelessWidget {
               width: 353.w,
               height: 150.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(13.r),
                 boxShadow: [
                   BoxShadow(
@@ -124,7 +127,7 @@ class HomeBody extends StatelessWidget {
               width: 353.w,
               height: 200.h,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(13.r),
                 boxShadow: [
                   BoxShadow(
@@ -147,14 +150,20 @@ class HomeBody extends StatelessWidget {
                         children: [
                           Text(
                             "Painting Advertisement",
-                            style: TextStyles.font25Blackw700.copyWith(
-                              fontSize: 14.sp,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font25Blackw700.copyWith(
+                                fontSize: 14.sp,
+                              ),
                             ),
                           ),
                           Gap(14),
                           Text(
                             "House Painting with High \n Professionalism  \nAffordable prices – guaranteed\nquality – fast execution",
-                            style: TextStyles.font12PrimaryColorW600,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
+                            ),
                           ),
                           Gap(20),
                           CustomButton(

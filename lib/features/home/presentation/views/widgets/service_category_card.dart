@@ -7,7 +7,11 @@ class ServiceCategoryCard extends StatelessWidget {
   final String name;
   final String image;
 
-  const ServiceCategoryCard({super.key, required this.name, required this.image, });
+  const ServiceCategoryCard({
+    super.key,
+    required this.name,
+    required this.image,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +21,7 @@ class ServiceCategoryCard extends StatelessWidget {
         width: 100.w,
         height: 120.h,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(13.r),
           boxShadow: [
             BoxShadow(
@@ -33,8 +37,9 @@ class ServiceCategoryCard extends StatelessWidget {
             Gap(16),
             Text(
               name,
-              style: TextStyles.font14PrimaryColorW700.copyWith(
-                fontSize: 12.sp,
+              style: TextStyles.onCard(
+                context,
+                TextStyles.font14PrimaryColorW700.copyWith(fontSize: 12.sp),
               ),
             ),
           ],

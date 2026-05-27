@@ -185,10 +185,13 @@ class _CustomLocationState extends State<CustomLocation>
                     child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
-                          BoxShadow(blurRadius: 5, color: Colors.black26),
+                          BoxShadow(
+                            blurRadius: 5,
+                            color: Theme.of(context).shadowColor.withOpacity(0.2),
+                          ),
                         ],
                       ),
                       child: Row(

@@ -10,6 +10,7 @@ class AppTheme {
       secondary: AppColors.grey,
     ),
     primaryColor: AppColors.primaryColor,
+    cardColor: Colors.white,
   );
 
   static final ThemeData darkTheme = ThemeData.dark().copyWith(
@@ -19,5 +20,6 @@ class AppTheme {
       secondary: AppColors.grey,
     ),
     primaryColor: AppColors.primaryColor,
+    cardColor: const Color(0xFF1E1E1E),
   );
 }

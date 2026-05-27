@@ -38,25 +38,37 @@ class ProfileLabourerView extends StatelessWidget {
                       Gap(10),
                       Text(
                         "John Doe",
-                        style: TextStyles.font16PrimaryColorW600.copyWith(
-                          fontSize: 18.sp,
+                        style: TextStyles.onCard(
+                          context,
+                          TextStyles.font16PrimaryColorW600.copyWith(
+                            fontSize: 18.sp,
+                          ),
                         ),
                       ),
                       Gap(5),
                       Text(
                         "Professional | electrical",
-                        style: TextStyles.font12PrimaryColorW600,
+                        style: TextStyles.onCard(
+                          context,
+                          TextStyles.font12PrimaryColorW600,
+                        ),
                       ),
                       Gap(4),
                       Text(
                         "0988 888 888",
-                        style: TextStyles.font12PrimaryColorW600,
+                        style: TextStyles.onCard(
+                          context,
+                          TextStyles.font12PrimaryColorW600,
+                        ),
                       ),
                       Gap(4),
                       Text(
                         "Hama | Located in Masyaf",
-                        style: TextStyles.font12PrimaryColorW600.copyWith(
-                          fontSize: 13.sp,
+                        style: TextStyles.onCard(
+                          context,
+                          TextStyles.font12PrimaryColorW600.copyWith(
+                            fontSize: 13.sp,
+                          ),
                         ),
                       ),
                       Gap(24),
@@ -105,7 +117,10 @@ class ProfileLabourerView extends StatelessWidget {
                           Gap(5),
                           Text(
                             "About him",
-                            style: TextStyles.font12PrimaryColorW600,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
+                            ),
                           ),
                         ],
                       ),
@@ -133,17 +148,23 @@ class ProfileLabourerView extends StatelessWidget {
                       children: [
                         Text(
                           "Working Hours and Days",
-                          style: TextStyles.font12PrimaryColorW600,
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font12PrimaryColorW600,
+                          ),
                         ),
                         Gap(12),
                         Row(
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                            Text(
-                              "Saturday _ Thursday",
-                              style: TextStyles.font12BlackW400,
+                          Text(
+                            "Saturday _ Thursday",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12BlackW400,
                             ),
+                          ),
                           ],
                         ),
                         Gap(7),
@@ -151,10 +172,13 @@ class ProfileLabourerView extends StatelessWidget {
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                            Text(
-                              "9 AM - 6 PM",
-                              style: TextStyles.font12BlackW400,
+                          Text(
+                            "9 AM - 6 PM",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12BlackW400,
                             ),
+                          ),
                           ],
                         ),
                         Gap(7),
@@ -162,10 +186,13 @@ class ProfileLabourerView extends StatelessWidget {
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                            Text(
-                              "20,000 SYP - 30,000 SYP",
-                              style: TextStyles.font12BlackW400,
+                          Text(
+                            "20,000 SYP - 30,000 SYP",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12BlackW400,
                             ),
+                          ),
                           ],
                         ),
                       ],
@@ -190,10 +217,13 @@ class ProfileLabourerView extends StatelessWidget {
                         Row(
                           children: [
                             Image.asset("assets/images/reviews_icon.png"),
-                            Text(
-                              "Customer Reviews and Ratings",
-                              style: TextStyles.font12PrimaryColorW600,
+                          Text(
+                            "Customer Reviews and Ratings",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
                             ),
+                          ),
                           ],
                         ),
                         Gap(8),
@@ -211,14 +241,20 @@ class ProfileLabourerView extends StatelessWidget {
                               children: [
                                 Text(
                                   "Jane Smith",
-                                  style: TextStyles.font12BlackW400.copyWith(
-                                    fontWeight: FontWeight.w600,
+                                  style: TextStyles.onCard(
+                                    context,
+                                    TextStyles.font12BlackW400.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                                 Gap(4),
                                 Text(
                                   "Great service! Highly recommend.",
-                                  style: TextStyles.font12BlackW400,
+                                  style: TextStyles.onCard(
+                                    context,
+                                    TextStyles.font12BlackW400,
+                                  ),
                                 ),
                               ],
                             ),

@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:servi_go_app/core/utils/app_colors.dart';
 
 class TextStyles {
+  static TextStyle onCard(BuildContext context, TextStyle style) {
+    if (Theme.of(context).brightness == Brightness.dark) {
+      return style.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    }
+    return style;
+  }
   static final font25Blackw700 = TextStyle(
     fontSize: 25,
     fontWeight: FontWeight.w700,
