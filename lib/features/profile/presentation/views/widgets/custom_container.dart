@@ -20,7 +20,7 @@ class CustomContainer extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Theme.of(context).shadowColor.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 5,
             offset: Offset(0, 2),

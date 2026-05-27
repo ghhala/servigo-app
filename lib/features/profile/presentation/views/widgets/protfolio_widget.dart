@@ -13,7 +13,7 @@ class ProtfolioWidget extends StatelessWidget {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18.r),
       ),
-      child:Column(
+      child: Column(
         children: [],
       ) ,
     );
