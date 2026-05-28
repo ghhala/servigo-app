@@ -75,9 +75,9 @@ class CustomTextFormFiled extends StatelessWidget {
 
                 filled: true,
                 fillColor: Theme.of(context).cardColor,
-                border: buildBorder(),
-                enabledBorder: buildBorder(),
-                focusedBorder: buildBorder(),
+                border: buildBorder(context),
+                enabledBorder: buildBorder(context),
+                focusedBorder: buildBorder(context),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5),
                   borderSide: const BorderSide(width: 1, color: Colors.red),
@@ -101,9 +101,9 @@ class CustomTextFormFiled extends StatelessWidget {
 
                 filled: true,
                 fillColor: fillColor ?? Theme.of(context).cardColor,
-                border: buildBorder(),
-                enabledBorder: buildBorder(),
-                focusedBorder: buildBorder(),
+                border: buildBorder(context),
+                enabledBorder: buildBorder(context),
+                focusedBorder: buildBorder(context),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
 
@@ -114,10 +114,11 @@ class CustomTextFormFiled extends StatelessWidget {
     );
   }
 
-  OutlineInputBorder buildBorder() {
+  OutlineInputBorder buildBorder(BuildContext context) {
     return OutlineInputBorder(
       borderRadius: borderRadius ?? BorderRadius.circular(8),
-      borderSide: borderSide ?? const BorderSide(width: 1, color: Colors.black),
+      borderSide: borderSide ??
+          BorderSide(width: 1, color: Theme.of(context).dividerColor),
     );
   }
 }

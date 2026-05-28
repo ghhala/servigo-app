@@ -17,8 +17,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
   final ScrollController _hourController = ScrollController();
   final ScrollController _periodController = ScrollController();
-  final Color _primaryDarkColor = const Color(0xFF0D3B51);
-  final Color _listBackgroundColor = const Color(0xFFF3F2F2);
 
   @override
   Widget build(BuildContext context) {
@@ -73,12 +71,20 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     required bool Function(String) isSelected,
     required Function(String) onTap,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? theme.cardColor : const Color(0xFFF3F2F2);
+    final borderColor = theme.dividerColor;
+    final textColor = theme.colorScheme.onSurface;
+    final controlColor = theme.colorScheme.primary;
+    final controlIconColor = theme.colorScheme.onPrimary;
     return Container(
       height: 65.h,
       width: width,
       decoration: BoxDecoration(
-        color: _listBackgroundColor,
-        border: Border.all(color: Colors.white, width: 1.5),
+        color: backgroundColor,
+        border: Border.all(color: borderColor, width: 1.5),
       ),
       child: Row(
         children: [
@@ -89,7 +95,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
               itemCount: itemCount,
               separatorBuilder: (context, index) => Divider(
                 height: 1,
-                color: _primaryDarkColor.withOpacity(0.3),
+                color: borderColor,
                 thickness: 0.5,
               ),
               itemBuilder: (context, index) {
@@ -105,7 +111,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: active ? FontWeight.w900 : FontWeight.bold,
-                        color: _primaryDarkColor,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -117,7 +123,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
           // عمود التحكم (الأسهم الجانبية)
           Container(
             width: 9.w,
-            color: _primaryDarkColor,
+            color: controlColor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -127,9 +133,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.ease,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_drop_up,
-                    color: Colors.white,
+                    color: controlIconColor,
                     size: 13,
                   ),
                 ),
@@ -139,9 +145,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                     duration: const Duration(milliseconds: 200),
                     curve: Curves.ease,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_drop_down,
-                    color: Colors.white,
+                    color: controlIconColor,
                     size: 13,
                   ),
                 ),
