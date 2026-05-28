@@ -9,19 +9,26 @@ class PriceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final fillColor =
+        isDark ? theme.cardColor : const Color(0xFFD9D9D9);
+    final borderSide = BorderSide(width: 0.1, color: theme.dividerColor);
+    final labelStyle = TextStyles.onCard(
+      context,
+      TextStyles.font12PrimaryColorW600,
+    ).copyWith(fontSize: 10);
+    final textColor = theme.colorScheme.onSurface;
+    return Row(
                           children: [
                             CustomTextFormFiled(
                               hintText: "20.000",
                               hintStyle: TextStyles.font12PrimaryColorW600,
                               textInputType: TextInputType.number,
-                              fillColor: Color(0xFFD9D9D9),
+                              fillColor: fillColor,
                               width: 100.w,
                               height: 20.h,
-                              borderSide: BorderSide(
-                                width: 0.1,
-                                color: Colors.white,
-                              ),
+                              borderSide: borderSide,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(2),
                               ),
@@ -29,24 +36,22 @@ class PriceWidget extends StatelessWidget {
                             Gap(2),
                             Text(
                               "SYP",
-                              style: TextStyles.font12PrimaryColorW600.copyWith(
-                                fontSize: 10,
-                              ),
+                              style: labelStyle,
                             ),
                             Gap(5),
-                            Text("-"),
+                            Text(
+                              "-",
+                              style: TextStyle(color: textColor),
+                            ),
                             Gap(8),
                             CustomTextFormFiled(
                               hintText: "20.000",
                               hintStyle: TextStyles.font12PrimaryColorW600,
                               textInputType: TextInputType.number,
-                              fillColor: Color(0xFFD9D9D9),
+                              fillColor: fillColor,
                               width: 100.w,
                               height: 20.h,
-                              borderSide: BorderSide(
-                                width: 0.1,
-                                color: Colors.white,
-                              ),
+                              borderSide: borderSide,
                               borderRadius: BorderRadius.all(
                                 Radius.circular(2),
                               ),
@@ -54,9 +59,7 @@ class PriceWidget extends StatelessWidget {
                             Gap(5),
                             Text(
                               "SYP",
-                              style: TextStyles.font12PrimaryColorW600.copyWith(
-                                fontSize: 10,
-                              ),
+                              style: labelStyle,
                             ),
                           ],
                         );

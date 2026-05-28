@@ -23,7 +23,6 @@ class CustomSubCategoryPicker extends StatefulWidget {
 class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
   late String _currentSelection;
   final ScrollController _scrollController = ScrollController();
-  final Color _primaryDarkColor = const Color(0xFF0D3B51);
 
   @override
   void initState() {
@@ -33,14 +32,26 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? theme.cardColor : Colors.grey.shade300;
+    final borderColor = theme.dividerColor;
+    final textColor = theme.colorScheme.onSurface;
+    final controlColor = theme.colorScheme.primary;
+    final controlIconColor = theme.colorScheme.onPrimary;
+    final labelStyle = TextStyles.onCard(
+      context,
+      TextStyles.font14PrimaryColorW700,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           height: 100.h,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
-            border: Border.all(color: Colors.white, width: 1.5),
+            color: backgroundColor,
+            border: Border.all(color: borderColor, width: 1.5),
           ),
           child: Row(
             children: [
@@ -52,7 +63,7 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
                   itemCount: widget.items.length,
                   separatorBuilder: (context, index) => Divider(
                     height: 1,
-                    color: _primaryDarkColor,
+                    color: borderColor,
                     thickness: 1,
                   ),
                   itemBuilder: (context, index) {
@@ -72,7 +83,7 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.bold,
-                            color: _primaryDarkColor,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -83,7 +94,7 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
 
               Container(
                 width: 16.w,
-                color: _primaryDarkColor,
+                color: controlColor,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -93,9 +104,9 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.ease,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_drop_up,
-                        color: Colors.white,
+                        color: controlIconColor,
                         size: 18,
                       ),
                     ),
@@ -106,9 +117,9 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.ease,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.arrow_drop_down,
-                        color: Colors.white,
+                        color: controlIconColor,
                         size: 18,
                       ),
                     ),
@@ -122,12 +133,12 @@ class _CustomSubCategoryPickerState extends State<CustomSubCategoryPicker> {
 
         Text.rich(
           TextSpan(
-            style: TextStyles.font14PrimaryColorW700,
+            style: labelStyle,
             children: [
               const TextSpan(text: "Sub category : "),
               TextSpan(
                 text: _currentSelection,
-                style: const TextStyle(fontWeight: FontWeight.w900),
+                style: labelStyle.copyWith(fontWeight: FontWeight.w900),
               ),
             ],
           ),

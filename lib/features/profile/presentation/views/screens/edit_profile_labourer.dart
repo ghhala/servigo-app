@@ -21,6 +21,12 @@ class EditProfileLabourer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final containerColor =
+        isDark ? theme.cardColor : const Color(0xFFF3F2F2);
+    final dividerColor = theme.dividerColor;
+    final onSurface = theme.colorScheme.onSurface;
     return Scaffold(
       body: AppBackground(
         padding: EdgeInsets.only(top: 45.h),
@@ -35,7 +41,7 @@ class EditProfileLabourer extends StatelessWidget {
                   width: 353.w,
                   height: 530.h,
                   decoration: BoxDecoration(
-                    color: Color(0xFFF3F2F2),
+                    color: containerColor,
                     borderRadius: BorderRadius.circular(18.r),
                   ),
                   child: SingleChildScrollView(
@@ -46,10 +52,13 @@ class EditProfileLabourer extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                             "Account Info",
-                            style: TextStyles.font16BlackW700,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font16BlackW700,
+                            ),
                           ),
                         ),
-                        Divider(color: Colors.black, thickness: 0.8),
+                        Divider(color: dividerColor, thickness: 0.8),
                         Gap(11),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -58,14 +67,17 @@ class EditProfileLabourer extends StatelessWidget {
                             children: [
                               Text(
                                 "Full Name",
-                                style: TextStyles.font16PrimaryColorW600,
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600,
+                                ),
                               ),
                               CustomTextFormFiled(
                                 hintText:
                                     userData?['full_name'] as String? ?? "hala",
                                 borderSide: BorderSide(
                                   width: 0.1,
-                                  color: Colors.white,
+                                  color: dividerColor,
                                 ),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(2),
@@ -74,13 +86,16 @@ class EditProfileLabourer extends StatelessWidget {
                               Gap(20),
                               Text(
                                 "Email",
-                                style: TextStyles.font16PrimaryColorW600,
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600,
+                                ),
                               ),
                               CustomTextFormFiled(
                                 hintText: userData?['email'] as String? ?? "",
                                 borderSide: BorderSide(
                                   width: 0.1,
-                                  color: Colors.white,
+                                  color: dividerColor,
                                 ),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(2),
@@ -89,13 +104,16 @@ class EditProfileLabourer extends StatelessWidget {
                               Gap(20),
                               Text(
                                 "Phone Number ",
-                                style: TextStyles.font16PrimaryColorW600,
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600,
+                                ),
                               ),
                               CustomTextFormFiled(
                                 hintText: userData?['phone'] as String? ?? "",
                                 borderSide: BorderSide(
                                   width: 0.1,
-                                  color: Colors.white,
+                                  color: dividerColor,
                                 ),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(2),
@@ -104,7 +122,10 @@ class EditProfileLabourer extends StatelessWidget {
                               Gap(20),
                               Text(
                                 "Location ",
-                                style: TextStyles.font16PrimaryColorW600,
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600,
+                                ),
                               ),
                               CustomTextFormFiled(
                                 hintText:
@@ -135,6 +156,23 @@ class EditProfileLabourer extends StatelessWidget {
                                 ),
                               ),
                               Gap(20),
+                              Text(
+                                "about_me ",
+                                style: TextStyles.font16PrimaryColorW600,
+                              ),
+                              CustomTextFormFiled(
+                                hintText: "Describe yourself in a few words",
+                                hintStyle: TextStyles.font11BlackW400,
+
+                                borderSide: BorderSide(
+                                  width: 0.1,
+                                  color: dividerColor,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(2),
+                                ),
+                              ),
+                              Gap(20),
                             ],
                           ),
                         ),
@@ -142,7 +180,10 @@ class EditProfileLabourer extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 10.h),
                           child: Text(
                             "Choose sub category :",
-                            style: TextStyles.font14PrimaryColorW700,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font14PrimaryColorW700,
+                            ),
                           ),
                         ),
                         Gap(4),
@@ -166,7 +207,10 @@ class EditProfileLabourer extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 10.h),
                           child: Text(
                             "Specify the holiday days :",
-                            style: TextStyles.font14PrimaryColorW700,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font14PrimaryColorW700,
+                            ),
                           ),
                         ),
                         HolidayDaysWidget(),
@@ -182,23 +226,39 @@ class EditProfileLabourer extends StatelessWidget {
                         Gap(20),
                         Text(
                           "Set the price for the services :",
-                          style: TextStyles.font14PrimaryColorW700,
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font14PrimaryColorW700,
+                          ),
                         ),
                         PriceWidget(),
                         Gap(47),
-                        Text(" Security ", style: TextStyles.font16BlackW700),
-                        Divider(color: Colors.black, thickness: 0.8),
+                        Text(
+                          " Security ",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font16BlackW700,
+                          ),
+                        ),
+                        Divider(color: dividerColor, thickness: 0.8),
                         Gap(10),
                         Row(
                           children: [
-                            Icon(Icons.lock_outline, size: 20),
+                            Icon(Icons.lock_outline, size: 20, color: onSurface),
                             Gap(10),
                             Text(
                               "Change Password",
-                              style: TextStyles.font16PrimaryColorW600,
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font16PrimaryColorW600,
+                              ),
                             ),
                             Spacer(),
-                            Icon(Icons.arrow_forward_ios, size: 15),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              size: 15,
+                              color: onSurface,
+                            ),
                           ],
                         ),
                         Gap(49),

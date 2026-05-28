@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:servi_go_app/core/utils/app_colors.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
 class HolidayDaysWidget extends StatefulWidget {
@@ -20,24 +19,34 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
     "Saturday",
   ];
 
-  // ✅ بدّلنا String? بـ Set<String> لدعم اختيار أكثر من يوم
-  final Set<String> _selectedDays = {};
+  String? _selectedDay = "Sunday";
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? theme.cardColor : Colors.grey.shade300;
+    final borderColor = theme.dividerColor;
+    final textStyle = TextStyles.onCard(
+      context,
+      TextStyles.font16PrimaryColorW600,
+    ).copyWith(fontSize: 14.sp);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           height: 100.h,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
-            border: Border.all(color: Colors.white, width: 1.5),
+            color: backgroundColor,
+            border: Border.all(color: borderColor, width: 1.5),
           ),
           child: Theme(
+            // تخصيص شكل الـ Scrollbar ليناسب التصميم
             data: Theme.of(context).copyWith(
               scrollbarTheme: ScrollbarThemeData(
-                thumbColor: MaterialStateProperty.all(AppColors.primaryColor),
+                thumbColor:
+                    MaterialStateProperty.all(theme.colorScheme.primary),
                 thickness: MaterialStateProperty.all(8),
                 radius: const Radius.circular(2),
               ),
@@ -51,14 +60,13 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
                 separatorBuilder: (context, index) => Divider(
                   height: 0.3,
                   thickness: 1.1,
-                  color: AppColors.primaryColor,
+                  color: borderColor,
                   indent: 0,
                   endIndent: 0,
                 ),
                 itemBuilder: (context, index) {
                   final day = _days[index];
-                  // ✅ نتحقق إذا كان اليوم موجوداً في الـ Set
-                  final isSelected = _selectedDays.contains(day);
+                  final isSelected = _selectedDay == day;
 
                   return ListTile(
                     dense: true,
@@ -69,33 +77,26 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
                     ),
                     title: Text(
                       day,
-                      style: TextStyles.font16PrimaryColorW600.copyWith(
-                        fontSize: 14.sp,
-                      ),
+                      style: textStyle,
                     ),
                     trailing: Container(
                       width: 20.w,
                       height: 20.h,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.transparent),
+                        color: theme.cardColor,
+                        border: Border.all(color: borderColor),
                       ),
                       child: isSelected
                           ? Icon(
                               Icons.check,
-                              color: AppColors.primaryColor,
+                              color: theme.colorScheme.primary,
                               size: 20.sp,
                             )
                           : null,
                     ),
                     onTap: () {
                       setState(() {
-                        // ✅ إذا كان محدداً → نزيله، وإذا لم يكن → نضيفه
-                        if (_selectedDays.contains(day)) {
-                          _selectedDays.remove(day);
-                        } else {
-                          _selectedDays.add(day);
-                        }
+                        _selectedDay = day;
                       });
                     },
                   );
