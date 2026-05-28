@@ -6,6 +6,7 @@ import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
+import 'package:servi_go_app/features/profile/presentation/views/widgets/Profile_photo_widget.dart';
 
 class UserProfileView extends StatelessWidget {
   const UserProfileView({super.key});

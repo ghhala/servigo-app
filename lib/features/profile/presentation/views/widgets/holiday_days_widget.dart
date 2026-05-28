@@ -20,11 +20,11 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
     "Saturday",
   ];
 
-  String? _selectedDay = "Sunday";
+  // ✅ بدّلنا String? بـ Set<String> لدعم اختيار أكثر من يوم
+  final Set<String> _selectedDays = {};
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,7 +35,6 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
             border: Border.all(color: Colors.white, width: 1.5),
           ),
           child: Theme(
-            // تخصيص شكل الـ Scrollbar ليناسب التصميم
             data: Theme.of(context).copyWith(
               scrollbarTheme: ScrollbarThemeData(
                 thumbColor: MaterialStateProperty.all(AppColors.primaryColor),
@@ -58,7 +57,8 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
                 ),
                 itemBuilder: (context, index) {
                   final day = _days[index];
-                  final isSelected = _selectedDay == day;
+                  // ✅ نتحقق إذا كان اليوم موجوداً في الـ Set
+                  final isSelected = _selectedDays.contains(day);
 
                   return ListTile(
                     dense: true,
@@ -90,7 +90,12 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
                     ),
                     onTap: () {
                       setState(() {
-                        _selectedDay = day;
+                        // ✅ إذا كان محدداً → نزيله، وإذا لم يكن → نضيفه
+                        if (_selectedDays.contains(day)) {
+                          _selectedDays.remove(day);
+                        } else {
+                          _selectedDays.add(day);
+                        }
                       });
                     },
                   );

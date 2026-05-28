@@ -26,8 +26,8 @@ class EmailJSOTP {
           'template_id': _templateId,
           'user_id': _publicKey,
           'template_params': {
-            'user_email': targetEmail, // يجب أن يطابق الاسم في القالب
-            'otp_code': otpCode,       // يجب أن يطابق الاسم في القالب
+            'user_email': targetEmail, 
+            'otp_code': otpCode,      
           },
         }),
       );

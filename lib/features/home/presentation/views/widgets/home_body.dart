@@ -10,7 +10,9 @@ import 'package:servi_go_app/features/home/presentation/views/widgets/provider_r
 import 'package:servi_go_app/features/home/presentation/views/widgets/service_category_card.dart';
 
 class HomeBody extends StatelessWidget {
-  const HomeBody({super.key});
+  final String userType;
+
+  const HomeBody({super.key, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +26,21 @@ class HomeBody extends StatelessWidget {
             LangagueThemeWidget(),
 
             Gap(16),
-            CircleAvatar(
-              radius: 45.r,
-              backgroundImage: AssetImage(Assets.userAvatar),
-            ),
+            (userType == 'labourer')
+                ? CircleAvatar(
+                    radius: 45.r,
+                    backgroundImage: AssetImage("assets/images/avatar2.jpg"),
+                  )
+                : CircleAvatar(
+                    radius: 45.r,
+                    backgroundImage: AssetImage("assetsimages/avatar2.jpg"),
+                  ),
+
             Gap(16),
-            Text("Welcome Ali Ali", style: TextStyles.font16PrimaryColorW600),
+            Text(
+              "Welcome Hala Ghassa",
+              style: TextStyles.font16PrimaryColorW600,
+            ),
             Text(
               "How Can We Help You Today ?",
               style: TextStyles.font16PrimaryColorW600.copyWith(

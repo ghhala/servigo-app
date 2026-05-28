@@ -95,7 +95,7 @@ class LogIn extends StatelessWidget {
                         "assets/images/password_icon.svg",
                       ),
                     ),
-                    textInputType: TextInputType.number,
+                    textInputType: TextInputType.text,
                   ),
                   Gap(10.h),
                   Align(

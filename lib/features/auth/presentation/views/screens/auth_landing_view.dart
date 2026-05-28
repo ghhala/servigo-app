@@ -52,7 +52,14 @@ class AuthLandingView extends StatelessWidget {
                     child: SvgPicture.asset(Assets.logo),
                   ),
                   Gap(108.h),
-                  Text("create account", style: TextStyles.font22BlackW600),
+                  Text(
+                    "create account",
+                    style: TextStyles.font22BlackW600.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                  ),
                   Gap(16.h),
                   CustomButton(
                     title: "Sign Up",
@@ -72,7 +79,11 @@ class AuthLandingView extends StatelessWidget {
                   Gap(96.h),
                   Text(
                     "you already have account ?",
-                    style: TextStyles.font22BlackW600,
+                    style: TextStyles.font22BlackW600.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                   ),
                   Gap(16.h),
                   CustomButton(

@@ -167,7 +167,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         debugPrint("Result received: $result");
 
                         if (result != null && result is Map) {
-                          // تأكد أن الـ widget لا يزال موجوداً
+                          
                           if (mounted) {
                             setState(() {
                               locationController.text = result['name'] ?? '';
@@ -252,7 +252,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           "assets/images/password_icon.svg",
                         ),
                       ),
-                      textInputType: TextInputType.number,
+                      textInputType: TextInputType.text,
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
@@ -263,7 +263,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           "assets/images/password_icon.svg",
                         ),
                       ),
-                      textInputType: TextInputType.number,
+                      textInputType: TextInputType.text,
                     ),
                     Gap(25.h),
                     TermsAndConditionsWidget(onChanged: (bool value) {}),

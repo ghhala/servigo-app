@@ -12,7 +12,16 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 
 class ResetPasswordView extends StatelessWidget {
-  const ResetPasswordView({super.key});
+  final String userType;
+  final String? receivedOtp;
+  final String? userEmail;
+
+  const ResetPasswordView({
+    super.key,
+    required this.userType,
+    this.receivedOtp,
+    this.userEmail,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +74,7 @@ class ResetPasswordView extends StatelessWidget {
                     padding: EdgeInsets.all(13.w),
                     child: SvgPicture.asset("assets/images/password_icon.svg"),
                   ),
-                  textInputType: TextInputType.number,
+                  textInputType: TextInputType.text,
                 ),
                 Gap(20.h),
                 CustomTextFormFiled(
@@ -81,7 +90,7 @@ class ResetPasswordView extends StatelessWidget {
                     padding: EdgeInsets.all(13.w),
                     child: SvgPicture.asset("assets/images/password_icon.svg"),
                   ),
-                  textInputType: TextInputType.number,
+                  textInputType: TextInputType.text,
                 ),
                 Gap(51.h),
                 CustomButton(
@@ -92,7 +101,9 @@ class ResetPasswordView extends StatelessWidget {
                   onTap: () {
                     if (formKey.currentState!.validate()) {
                       SuccessPasswordPopUp.show(context);
-                      GoRouter.of(context).push(AppRouter.kLogin);
+                      GoRouter.of(
+                        context,
+                      ).push(AppRouter.klogIn, extra: userType);
                     }
                   },
                 ),

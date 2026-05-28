@@ -149,8 +149,8 @@ class _CustomLocationState extends State<CustomLocation>
                       await _getPlaceName(point);
                       debugPrint(
                         "selectedLocation: $selectedLocation",
-                      ); // ← أضف
-                      debugPrint("placeName after fetch: $placeName"); // ← أضف
+                      );
+                      debugPrint("placeName after fetch: $placeName");  
                     },
                   ),
                   children: [

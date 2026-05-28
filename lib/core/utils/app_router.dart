@@ -92,7 +92,23 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kresetpassword,
-        builder: (context, state) => const ResetPasswordView(),
+        builder: (context, state) {
+          // 1. استلام الـ extra كـ Map بشكل مرن، وإذا كانت فارغة نضع Map فارغ
+          final data = state.extra is Map<String, dynamic>
+              ? state.extra as Map<String, dynamic>
+              : {};
+
+          // 2. تحويل القيم بأمان إلى نصوص String لتطابق الـ Constructor الخاص بالصفحة
+          final String? otp = data['otp']?.toString();
+          final String? email = data['email']?.toString();
+          final String userType = data['userType']?.toString() ?? 'user';
+
+          return ResetPasswordView(
+            receivedOtp: otp,
+            userEmail: email,
+            userType: userType,
+          );
+        },
       ),
       GoRoute(
         path: kuserlabourer,

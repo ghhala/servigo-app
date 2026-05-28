@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
+import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 
 class UserTypeView extends StatelessWidget {
   const UserTypeView({super.key});
@@ -41,11 +42,7 @@ class UserTypeView extends StatelessWidget {
             ),
             Positioned(
               top: 50.h,
-              child: Row(
-                children: [
-                  Icon(Icons.toggle_off_rounded, color: Colors.white, size: 35.w),
-                ],
-              ),
+              child: Row(children: [LangagueThemeWidget()]),
             ),
             Positioned(
               right: 0,
@@ -60,7 +57,11 @@ class UserTypeView extends StatelessWidget {
                   Gap(67.h),
                   Text(
                     "Select account type",
-                    style: TextStyles.font16BlackW700,
+                    style: TextStyles.font16BlackW700.copyWith(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                   ),
                   Gap(48.h),
                   Padding(
@@ -69,20 +70,20 @@ class UserTypeView extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            GoRouter.of(
-                              context,
-                            ).pushReplacement(AppRouter.kauthlandingview,
-                             extra: 'user', );
+                            GoRouter.of(context).pushReplacement(
+                              AppRouter.kauthlandingview,
+                              extra: 'user',
+                            );
                           },
                           child: SvgPicture.asset("assets/images/user.svg"),
                         ),
                         Gap(34.w),
                         GestureDetector(
                           onTap: () {
-                            GoRouter.of(
-                              context,
-                            ).pushReplacement(AppRouter.kauthlandingview,
-                             extra: 'labourer', );
+                            GoRouter.of(context).pushReplacement(
+                              AppRouter.kauthlandingview,
+                              extra: 'labourer',
+                            );
                           },
                           child: SvgPicture.asset("assets/images/labourer.svg"),
                         ),

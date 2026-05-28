@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
+import 'package:servi_go_app/core/widgets/change_password_page%20.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 
@@ -47,19 +48,19 @@ class EditProfileUser extends StatelessWidget {
                             "Full Name",
                             style: TextStyles.font16PrimaryColorW600,
                           ),
-                          CustomTextFormFiled(hintText: "hh"),
+                          CustomTextFormFiled(hintText: "Hala Ghassa"),
                           Gap(20),
                           Text(
                             "Email",
                             style: TextStyles.font16PrimaryColorW600,
                           ),
-                          CustomTextFormFiled(hintText: "hh"),
+                          CustomTextFormFiled(hintText: "ghhala02@gmail.com"),
                           Gap(20),
                           Text(
                             "Phone Number ",
                             style: TextStyles.font16PrimaryColorW600,
                           ),
-                          CustomTextFormFiled(hintText: "hh"),
+                          CustomTextFormFiled(hintText: "09767644257"),
                         ],
                       ),
                     ),
@@ -76,7 +77,17 @@ class EditProfileUser extends StatelessWidget {
                           style: TextStyles.font16PrimaryColorW600,
                         ),
                         Spacer(),
-                        Icon(Icons.arrow_forward_ios, size: 15),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChangePasswordPage(),
+                              ),
+                            );
+                          },
+                          child: Icon(Icons.arrow_forward_ios, size: 15),
+                        ),
                       ],
                     ),
                   ],

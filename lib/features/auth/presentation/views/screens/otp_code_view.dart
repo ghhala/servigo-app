@@ -85,9 +85,14 @@ class OtpCodeView extends StatelessWidget {
                 height: 52.h,
                 onTap: () {
                   if (enteredOtp == receivedOtp) {
-                    GoRouter.of(
-                      context,
-                    ).pushReplacement(AppRouter.kresetpassword);
+                    context.go(
+  AppRouter.kresetpassword,
+  extra: {
+    'otp': receivedOtp,
+    'email': userEmail,
+    'userType': 'user', // أو القيمة الديناميكية المتوفرة لديك
+  },
+);
                   } else {
                     // إظهار خطأ
                   }

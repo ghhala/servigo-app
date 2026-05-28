@@ -6,7 +6,7 @@ import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/container_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/custom_container.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/protfolio_widget.dart';
+import 'package:servi_go_app/features/profile/presentation/views/widgets/my_protifolio.dart';
 
 class ProfileLabourerView extends StatelessWidget {
   const ProfileLabourerView({super.key});
@@ -32,7 +32,7 @@ class ProfileLabourerView extends StatelessWidget {
                       CircleAvatar(
                         radius: 30.r,
                         backgroundImage: AssetImage(
-                          "assets/images/user_avatar.jpg",
+                          "assets/images/avatar2.jpg",
                         ),
                       ),
                       Gap(10),
@@ -201,7 +201,7 @@ class ProfileLabourerView extends StatelessWidget {
                 ),
               ),
               Gap(20),
-              ProtfolioWidget(),
+              MyProtifolio(),
               Gap(20),
               CustomContainer(
                 width: 353.w,
@@ -211,6 +211,7 @@ class ProfileLabourerView extends StatelessWidget {
                     horizontal: 12.w,
                     vertical: 10.h,
                   ),
+
                   child: SingleChildScrollView(
                     child: Column(
                       children: [

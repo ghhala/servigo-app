@@ -23,13 +23,13 @@ class _HomeViewState extends State<HomeView> {
   List<Widget> get _pages {
     if (widget.userType == 'labourer') {
       return [
-        HomeBody(),
+        HomeBody(userType: "labourer",),
         ProfileLabourerView(),
         MessagesScreen(),
         SettingsView(),
       ];
     } else {
-      return [HomeBody(), UserProfileView(), MessagesScreen(), SettingsView()];
+      return  [HomeBody(userType: "user",), UserProfileView(), MessagesScreen(), SettingsView()];
     }
   }
 

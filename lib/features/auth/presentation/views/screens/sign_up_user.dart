@@ -132,7 +132,7 @@ class SignUpUser extends StatelessWidget {
                           "assets/images/password_icon.svg",
                         ),
                       ),
-                      textInputType: TextInputType.number,
+                      textInputType: TextInputType.text,
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
@@ -143,7 +143,7 @@ class SignUpUser extends StatelessWidget {
                           "assets/images/password_icon.svg",
                         ),
                       ),
-                      textInputType: TextInputType.number,
+                      textInputType: TextInputType.text,
                     ),
                     Gap(25.h),
                     TermsAndConditionsWidget(onChanged: (bool value) {}),

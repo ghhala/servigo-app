@@ -7,6 +7,7 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
+import 'package:servi_go_app/features/profile/presentation/views/widgets/Profile_photo_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/holiday_days_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/price_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/protfolio_widget.dart';
@@ -22,11 +23,14 @@ class EditProfileLabourer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
+        padding: EdgeInsets.only(top: 45.h),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
+                ProfilePhotoWidget(),
+                Gap(10),
                 Container(
                   width: 353.w,
                   height: 530.h,
@@ -114,6 +118,23 @@ class EditProfileLabourer extends StatelessWidget {
                                 ),
                               ),
                               Gap(20),
+                              Text(
+                                "about_me ",
+                                style: TextStyles.font16PrimaryColorW600,
+                              ),
+                              CustomTextFormFiled(
+                                hintText: "Describe yourself in a few words",
+                                hintStyle: TextStyles.font11BlackW400,
+
+                                borderSide: BorderSide(
+                                  width: 0.1,
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(2),
+                                ),
+                              ),
+                              Gap(20),
                             ],
                           ),
                         ),
@@ -129,11 +150,12 @@ class EditProfileLabourer extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 10.h),
                           child: CustomSubCategoryPicker(
                             items: const [
-                              "electrical",
-                              "plumber",
-                              "paint",
-                              "carpenter",
-                              "cleaning",
+                              "House Cleaning",
+                              "Car Cleaning",
+                              "Water Heater Installation",
+                              "Pipe Repair",
+                              "Office Cleaning",
+                              "Lighting Installation",
                             ],
                             initialValue: "electrical",
                             onSelected: (value) {},
@@ -149,14 +171,15 @@ class EditProfileLabourer extends StatelessWidget {
                         ),
                         HolidayDaysWidget(),
                         Gap(14),
-                        Text(
-                          "Set working hours : 00 : 00 AM - 00 : 00 PM",
-                          style: TextStyles.font14PrimaryColorW700,
-                        ),
                         CustomTimePicker(
-                          onTimeChanged: (int hour, String period) {},
+                          onTimeChanged:
+                              (startHour, startPeriod, endHour, endPeriod) {
+                                print(
+                                  'From: $startHour:00 $startPeriod  To: $endHour:00 $endPeriod',
+                                );
+                              },
                         ),
-                        Gap(16),
+                        Gap(20),
                         Text(
                           "Set the price for the services :",
                           style: TextStyles.font14PrimaryColorW700,
@@ -184,8 +207,16 @@ class EditProfileLabourer extends StatelessWidget {
                   ),
                 ),
                 Gap(20),
-                ProtfolioWidget(),
+                MyPortfolioSection(
+                  text: 'My Portfolio',
+                  subtext: 'Add photos of your work',
+                ),
+                MyPortfolioSection(
+                  text: 'My certificates :',
+                  subtext: 'Add your certificates',
+                ),
                 Gap(35),
+
                 CustomButton(
                   width: 205.w,
                   height: 30.h,
