@@ -10,16 +10,34 @@ class OrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(thickness: 1.7, color: Colors.black)),
+        Expanded(
+          child: Divider(
+            thickness: 1.7,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
         Gap(16.w),
         Text(
           'OR',
           textAlign: TextAlign.center,
-          style: TextStyles.font16BlackW700,
+          style: TextStyles.font16BlackW700.copyWith(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
         ),
         Gap(18.w),
 
-        const Expanded(child: Divider(thickness: 1.7, color: Colors.black)),
+        Expanded(
+          child: Divider(
+            thickness: 1.7,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+          ),
+        ),
       ],
     );
   }

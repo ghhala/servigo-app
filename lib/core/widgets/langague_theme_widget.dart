@@ -21,7 +21,11 @@ class LangagueThemeWidget extends StatelessWidget {
               onPressed: () {
                 context.read<ThemeBloc>().add(const ThemeToggled());
               },
-              icon: Icon(isDark ? Icons.dark_mode : Icons.light_mode),
+              icon: Icon(
+                isDark ? Icons.dark_mode : Icons.light_mode_outlined,
+                size: 29,
+                color: Colors.white,
+              ),
               tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
             );
           },

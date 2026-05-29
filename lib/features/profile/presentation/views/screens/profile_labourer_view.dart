@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
+import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/container_widget.dart';
 import 'package:servi_go_app/features/profile/presentation/views/widgets/custom_container.dart';
@@ -158,13 +159,13 @@ class ProfileLabourerView extends StatelessWidget {
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                          Text(
-                            "Saturday _ Thursday",
-                            style: TextStyles.onCard(
-                              context,
-                              TextStyles.font12BlackW400,
+                            Text(
+                              "Saturday _ Thursday",
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font12BlackW400,
+                              ),
                             ),
-                          ),
                           ],
                         ),
                         Gap(7),
@@ -172,13 +173,13 @@ class ProfileLabourerView extends StatelessWidget {
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                          Text(
-                            "9 AM - 6 PM",
-                            style: TextStyles.onCard(
-                              context,
-                              TextStyles.font12BlackW400,
+                            Text(
+                              "9 AM - 6 PM",
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font12BlackW400,
+                              ),
                             ),
-                          ),
                           ],
                         ),
                         Gap(7),
@@ -186,13 +187,13 @@ class ProfileLabourerView extends StatelessWidget {
                           children: [
                             Icon(Icons.circle, size: 14.sp),
                             Gap(5),
-                          Text(
-                            "20,000 SYP - 30,000 SYP",
-                            style: TextStyles.onCard(
-                              context,
-                              TextStyles.font12BlackW400,
+                            Text(
+                              "20,000 SYP - 30,000 SYP",
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font12BlackW400,
+                              ),
                             ),
-                          ),
                           ],
                         ),
                       ],
@@ -218,13 +219,13 @@ class ProfileLabourerView extends StatelessWidget {
                         Row(
                           children: [
                             Image.asset("assets/images/reviews_icon.png"),
-                          Text(
-                            "Customer Reviews and Ratings",
-                            style: TextStyles.onCard(
-                              context,
-                              TextStyles.font12PrimaryColorW600,
+                            Text(
+                              "Customer Reviews and Ratings",
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font12PrimaryColorW600,
+                              ),
                             ),
-                          ),
                           ],
                         ),
                         Gap(8),
@@ -258,6 +259,12 @@ class ProfileLabourerView extends StatelessWidget {
                                   ),
                                 ),
                               ],
+                            ),
+                            CustomButton(
+                              width: 80.w,
+                              height: 30.h,
+                              title: "Report ",
+                              onTap: () {},
                             ),
                           ],
                         ),

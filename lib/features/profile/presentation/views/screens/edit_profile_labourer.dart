@@ -23,8 +23,7 @@ class EditProfileLabourer extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final containerColor =
-        isDark ? theme.cardColor : const Color(0xFFF3F2F2);
+    final containerColor = isDark ? theme.cardColor : const Color(0xFFF3F2F2);
     final dividerColor = theme.dividerColor;
     final onSurface = theme.colorScheme.onSurface;
     return Scaffold(
@@ -244,7 +243,11 @@ class EditProfileLabourer extends StatelessWidget {
                         Gap(10),
                         Row(
                           children: [
-                            Icon(Icons.lock_outline, size: 20, color: onSurface),
+                            Icon(
+                              Icons.lock_outline,
+                              size: 20,
+                              color: onSurface,
+                            ),
                             Gap(10),
                             Text(
                               "Change Password",
@@ -267,14 +270,8 @@ class EditProfileLabourer extends StatelessWidget {
                   ),
                 ),
                 Gap(20),
-                MyPortfolioSection(
-                  text: 'My Portfolio',
-                  subtext: 'Add photos of your work',
-                ),
-                MyPortfolioSection(
-                  text: 'My certificates :',
-                  subtext: 'Add your certificates',
-                ),
+                MyPortfolioSection(),
+
                 Gap(35),
 
                 CustomButton(
