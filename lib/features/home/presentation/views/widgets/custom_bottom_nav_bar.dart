@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -14,16 +15,17 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 74.h,
       decoration: BoxDecoration(color: Colors.transparent),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(0, Icons.home_rounded, "Home"),
-          _buildNavItem(1, Icons.person_pin_circle_rounded, "Profile"),
-          _buildNavItem(2, Icons.message_rounded, "Messages"),
-          _buildNavItem(3, Icons.settings_rounded, "Setting"),
+          _buildNavItem(0, Icons.home_rounded, l10n.home),
+          _buildNavItem(1, Icons.person_pin_circle_rounded, l10n.profile),
+          _buildNavItem(2, Icons.message_rounded, l10n.messages),
+          _buildNavItem(3, Icons.settings_rounded, l10n.settings),
         ],
       ),
     );
