@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/locale_cubit.dart';
 import 'package:servi_go_app/core/theme/theme_bloc.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 
@@ -12,7 +13,16 @@ class LangagueThemeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        SvgPicture.asset(Assets.langagueIcon),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            context.read<LocaleCubit>().setLocale(Locale(value));
+          },
+          itemBuilder: (context) => const [
+            PopupMenuItem(value: 'ar', child: Text('العربية')),
+            PopupMenuItem(value: 'en', child: Text('English')),
+          ],
+          child: SvgPicture.asset(Assets.langagueIcon),
+        ),
         Gap(8),
         BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {
