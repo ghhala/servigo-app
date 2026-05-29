@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "login": "Login",
+  "signup": "Sign Up",
+  "home": "Home",
+  "profile": "Profile",
+  "messages": "Messages",
+  "settings": "Settings",
+  "changeLanguage": "Change Language",
+  "editProfile": "Edit Profile",
+  "logOut": "Log Out",
+  "deleteAccount": "Delete account",
+  "visitWebsite": "Visit Our Website",
+  "contactSupport": "Contact Support"
+}
