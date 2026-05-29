@@ -1,0 +1,15 @@
+{
+  "@@locale": "ar",
+  "login": "تسجيل الدخول",
+  "signup": "إنشاء حساب",
+  "home": "الرئيسية",
+  "profile": "الملف الشخصي",
+  "messages": "الرسائل",
+  "settings": "الإعدادات",
+  "changeLanguage": "تغيير اللغة",
+  "editProfile": "تعديل الملف الشخصي",
+  "logOut": "تسجيل الخروج",
+  "deleteAccount": "حذف الحساب",
+  "visitWebsite": "زيارة موقعنا",
+  "contactSupport": "اتصل بالدعم"
+}
