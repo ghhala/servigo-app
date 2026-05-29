@@ -6,18 +6,18 @@ import 'package:servi_go_app/core/utils/styles.dart';
 class ContainerWidget extends StatelessWidget {
   final String text;
   final String image;
-  final num number;
+  final num? number;
   const ContainerWidget({
     super.key,
     required this.text,
     required this.image,
-    required this.number,
+    this.number,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 106.w,
+      width: 130.w,
       height: 48.h,
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -33,29 +33,26 @@ class ContainerWidget extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(left: 7.0, top: 7),
+        padding: const EdgeInsets.only(left: 4.0, top: 7),
         child: Row(
           children: [
-            Image.asset(image),
+            Image.asset(image, width: 30),
             Gap(5),
-                Column(
-                  children: [
-                    Text(
-                      text,
-                      style: TextStyles.onCard(
-                        context,
-                        TextStyles.font16BlackW700.copyWith(fontSize: 13.sp),
-                      ),
-                    ),
-                    Text(
-                      number.toString(),
-                      style: TextStyles.onCard(
-                        context,
-                        TextStyles.font11BlackW400,
-                      ),
-                    ),
-                  ],
+            Column(
+              children: [
+                Text(
+                  text,
+                  style: TextStyles.onCard(
+                    context,
+                    TextStyles.font16BlackW700.copyWith(fontSize: 13.sp),
+                  ),
                 ),
+                Text(
+                  number?.toString() ?? "",
+                  style: TextStyles.onCard(context, TextStyles.font11BlackW400),
+                ),
+              ],
+            ),
           ],
         ),
       ),

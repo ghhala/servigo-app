@@ -11,10 +11,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
-      child: BlocProvider(
-        create: (_) => ThemeBloc(),
-        child: const MyApp(),
-      ),
+      child: BlocProvider(create: (_) => ThemeBloc(), child: const MyApp()),
     ),
   );
 }
@@ -35,6 +32,7 @@ class MyApp extends StatelessWidget {
             themeMode: state.themeMode,
             routerConfig: AppRouter.router,
             debugShowCheckedModeBanner: false,
+           
           );
         },
       ),

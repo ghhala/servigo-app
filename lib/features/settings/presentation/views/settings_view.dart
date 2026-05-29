@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,9 +7,15 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/settings/presentation/widgets/custom_Row_widget.dart';
 
-class SettingsView extends StatelessWidget {
+class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
 
+  @override
+  State<SettingsView> createState() => _SettingsViewState();
+}
+
+class _SettingsViewState extends State<SettingsView> {
+  bool _isAvailable = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +34,7 @@ class SettingsView extends StatelessWidget {
               Gap(90),
               Container(
                 width: 353.w,
-                height: 300.h,
+                height: 293.h,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -44,10 +51,6 @@ class SettingsView extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        CustomRowWidget(
-                          text: 'Profile',
-                          iconPath: 'assets/images/profile_icon.svg',
-                        ),
                         CustomRowWidget(
                           text: 'EditProfile',
                           iconPath: 'assets/images/profile_icon.svg',
@@ -72,9 +75,19 @@ class SettingsView extends StatelessWidget {
                           style: TextStyles.font16PrimaryColorW600,
                         ),
                         CustomRowWidget(
-                          text: 'Contact Support',
-                          iconPath: 'assets/images/support_icon.svg',
+                          text: 'is available ',
+                          iconPath: 'assets/images/avaliableIcon.png',
                           style: TextStyles.font16PrimaryColorW600,
+                          trailing: CupertinoSwitch(
+                            activeColor: Colors.green,
+                            inactiveThumbColor: Colors.grey,
+                            value: _isAvailable,
+                            onChanged: (value) {
+                              setState(() {
+                                _isAvailable = value;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),

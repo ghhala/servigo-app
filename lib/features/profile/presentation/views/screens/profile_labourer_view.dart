@@ -16,91 +16,93 @@ class ProfileLabourerView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
-        padding: EdgeInsets.only(left: 14.w, top: 50.h),
+        padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 50.h),
 
         child: SingleChildScrollView(
           child: Column(
             children: [
               LangagueThemeWidget(),
               Gap(60.h),
-              CustomContainer(
-                width: 360.w,
-                height: 266.h,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 15).r,
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 30.r,
-                        backgroundImage: AssetImage(
-                          "assets/images/avatar2.jpg",
-                        ),
-                      ),
-                      Gap(10),
-                      Text(
-                        "John Doe",
-                        style: TextStyles.onCard(
-                          context,
-                          TextStyles.font16PrimaryColorW600.copyWith(
-                            fontSize: 18.sp,
+              SingleChildScrollView(
+                child: CustomContainer(
+                  width: 360.w,
+                  height: 320.h,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 15).r,
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 30.r,
+                          backgroundImage: AssetImage(
+                            "assets/images/avatar2.jpg",
                           ),
                         ),
-                      ),
-                      Gap(5),
-                      Text(
-                        "Professional | electrical",
-                        style: TextStyles.onCard(
-                          context,
-                          TextStyles.font12PrimaryColorW600,
-                        ),
-                      ),
-                      Gap(4),
-                      Text(
-                        "0988 888 888",
-                        style: TextStyles.onCard(
-                          context,
-                          TextStyles.font12PrimaryColorW600,
-                        ),
-                      ),
-                      Gap(4),
-                      Text(
-                        "Hama | Located in Masyaf",
-                        style: TextStyles.onCard(
-                          context,
-                          TextStyles.font12PrimaryColorW600.copyWith(
-                            fontSize: 13.sp,
+                        Gap(10),
+                        Text(
+                          "John Doe",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font16PrimaryColorW600.copyWith(
+                              fontSize: 18.sp,
+                            ),
                           ),
                         ),
-                      ),
-                      Gap(24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ContainerWidget(
-                              image: "assets/images/star_icon.png",
-                              text: "Reviews",
-                              number: 4.5,
+                        Gap(5),
+                        Text(
+                          "Cleaning | clean house",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font12PrimaryColorW600,
+                          ),
+                        ),
+                        Gap(4),
+                        Text(
+                          "0988 888 888",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font12PrimaryColorW600,
+                          ),
+                        ),
+                        Gap(4),
+                        Text(
+                          "homs | wadi al zahab ",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font12PrimaryColorW600.copyWith(
+                              fontSize: 13.sp,
                             ),
-                            Gap(10),
-                            ContainerWidget(
-                              image: "assets/images/visits_Icon.png",
-                              text: "Visits",
-                              number: 140,
-                            ),
-                            Gap(10),
-                            Expanded(
-                              child: ContainerWidget(
-                                image: "assets/images/Experince_icon.png",
-                                text: "Experiance",
-                                number: 5,
+                          ),
+                        ),
+                        Gap(24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ContainerWidget(
+                                image: "assets/images/star_icon.png",
+                                text: "avg rating",
+                                number: 4.5,
                               ),
-                            ),
-                          ],
+                              Gap(10),
+                              Expanded(
+                                child: ContainerWidget(
+                                  image: "assets/images/pin.png",
+                                  text: "Both(Fixed & Mobile)",
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        Gap(10),
+                        Expanded(
+                          child: ContainerWidget(
+                            image: "assets/images/checked.png",
+                            text: "available ",
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -182,25 +184,45 @@ class ProfileLabourerView extends StatelessWidget {
                             ),
                           ],
                         ),
-                        Gap(7),
-                        Row(
-                          children: [
-                            Icon(Icons.circle, size: 14.sp),
-                            Gap(5),
-                            Text(
-                              "20,000 SYP - 30,000 SYP",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font12BlackW400,
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
                 ),
               ),
+              Gap(20),
+              CustomContainer(
+                width: 353.w,
+                height: 80.h,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Image.asset("assets/images/about_him_icon.png"),
+                          Gap(5),
+                          Text(
+                            "Price",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Gap(4),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text("2o000 - 30000 "),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               Gap(20),
               MyProtifolio(),
               Gap(20),
@@ -260,10 +282,14 @@ class ProfileLabourerView extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            Gap(20),
                             CustomButton(
-                              width: 80.w,
-                              height: 30.h,
+                              width: 50.w,
+                              height: 23.h,
                               title: "Report ",
+                              textstyle: TextStyles.font11WhiteW500.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                               onTap: () {},
                             ),
                           ],
