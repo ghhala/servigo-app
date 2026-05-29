@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
+import 'package:servi_go_app/core/localization/locale_cubit.dart';
 import 'package:servi_go_app/core/theme/app_theme.dart';
 import 'package:servi_go_app/core/theme/theme_bloc.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
@@ -11,7 +13,13 @@ void main() {
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
-      child: BlocProvider(create: (_) => ThemeBloc(), child: const MyApp()),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => ThemeBloc()),
+          BlocProvider(create: (_) => LocaleCubit()..loadLocale()),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -25,14 +33,20 @@ class MyApp extends StatelessWidget {
       designSize: const Size(393, 852),
       minTextAdapt: true,
       child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, state) {
-          return MaterialApp.router(
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: state.themeMode,
-            routerConfig: AppRouter.router,
-            debugShowCheckedModeBanner: false,
-           
+        builder: (context, themeState) {
+          return BlocBuilder<LocaleCubit, Locale>(
+            builder: (context, locale) {
+              return MaterialApp.router(
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeState.themeMode,
+                routerConfig: AppRouter.router,
+                debugShowCheckedModeBanner: false,
+              );
+            },
           );
         },
       ),
