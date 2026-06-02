@@ -7,6 +7,7 @@ import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class UserTypeView extends StatelessWidget {
   const UserTypeView({super.key});
@@ -56,7 +57,7 @@ class UserTypeView extends StatelessWidget {
                   ),
                   Gap(67.h),
                   Text(
-                    "Select account type",
+                    AppLocalizations.of(context)!.selectAccountType,
                     style: TextStyles.font16BlackW700.copyWith(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white

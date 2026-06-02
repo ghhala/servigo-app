@@ -94,12 +94,12 @@ class _CustomLocationState extends State<CustomLocation>
 
         final address = data['address'];
         final name = [
-          address['amenity'],
-          address['building'],
-          address['shop'],
-          address['leisure'],
-          address['road'],
-          address['neighbourhood'] ?? address['suburb'] ?? address['quarter'],
+         // address['amenity'],
+          // address['building'],
+          // address['shop'],
+          // address['leisure'],
+          // address['road'],
+          // address['neighbourhood'] ?? address['suburb'] ?? address['quarter'],
           address['city'] ?? address['town'] ?? address['village'],
         ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
         if (mounted) {

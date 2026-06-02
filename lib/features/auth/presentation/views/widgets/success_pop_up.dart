@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 
@@ -44,7 +45,7 @@ final String userType;
               Gap(24.h),
 
               Text(
-                'S u c c e s s !',
+                AppLocalizations.of(context)!.success,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w600,
@@ -56,7 +57,7 @@ final String userType;
               Gap(12.h),
 
               Text(
-                'The account has been\ncreated successfully',
+                AppLocalizations.of(context)!.accountCreatedSuccessfully,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -83,9 +84,9 @@ final String userType;
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(
+                  child: Text(
+                    AppLocalizations.of(context)!.ok,
+                    style: const TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1,

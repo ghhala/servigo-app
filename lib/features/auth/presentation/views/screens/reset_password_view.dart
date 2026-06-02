@@ -10,6 +10,7 @@ import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/success_password_pop_up.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class ResetPasswordView extends StatelessWidget {
   final String userType;
@@ -42,7 +43,7 @@ class ResetPasswordView extends StatelessWidget {
                   children: [
                     Icon(Icons.arrow_back_ios),
                     Text(
-                      "Reset password",
+                      AppLocalizations.of(context)!.resetPassword,
                       style: TextStyles.font18BlackW500.copyWith(
                         fontSize: 20.sp,
                       ),
@@ -53,13 +54,13 @@ class ResetPasswordView extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Reset Password",
+                    AppLocalizations.of(context)!.resetPassword,
                     style: TextStyles.font22PrimaryColorW700,
                   ),
                 ),
                 Gap(12.h),
                 Text(
-                  "Please Enter New Password And Try Don't Forget it ",
+                  AppLocalizations.of(context)!.pleaseEnterNewPassword,
                   style: TextStyles.font16PrimaryColorW400.copyWith(
                     fontSize: 13.sp,
                   ),
@@ -68,7 +69,7 @@ class ResetPasswordView extends StatelessWidget {
                 CustomTextFormFiled(
                   controller: passwordController,
                   validator: Validators.password,
-                  hintText: 'Password',
+                  hintText: AppLocalizations.of(context)!.password,
 
                   prefixIcon: Padding(
                     padding: EdgeInsets.all(13.w),
@@ -84,7 +85,7 @@ class ResetPasswordView extends StatelessWidget {
                         confirmPasswordController,
                         passwordController.text,
                       ),
-                  hintText: ' Confirm Password',
+                  hintText:  AppLocalizations.of(context)!.confirmPassword,
 
                   prefixIcon: Padding(
                     padding: EdgeInsets.all(13.w),
@@ -94,7 +95,7 @@ class ResetPasswordView extends StatelessWidget {
                 ),
                 Gap(51.h),
                 CustomButton(
-                  title: "Reset Password",
+                  title: AppLocalizations.of(context)!.resetPassword,
                   textstyle: TextStyles.font20White800,
                   width: MediaQuery.sizeOf(context).width * 0.88,
                   height: 52.h,

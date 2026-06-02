@@ -1,3 +1,10 @@
+/// Validator utility class for form validation.
+/// 
+/// NOTE: These validators currently return hardcoded English strings. 
+/// To fully localize these error messages, the validator methods will need to be refactored
+/// to accept a BuildContext parameter so they can access AppLocalizations.
+/// This is a follow-up improvement that will require changes to how validators are used
+/// throughout the authentication screens.
 class Validators {
 
   // Full Name
@@ -66,6 +73,17 @@ class Validators {
     if (value != password) {
       return 'Passwords do not match';
     }
+
+    return null;
+  }
+  //location details
+  static String? location(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Enter your location Details';
+    }
+    
+
+    
 
     return null;
   }

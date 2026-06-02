@@ -6,7 +6,7 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
-import 'package:servi_go_app/features/home/presentation/views/widgets/provider_rating_card.dart';
+import 'package:servi_go_app/features/home/presentation/views/widgets/favorite_provider_card.dart';
 import 'package:servi_go_app/features/home/presentation/views/widgets/service_category_card.dart';
 
 class HomeBody extends StatelessWidget {
@@ -101,7 +101,7 @@ class HomeBody extends StatelessWidget {
                 shrinkWrap: true,
                 physics: const ClampingScrollPhysics(),
                 scrollDirection: Axis.horizontal,
-                itemCount: 4,
+                itemCount: 3,
                 itemBuilder: (context, index) {
                   return ServiceCategoryCard(
                     name: 'Cleaning',
@@ -112,7 +112,7 @@ class HomeBody extends StatelessWidget {
             ),
             Gap(20),
             Text(
-              "Top five rated people",
+              "Favorite Providers :",
               style: TextStyles.font16PrimaryColorW600,
             ),
             Gap(20),
@@ -121,14 +121,14 @@ class HomeBody extends StatelessWidget {
               spacing: 2.w,
               runSpacing: 6.h,
 
-              children: List.generate(5, (index) {
+              children: List.generate(7, (index) {
                 return SizedBox(
                   width: 120.w,
-                  child: const ProviderRatingCard(
-                    providerName: 'Ali Ali',
-                    imageUrl: 'assets/images/test.png',
-                    serviceType: 'Plumbing',
-                    rating: 3,
+                  child: FavoriteProviderCard(
+                    providerName: "sara ali",
+                    imageUrl: "assets/images/test.png",
+                    mainService: "Cleaning",
+                    subService: "House Cleaning",
                   ),
                 );
               }),

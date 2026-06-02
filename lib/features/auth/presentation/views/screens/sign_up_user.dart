@@ -12,6 +12,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class SignUpUser extends StatelessWidget {
   final String userType;
@@ -40,7 +41,7 @@ class SignUpUser extends StatelessWidget {
                     children: [
                       Icon(Icons.arrow_back_ios),
                       Text(
-                        "Create a user account",
+                        AppLocalizations.of(context)!.createUserAccount,
                         style: TextStyles.font18BlackW500,
                       ),
                       Gap(16.w),
@@ -59,10 +60,10 @@ class SignUpUser extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "Welcome ! \n",
+                            text: AppLocalizations.of(context)!.welcomeCreateAccount,
                             style: TextStyles.font24PrimaryColorW800,
                           ),
-                          TextSpan(text: "Create Account At ServiGo"),
+                          TextSpan(text: AppLocalizations.of(context)!.welcomeCreateAccount),
                         ],
                       ),
                     ),
@@ -70,13 +71,13 @@ class SignUpUser extends StatelessWidget {
                 ),
                 Gap(16.h),
                 SocialAuthButton(
-                  title: "Continue with Google",
+                  title: AppLocalizations.of(context)!.continueWithGoogle,
                   image: Assets.googleIcon,
                   onPressed: () {},
                 ),
                 Gap(20.h),
                 SocialAuthButton(
-                  title: "Continue with apple",
+                  title: AppLocalizations.of(context)!.continueWithApple,
                   image: Assets.appleIcon,
                   onPressed: () {},
                 ),
@@ -90,7 +91,7 @@ class SignUpUser extends StatelessWidget {
                   children: [
                     CustomTextFormFiled(
                       validator: Validators.fullName,
-                      hintText: 'Full Name',
+                      hintText: AppLocalizations.of(context)!.fullName,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -101,7 +102,7 @@ class SignUpUser extends StatelessWidget {
                     Gap(20.h),
                     CustomTextFormFiled(
                       validator: Validators.phone,
-                      hintText: 'Phone Number',
+                      hintText: AppLocalizations.of(context)!.phoneNumber,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -112,7 +113,7 @@ class SignUpUser extends StatelessWidget {
                     Gap(20.h),
                     CustomTextFormFiled(
                       validator: Validators.email,
-                      hintText: 'Email Address',
+                      hintText: AppLocalizations.of(context)!.emailAddress,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -124,7 +125,7 @@ class SignUpUser extends StatelessWidget {
 
                     CustomTextFormFiled(
                       validator: Validators.password,
-                      hintText: 'Password',
+                      hintText: AppLocalizations.of(context)!.password,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
@@ -136,7 +137,7 @@ class SignUpUser extends StatelessWidget {
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
-                      hintText: 'Confirm Password',
+                      hintText: AppLocalizations.of(context)!.confirmPassword,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -149,7 +150,7 @@ class SignUpUser extends StatelessWidget {
                     TermsAndConditionsWidget(onChanged: (bool value) {}),
                     Gap(56.h),
                     CustomButton(
-                      title: "Sign up",
+                      title: AppLocalizations.of(context)!.signUp,
                       textstyle: TextStyles.font20White800,
                       width: MediaQuery.sizeOf(context).width * 0.88,
                       height: 52.h,

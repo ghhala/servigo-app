@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_check_box.dart';
 
@@ -32,11 +33,11 @@ class _TermsAndConditionsWidgetState extends State<TermsAndConditionsWidget> {
             TextSpan(
               children: [
                 TextSpan(
-                  text: 'By creating an account, you agree to our ',
+                  text: AppLocalizations.of(context)!.byCreatingAccount,
                   style: TextStyles.font16PrimaryColorW400,
                 ),
                 TextSpan(
-                  text: ' terms and conditions',
+                  text: AppLocalizations.of(context)!.termsAndConditions,
                   style: TextStyles.font18BlackW500,
                 ),
               ],

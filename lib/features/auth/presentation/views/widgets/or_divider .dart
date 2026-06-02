@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
 class OrDivider extends StatelessWidget {
@@ -20,7 +21,7 @@ class OrDivider extends StatelessWidget {
         ),
         Gap(16.w),
         Text(
-          'OR',
+          AppLocalizations.of(context)!.or,
           textAlign: TextAlign.center,
           style: TextStyles.font16BlackW700.copyWith(
             color: Theme.of(context).brightness == Brightness.dark

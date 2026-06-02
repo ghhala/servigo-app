@@ -3,17 +3,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
-class ProviderRatingCard extends StatelessWidget {
+class FavoriteProviderCard extends StatelessWidget {
   final String providerName;
   final String imageUrl;
-  final String serviceType;
-  final double rating;
-  const ProviderRatingCard({
+  final String mainService;
+  final String subService;
+
+  const FavoriteProviderCard({
     super.key,
     required this.providerName,
     required this.imageUrl,
-    required this.serviceType,
-    required this.rating,
+    required this.mainService,
+    required this.subService,
   });
 
   @override
@@ -38,45 +39,35 @@ class ProviderRatingCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Image.asset(imageUrl),
+              // الصورة من الـ network بدل asset
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.r),
+                child: Image.network(
+                  imageUrl,
+                  width: 50.w,
+                  height: 50.h,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.person,
+                    size: 50.r,
+                  ),
+                ),
+              ),
               Gap(6),
               Row(
                 children: [
                   Text(
-                    "Name:",
+                    "Name: ",
                     style: TextStyles.onCard(
                       context,
                       TextStyles.font8PrimaryColorW700,
                     ),
                   ),
-
-                  Text(
-                    providerName,
-                    style: TextStyles.onCard(
-                      context,
-                      TextStyles.font8PrimaryColorW700.copyWith(
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Gap(3),
-              Row(
-                children: [
-                  Text(
-                    "Type of service :",
-                    style: TextStyles.onCard(
-                      context,
-                      TextStyles.font8PrimaryColorW700,
-                    ),
-                  ),
-
                   Expanded(
                     child: Text(
-                      overflow: TextOverflow.visible,
+                      providerName,
                       maxLines: 1,
-                      serviceType,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyles.onCard(
                         context,
                         TextStyles.font8PrimaryColorW700.copyWith(
@@ -91,19 +82,47 @@ class ProviderRatingCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Evaluation",
+                    "Service: ",
                     style: TextStyles.onCard(
                       context,
                       TextStyles.font8PrimaryColorW700,
                     ),
                   ),
-
+                  Expanded(
+                    child: Text(
+                      mainService,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.onCard(
+                        context,
+                        TextStyles.font8PrimaryColorW700.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Gap(3),
+              Row(
+                children: [
                   Text(
-                    rating.toString(),
+                    "Type: ",
                     style: TextStyles.onCard(
                       context,
-                      TextStyles.font8PrimaryColorW700.copyWith(
-                        fontWeight: FontWeight.w400,
+                      TextStyles.font8PrimaryColorW700,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      subService,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.onCard(
+                        context,
+                        TextStyles.font8PrimaryColorW700.copyWith(
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                   ),

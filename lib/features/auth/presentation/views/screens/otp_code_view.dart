@@ -7,6 +7,7 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class OtpCodeView extends StatelessWidget {
   final String receivedOtp;
@@ -32,7 +33,7 @@ class OtpCodeView extends StatelessWidget {
                 children: [
                   Icon(Icons.arrow_back_ios),
                   Text(
-                    "Otp Code",
+                    AppLocalizations.of(context)!.otpCode,
                     style: TextStyles.font18BlackW500.copyWith(fontSize: 20.sp),
                   ),
                 ],
@@ -41,7 +42,7 @@ class OtpCodeView extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "OTP Code",
+                  AppLocalizations.of(context)!.otpCode,
                   style: TextStyles.font22PrimaryColorW700,
                 ),
               ),
@@ -50,7 +51,7 @@ class OtpCodeView extends StatelessWidget {
                 TextSpan(
                   children: [
                     TextSpan(
-                      text: "Please Enter Your Otp Code \n",
+                      text: AppLocalizations.of(context)!.pleaseEnterOtp,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 14.sp,
                       ),
@@ -62,7 +63,7 @@ class OtpCodeView extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: "Change It?",
+                      text: AppLocalizations.of(context)!.changeIt,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 14.sp,
                       ),
@@ -79,7 +80,7 @@ class OtpCodeView extends StatelessWidget {
               ),
               Gap(26.h),
               CustomButton(
-                title: "Verify Code",
+                title: AppLocalizations.of(context)!.verifyCode,
                 textstyle: TextStyles.font20White800,
                 width: MediaQuery.sizeOf(context).width * 0.88,
                 height: 52.h,
@@ -102,12 +103,12 @@ class OtpCodeView extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Resend Code?",
+                    AppLocalizations.of(context)!.resendCode,
                     style: TextStyles.font12GreyW400(context),
                   ),
                   Spacer(),
                   Text(
-                    "Resend in 00:12 s",
+                    AppLocalizations.of(context)!.resendIn,
                     style: TextStyles.font16PrimaryColorW400,
                   ),
                 ],

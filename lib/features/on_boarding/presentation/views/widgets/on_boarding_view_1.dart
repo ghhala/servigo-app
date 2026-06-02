@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -22,7 +23,7 @@ class OnBoardingView1 extends StatelessWidget {
             ),
             Gap(46.h),
             Text(
-              "Your needs, one platform",
+              AppLocalizations.of(context)!.onBoardingTitle1,
               style: TextStyles.font25Blackw700.copyWith(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
@@ -31,7 +32,7 @@ class OnBoardingView1 extends StatelessWidget {
             ),
             Gap(16),
             Text(
-              "Find trusted professionals \n near you compare ratings\n and choose with confidence",
+              AppLocalizations.of(context)!.onBoardingDescription1,
               textAlign: TextAlign.center,
               style: TextStyles.font25Blackw700.copyWith(
                 fontSize: 22.sp,
@@ -43,7 +44,7 @@ class OnBoardingView1 extends StatelessWidget {
             ),
             Gap(70),
             CustomButton(
-              title: "Next",
+              title: AppLocalizations.of(context)!.next,
               icon: Icons.arrow_forward,
               onTap: () {
                 GoRouter.of(context).push(AppRouter.kOnboarding2);

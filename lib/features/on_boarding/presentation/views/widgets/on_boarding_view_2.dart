@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
@@ -26,13 +27,13 @@ class OnBoardingView2 extends StatelessWidget {
             Image.asset('assets/images/on_boarding_view2.png'),
             Gap(16.h),
             Text(
-              "Welcome to the ServiGo\nwhich provides you with\nservices easily and simply\n wherever you are.",
+              AppLocalizations.of(context)!.onBoardingDescription2,
               style: TextStyles.font19w500,
             ),
             Gap(54.h),
 
             CustomButton(
-              title: 'Get Started',
+              title: AppLocalizations.of(context)!.getStarted,
               textstyle: TextStyles.font26WhiteW600,
               width: 250.w,
               onTap: () {

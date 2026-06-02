@@ -8,6 +8,7 @@ import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_%2
 import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_user.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/user_type_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/verviciton_view.dart';
+import 'package:servi_go_app/features/filter/presentation/views/filter_bottom_sheet.dart';
 import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
@@ -39,6 +40,7 @@ abstract class AppRouter {
   static const kProfileLabourer = '/profile_labourer';
   static const kCompliteProfile = '/complite_profile';
   static const kEditProfileLabourer = '/EditProfileLabourer';
+  static const kfilterButtonSheet = '/filter_bottom_sheet';
 
   static final router = GoRouter(
     routes: [
@@ -192,6 +194,10 @@ abstract class AppRouter {
           return EditProfileLabourer(userData: userData, userType: userType);
         },
       ),
+      // GoRoute(
+      //   path: kfilterButtonSheet,
+      //   builder: (context, state) => FilterBottomSheet(),
+      // ),
     ],
   );
 }

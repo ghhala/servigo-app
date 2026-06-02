@@ -12,6 +12,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class LogIn extends StatelessWidget {
   final String userType;
@@ -36,8 +37,7 @@ class LogIn extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.arrow_back_ios),
-                      Text(
-                        "Log In",
+                      Text(AppLocalizations.of(context)!.logIn,
                         style: TextStyles.font18BlackW500.copyWith(
                           fontSize: 20.sp,
                         ),
@@ -51,10 +51,10 @@ class LogIn extends StatelessWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "Welcome back! \n",
+                            text: AppLocalizations.of(context)!.welcomeBack,
                             style: TextStyles.font24PrimaryColorW800,
                           ),
-                          TextSpan(text: "Login With Your Account"),
+                          TextSpan(text: AppLocalizations.of(context)!.loginWithAccount),
                         ],
                       ),
                     ),
@@ -62,20 +62,20 @@ class LogIn extends StatelessWidget {
                   Gap(21.h),
                   SocialAuthButton(
                     image: Assets.googleIcon,
-                    title: 'Continue with Google',
+                    title: AppLocalizations.of(context)!.continueWithGoogle,
                     onPressed: () {},
                   ),
                   Gap(21.h),
                   SocialAuthButton(
                     image: Assets.appleIcon,
-                    title: 'Continue with apple',
+                    title: AppLocalizations.of(context)!.continueWithApple,
                     onPressed: () {},
                   ),
                   Gap(8.h),
                   OrDivider(),
                   Gap(16.h),
                   CustomTextFormFiled(
-                    hintText: 'Phone Number',
+                    hintText: AppLocalizations.of(context)!.phoneNumber,
                     validator: Validators.phone,
 
                     prefixIcon: Padding(
@@ -86,7 +86,7 @@ class LogIn extends StatelessWidget {
                   ),
                   Gap(16.h),
                   CustomTextFormFiled(
-                    hintText: 'Password',
+                    hintText: AppLocalizations.of(context)!.password,
                     validator: Validators.password,
 
                     prefixIcon: Padding(
@@ -105,14 +105,14 @@ class LogIn extends StatelessWidget {
                         GoRouter.of(context).push(AppRouter.kforgetPassword);
                       },
                       child: Text(
-                        "Forget Password?",
+                        AppLocalizations.of(context)!.forgetPasswordQuestion,
                         style: TextStyles.font12GreyW400(context),
                       ),
                     ),
                   ),
                   Gap(46.h),
                   CustomButton(
-                    title: "Log In",
+                    title: AppLocalizations.of(context)!.logIn,
                     textstyle: TextStyles.font20White800,
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
@@ -129,7 +129,7 @@ class LogIn extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account?",
+                        AppLocalizations.of(context)!.dontHaveAccount,
                         style: TextStyles.font16PrimaryColorW400.copyWith(
                           fontSize: 14,
                         ),
@@ -144,8 +144,7 @@ class LogIn extends StatelessWidget {
                                   context,
                                 ).push(AppRouter.ksignupuser, extra: userType);
                         },
-                        child: Text(
-                          "Sign Up",
+                        child: Text(AppLocalizations.of(context)!.signUp,
                           style: TextStyles.font16PrimaryColorW400.copyWith(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,

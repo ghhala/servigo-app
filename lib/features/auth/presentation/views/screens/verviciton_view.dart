@@ -9,6 +9,7 @@ import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class VervicitonView extends StatefulWidget {
   final String userType;
@@ -51,7 +52,7 @@ class _VervicitonViewState extends State<VervicitonView> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from Gallery'),
+                title: Text(AppLocalizations.of(context)!.chooseFromGallery),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(ImageSource.gallery, isFront);
@@ -59,7 +60,7 @@ class _VervicitonViewState extends State<VervicitonView> {
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Take a Photo'),
+                title: Text(AppLocalizations.of(context)!.takePhoto),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(ImageSource.camera, isFront);
@@ -94,12 +95,12 @@ class _VervicitonViewState extends State<VervicitonView> {
                 child: Column(
                   children: [
                     Text(
-                      "Upload a personal ID photo",
+                      AppLocalizations.of(context)!.uploadIdPhoto,
                       style: TextStyles.font20White800,
                     ),
                     Gap(10.h),
                     Text(
-                      "Please upload a clear photo of the ID from both sides",
+                      AppLocalizations.of(context)!.uploadClearPhoto,
                       textAlign: TextAlign.center,
                       style: TextStyles.font15WhiteColorW500,
                     ),
@@ -110,7 +111,7 @@ class _VervicitonViewState extends State<VervicitonView> {
                     ),
                     Gap(10.h),
                     Text(
-                      "Click to upload the front image of the ID",
+                      AppLocalizations.of(context)!.uploadFrontImage,
                       style: TextStyles.font15WhiteColorW500.copyWith(
                         fontSize: 13.sp,
                       ),
@@ -124,7 +125,7 @@ class _VervicitonViewState extends State<VervicitonView> {
                     ),
                     Gap(10.h),
                     Text(
-                      "Click to upload the back image of the ID",
+                      AppLocalizations.of(context)!.uploadBackImage,
                       style: TextStyles.font15WhiteColorW500.copyWith(
                         fontSize: 13.sp,
                       ),
@@ -132,7 +133,7 @@ class _VervicitonViewState extends State<VervicitonView> {
 
                     Gap(54.h),
                     CustomButton(
-                      title: "Submit",
+                      title: AppLocalizations.of(context)!.submit,
                       textstyle: TextStyles.font20White800,
                       width: MediaQuery.sizeOf(context).width * 0.60,
                       height: 52.h,

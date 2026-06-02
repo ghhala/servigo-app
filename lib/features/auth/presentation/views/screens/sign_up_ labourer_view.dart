@@ -14,10 +14,11 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class SignUplabourerView extends StatefulWidget {
   final String userType;
-  
+
   const SignUplabourerView({super.key, required this.userType});
 
   @override
@@ -27,12 +28,12 @@ class SignUplabourerView extends StatefulWidget {
 class _SignUplabourerViewState extends State<SignUplabourerView> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController locationController = TextEditingController();
- TextEditingController regionController = TextEditingController();
- TextEditingController serviceController = TextEditingController();
- TextEditingController emailController = TextEditingController();
- TextEditingController passwordController = TextEditingController();
- TextEditingController fullNameController = TextEditingController();
- TextEditingController phoneController = TextEditingController();
+  TextEditingController regionController = TextEditingController();
+  TextEditingController serviceController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController fullNameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   String? selectedRegion;
   String? selectedService;
 
@@ -71,7 +72,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     children: [
                       Icon(Icons.arrow_back_ios),
                       Text(
-                        "Create a labourer account ",
+                        AppLocalizations.of(context)!.createLabourerAccount,
                         style: TextStyles.font18BlackW500,
                       ),
                       Gap(5.w),
@@ -90,10 +91,14 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "Welcome ! \n",
+                            text: AppLocalizations.of(context)!.welcome,
                             style: TextStyles.font24PrimaryColorW800,
                           ),
-                          TextSpan(text: "Create Account At ServiGo"),
+                          TextSpan(
+                            text: AppLocalizations.of(
+                              context,
+                            )!.welcomeCreateAccount,
+                          ),
                         ],
                       ),
                     ),
@@ -101,13 +106,13 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                 ),
                 Gap(16.h),
                 SocialAuthButton(
-                  title: "Continue with Google",
+                  title: AppLocalizations.of(context)!.continueWithGoogle,
                   image: Assets.googleIcon,
                   onPressed: () {},
                 ),
                 Gap(20.h),
                 SocialAuthButton(
-                  title: "Continue with apple",
+                  title: AppLocalizations.of(context)!.continueWithApple,
                   image: Assets.appleIcon,
                   onPressed: () {},
                 ),
@@ -123,7 +128,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       validator: Validators.fullName,
                       controller: fullNameController,
 
-                      hintText: 'Full Name',
+                      hintText: AppLocalizations.of(context)!.fullName,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -135,7 +140,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     CustomTextFormFiled(
                       validator: Validators.phone,
                       controller: phoneController,
-                      hintText: 'Phone Number',
+                      hintText: AppLocalizations.of(context)!.phoneNumber,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -147,7 +152,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     CustomTextFormFiled(
                       validator: Validators.email,
                       controller: emailController,
-                      hintText: 'Email Address',
+                      hintText: AppLocalizations.of(context)!.emailAddress,
 
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
@@ -155,7 +160,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       ),
                       textInputType: TextInputType.emailAddress,
                     ),
-                    SizedBox(height: 20.h),
+                    Gap(20.h),
                     GestureDetector(
                       onTap: () async {
                         final result = await Navigator.of(context).push(
@@ -167,7 +172,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         debugPrint("Result received: $result");
 
                         if (result != null && result is Map) {
-                          
                           if (mounted) {
                             setState(() {
                               locationController.text = result['name'] ?? '';
@@ -178,7 +182,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       child: AbsorbPointer(
                         child: CustomTextFormFiled(
                           controller: locationController,
-                          hintText: 'Location',
+                          hintText: AppLocalizations.of(context)!.location,
                           readOnly: true,
                           prefixIcon: Padding(
                             padding: EdgeInsets.all(11.w),
@@ -192,8 +196,22 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
+                      validator: Validators.location,
+                      controller: locationController,
+                      hintText: AppLocalizations.of(context)!.locationDetails,
+
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.all(10.w),
+                        child: SvgPicture.asset(
+                          "assets/images/location_icon.svg",
+                        ),
+                      ),
+                      textInputType: TextInputType.emailAddress,
+                    ),
+                    Gap(20.h),
+                    CustomTextFormFiled(
                       controller: serviceController,
-                      hintText: "Choose The Service",
+                      hintText: AppLocalizations.of(context)!.chooseService,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -205,9 +223,11 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       items: ['Cleaning', 'Plumbing', 'Electrical'],
                       validator: (value) {
                         if (value == null) {
-                          return "Please select service";
+                          return AppLocalizations.of(
+                            context,
+                          )!.pleaseSelectService;
                         }
-                         return null;
+                        return null;
                       },
                       onChanged: (value) {
                         setState(() {
@@ -219,7 +239,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     Gap(20.h),
                     CustomTextFormFiled(
                       controller: regionController,
-                      hintText: "work_type",
+                      hintText: AppLocalizations.of(context)!.workType,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -228,10 +248,12 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       ),
                       isDropdown: true,
                       value: selectedRegion,
-                      items: ['Fixed', 'Mobile','Both'],
+                      items: ['Fixed', 'Mobile', 'Both'],
                       validator: (value) {
                         if (value == null) {
-                          return "Please select region";
+                          return AppLocalizations.of(
+                            context,
+                          )!.pleaseSelectRegion;
                         }
                         return null;
                       },
@@ -245,7 +267,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     CustomTextFormFiled(
                       controller: passwordController,
                       validator: Validators.password,
-                      hintText: 'Password',
+                      hintText: AppLocalizations.of(context)!.password,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -256,7 +278,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
-                      hintText: 'Confirm Password',
+                      hintText: AppLocalizations.of(context)!.confirmPassword,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -269,28 +291,26 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     TermsAndConditionsWidget(onChanged: (bool value) {}),
                     Gap(56.h),
                     CustomButton(
-                      title: "Sign up",
+                      title: AppLocalizations.of(context)!.signUp,
                       textstyle: TextStyles.font20White800,
                       width: MediaQuery.sizeOf(context).width * 0.88,
                       height: 52.h,
                       onTap: () {
-                      
                         if (formKey.currentState!.validate()) {
-                            Map<String, dynamic> initialData = {
-  'full_name': fullNameController.text,
-  'email': emailController.text,
-  'phone': phoneController.text,
-  'location': locationController.text,
-  'service': serviceController.text,
-  'region': regionController.text
-};
-                          GoRouter.of(
-                            context,
-                          ).pushReplacement(AppRouter.kVerviciton, 
-                         extra: {
-    'initialData': initialData,
-    'userType': widget.userType,
-  },
+                          Map<String, dynamic> initialData = {
+                            'full_name': fullNameController.text,
+                            'email': emailController.text,
+                            'phone': phoneController.text,
+                            'location': locationController.text,
+                            'service': serviceController.text,
+                            'region': regionController.text,
+                          };
+                          GoRouter.of(context).pushReplacement(
+                            AppRouter.kVerviciton,
+                            extra: {
+                              'initialData': initialData,
+                              'userType': widget.userType,
+                            },
                           );
                         }
                       },

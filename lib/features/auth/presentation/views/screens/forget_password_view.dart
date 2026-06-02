@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -35,7 +36,7 @@ class ForgetPasswordView extends StatelessWidget {
                   children: [
                     Icon(Icons.arrow_back_ios),
                     Text(
-                      "Forget password",
+                      AppLocalizations.of(context)!.forgetPassword,
                       style: TextStyles.font18BlackW500.copyWith(
                         fontSize: 20.sp,
                       ),
@@ -44,12 +45,12 @@ class ForgetPasswordView extends StatelessWidget {
                 ),
                 Gap(54.h),
                 Text(
-                  "It's happened . Don't worry",
+                  AppLocalizations.of(context)!.itsHappened,
                   style: TextStyles.font22PrimaryColorW700,
                 ),
                 Gap(12.h),
                 Text(
-                  "Please write your Email  Bellow To Send Code",
+                  AppLocalizations.of(context)!.pleaseSendCode,
                   style: TextStyles.font16PrimaryColorW400.copyWith(
                     fontSize: 13.sp,
                   ),
@@ -58,7 +59,7 @@ class ForgetPasswordView extends StatelessWidget {
                 CustomTextFormFiled(
                   validator: Validators.email,
                   controller: emailController,
-                  hintText: 'Email Address',
+                  hintText: AppLocalizations.of(context)!.emailAddress,
                   prefixIcon: Padding(
                     padding: EdgeInsets.all(10.w),
                     child: SvgPicture.asset("assets/images/iconEmail.svg"),
@@ -67,7 +68,7 @@ class ForgetPasswordView extends StatelessWidget {
                 ),
                 Gap(43.h),
                 CustomButton(
-                  title: "Send",
+                  title: AppLocalizations.of(context)!.send,
                   textstyle: TextStyles.font20White800,
                   width: MediaQuery.sizeOf(context).width * 0.88,
                   height: 52.h,

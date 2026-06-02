@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
@@ -53,7 +54,7 @@ class AuthLandingView extends StatelessWidget {
                   ),
                   Gap(108.h),
                   Text(
-                    "create account",
+                    AppLocalizations.of(context)!.createAccount,
                     style: TextStyles.font22BlackW600.copyWith(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
@@ -62,7 +63,7 @@ class AuthLandingView extends StatelessWidget {
                   ),
                   Gap(16.h),
                   CustomButton(
-                    title: "Sign Up",
+                    title: AppLocalizations.of(context)!.signUp,
                     width: 250.w,
                     onTap: () {
                       userType == 'user'
@@ -78,7 +79,7 @@ class AuthLandingView extends StatelessWidget {
                   ),
                   Gap(96.h),
                   Text(
-                    "you already have account ?",
+                    AppLocalizations.of(context)!.youAlreadyHaveAccount,
                     style: TextStyles.font22BlackW600.copyWith(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
@@ -87,7 +88,7 @@ class AuthLandingView extends StatelessWidget {
                   ),
                   Gap(16.h),
                   CustomButton(
-                    title: "Log In",
+                    title: AppLocalizations.of(context)!.logIn,
                     width: 250.w,
                     onTap: () {
                       GoRouter.of(

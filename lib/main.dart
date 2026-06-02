@@ -6,8 +6,9 @@ import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/localization/locale_cubit.dart';
 import 'package:servi_go_app/core/theme/app_theme.dart';
 import 'package:servi_go_app/core/theme/theme_bloc.dart';
-import 'package:servi_go_app/core/utils/app_router.dart';
+//import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
+import 'package:servi_go_app/features/filter/presentation/views/filter_view.dart';
 
 void main() {
   runApp(
@@ -36,14 +37,15 @@ class MyApp extends StatelessWidget {
         builder: (context, themeState) {
           return BlocBuilder<LocaleCubit, Locale>(
             builder: (context, locale) {
-              return MaterialApp.router(
+              return MaterialApp(
                 locale: locale,
                 supportedLocales: AppLocalizations.supportedLocales,
                 localizationsDelegates: AppLocalizations.localizationsDelegates,
                 theme: AppTheme.lightTheme,
                 darkTheme: AppTheme.darkTheme,
                 themeMode: themeState.themeMode,
-                routerConfig: AppRouter.router,
+                // routerConfig: AppRouter.router,
+                home: FilterView(),
                 debugShowCheckedModeBanner: false,
               );
             },
