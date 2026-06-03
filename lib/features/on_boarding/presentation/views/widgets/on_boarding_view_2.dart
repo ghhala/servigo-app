@@ -37,9 +37,7 @@ class OnBoardingView2 extends StatelessWidget {
               textstyle: TextStyles.font26WhiteW600,
               width: 250.w,
               onTap: () {
-                GoRouter.of(
-                  context,
-                ).pushReplacement(AppRouter.kusertypeview);
+                GoRouter.of(context).pushReplacement(AppRouter.kusertypeview);
               },
             ),
           ],

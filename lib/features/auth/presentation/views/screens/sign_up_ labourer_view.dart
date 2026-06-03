@@ -34,6 +34,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController fullNameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  TextEditingController locationDetailsController = TextEditingController();
   String? selectedRegion;
   String? selectedService;
 
@@ -197,7 +198,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     Gap(20.h),
                     CustomTextFormFiled(
                       validator: Validators.location,
-                      controller: locationController,
+                      controller: locationDetailsController,
                       hintText: AppLocalizations.of(context)!.locationDetails,
 
                       prefixIcon: Padding(
@@ -206,7 +207,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           "assets/images/location_icon.svg",
                         ),
                       ),
-                      textInputType: TextInputType.emailAddress,
+                      textInputType: TextInputType.text,
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(

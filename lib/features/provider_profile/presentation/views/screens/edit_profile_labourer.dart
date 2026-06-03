@@ -7,12 +7,13 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/Profile_photo_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/holiday_days_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/price_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/protfolio_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/sub_category_picker.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/working_hours_picker.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/Certificates%20_section.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/Profile_photo_widget.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/holiday_days_widget.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/price_widget.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/my_portfolio_section.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/sub_category_picker.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/working_hours_picker.dart';
 
 class EditProfileLabourer extends StatelessWidget {
   final String userType;
@@ -139,13 +140,16 @@ class EditProfileLabourer extends StatelessWidget {
                               ),
                               Gap(20),
                               Text(
-                                "about_me ",
-                                style: TextStyles.font16PrimaryColorW600,
+                                "Location Details ",
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600,
+                                ),
                               ),
                               CustomTextFormFiled(
-                                hintText: "Describe yourself in a few words",
-                                hintStyle: TextStyles.font11BlackW400,
-
+                                hintText:
+                                    userData?['location_details'] as String? ??
+                                    "",
                                 borderSide: BorderSide(
                                   width: 0.1,
                                   color: Colors.white,
@@ -165,12 +169,13 @@ class EditProfileLabourer extends StatelessWidget {
 
                                 borderSide: BorderSide(
                                   width: 0.1,
-                                  color: dividerColor,
+                                  color: Colors.white,
                                 ),
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(2),
                                 ),
                               ),
+
                               Gap(20),
                             ],
                           ),
@@ -271,7 +276,8 @@ class EditProfileLabourer extends StatelessWidget {
                 ),
                 Gap(20),
                 MyPortfolioSection(),
-
+                Gap(20),
+                CertificatesSection(),
                 Gap(35),
 
                 CustomButton(

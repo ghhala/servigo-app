@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class MyPortfolioSection extends StatefulWidget {
-  const MyPortfolioSection({super.key});
+class CertificatesSection extends StatefulWidget {
+  const CertificatesSection({super.key});
 
   @override
-  State<MyPortfolioSection> createState() => _MyPortfolioSectionState();
+  State<CertificatesSection> createState() => _CertificatesSectionState();
 }
 
-class _MyPortfolioSectionState extends State<MyPortfolioSection> {
+class _CertificatesSectionState extends State<CertificatesSection> {
   final List<File> _portfolioImages = [];
   final ImagePicker _picker = ImagePicker();
 
@@ -112,7 +112,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'My Portfolio',
+                'My Certificates',
                 style: TextStyle(
                   color: _textDark,
                   fontWeight: FontWeight.bold,
@@ -121,8 +121,8 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               ),
               Text(
                 _portfolioImages.isEmpty
-                    ? 'Add photos of your work'
-                    : '${_portfolioImages.length} photo(s) added',
+                    ? 'Add certificates to showcase your skills and qualifications.'
+                    : '${_portfolioImages.length} certificate(s) added',
                 style: const TextStyle(color: _textMid, fontSize: 12),
               ),
             ],
@@ -192,7 +192,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
             ),
             const SizedBox(height: 10),
             const Text(
-              'No portfolio photos yet.',
+              'No certificates added yet.',
               style: TextStyle(
                 color: _textMid,
                 fontSize: 13,
@@ -201,7 +201,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
             ),
             const SizedBox(height: 2),
             Text(
-              'Tap + to add your work',
+              'Tap + to add your certificates',
               style: TextStyle(color: _textMid.withOpacity(0.6), fontSize: 12),
             ),
           ],

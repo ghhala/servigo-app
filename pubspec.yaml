@@ -28,14 +28,15 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  chewie: ^1.14.1
   cupertino_icons: ^1.0.8
   firebase_auth: ^6.5.1
   firebase_core: ^4.9.0
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
-  flutter_bloc: ^9.1.1
   flutter_map: ^8.3.0
   flutter_screenutil: ^5.9.3
   flutter_svg: ^2.2.4
@@ -52,6 +53,7 @@ dependencies:
   percent_indicator: ^4.2.5
   provider: ^6.1.5+1
   shared_preferences: ^2.5.5
+  video_player: ^2.11.1
 
 dev_dependencies:
   flutter_lints: ^6.0.0

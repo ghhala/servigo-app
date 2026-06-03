@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @onBoardingDescription2.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to the ServiGo which provides you with services easily and simply wherever you are.'**
+  /// **' Welcome to the ServiGo which provides \n   you with services easily and simply\n  wherever you are.'**
   String get onBoardingDescription2;
 
   /// No description provided for @getStarted.

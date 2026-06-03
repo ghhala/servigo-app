@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
-import 'package:servi_go_app/core/localization/locale_cubit.dart';
+
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/settings/presentation/widgets/custom_Row_widget.dart';
@@ -99,10 +99,6 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
               ),
               Gap(20),
-              ElevatedButton(
-                onPressed: () => context.read<LocaleCubit>().toggleLocale(),
-                child: Text(l10n.changeLanguage),
-              ),
             ],
           ),
         ),

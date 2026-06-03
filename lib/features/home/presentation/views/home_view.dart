@@ -4,7 +4,7 @@ import 'package:servi_go_app/features/home/presentation/views/widgets/custom_bot
 import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
 
 import 'package:servi_go_app/features/messaging/presentation/views/messages_screen.dart';
-import 'package:servi_go_app/features/profile/presentation/views/screens/profile_labourer_view.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/user_profile_view.dart';
 

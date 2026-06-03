@@ -245,7 +245,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onBoardingDescription2 =>
-      'Welcome to the ServiGo which provides you with services easily and simply wherever you are.';
+      ' Welcome to the ServiGo which provides \n   you with services easily and simply\n  wherever you are.';
 
   @override
   String get getStarted => 'Get Started';

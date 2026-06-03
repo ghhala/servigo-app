@@ -5,9 +5,9 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/container_widget.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/custom_container.dart';
-import 'package:servi_go_app/features/profile/presentation/views/widgets/my_protifolio.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/container_widget.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/custom_container.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/my_protifolio.dart';
 
 class ProfileLabourerView extends StatelessWidget {
   const ProfileLabourerView({super.key});
