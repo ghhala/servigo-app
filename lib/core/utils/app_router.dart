@@ -1,4 +1,10 @@
+import 'package:flutter_bloc/flutter_bloc.dart'; 
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/network/api_service.dart';
+import 'package:servi_go_app/core/network/dio_client.dart';
+import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/auth_landing_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/forget_password_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/log_in.dart';
@@ -8,7 +14,6 @@ import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_%2
 import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_user.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/user_type_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/verviciton_view.dart';
-import 'package:servi_go_app/features/filter/presentation/views/filter_bottom_sheet.dart';
 import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
@@ -68,7 +73,16 @@ abstract class AppRouter {
         path: ksignupuser,
         builder: (context, state) {
           final userType = state.extra as String;
-          return SignUpUser(userType: userType);
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(
+                AuthRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: SignUpUser(userType: userType),
+          );
         },
       ),
       GoRoute(
@@ -82,25 +96,28 @@ abstract class AppRouter {
         path: kforgetPassword,
         builder: (context, state) => const ForgetPasswordView(),
       ),
+      
+      // 🌟 تم تعديل هذا المسار ليستقبل كل المعاملات الجديدة ويمررها لـ الـ OtpCodeView
       GoRoute(
         path: kotpcode,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
           return OtpCodeView(
-            receivedOtp: data['otp'],
-            userEmail: data['email'],
+            receivedOtp: data['otp']?.toString() ?? '',
+            userEmail: data['email']?.toString() ?? '',
+            userType: data['userType']?.toString() ?? 'user', // استخراج نوع المستخدم
+            isForgetPassword: data['isForgetPassword'] as bool? ?? false, // استخراج العلم
           );
         },
       ),
+      
       GoRoute(
         path: kresetpassword,
         builder: (context, state) {
-          // 1. استلام الـ extra كـ Map بشكل مرن، وإذا كانت فارغة نضع Map فارغ
           final data = state.extra is Map<String, dynamic>
               ? state.extra as Map<String, dynamic>
               : {};
 
-          // 2. تحويل القيم بأمان إلى نصوص String لتطابق الـ Constructor الخاص بالصفحة
           final String? otp = data['otp']?.toString();
           final String? email = data['email']?.toString();
           final String userType = data['userType']?.toString() ?? 'user';
@@ -125,13 +142,11 @@ abstract class AppRouter {
           Map<String, dynamic> userData = {};
           String userType = 'user';
 
-          // 👈 فحص ذكي: إذا كانت البيانات القادمة هي Map (تأتي من صفحة التسجيل المتقدمة)
           if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
             userData = data['initialData'] as Map<String, dynamic>? ?? {};
           }
-          // 👈 إذا كانت البيانات القادمة نص عادي String (تأتي من صفحة اختيار الحساب مباشرة)
           else if (state.extra is String) {
             userType = state.extra as String;
           }
@@ -151,20 +166,16 @@ abstract class AppRouter {
       GoRoute(
         path: kHome,
         builder: (context, state) {
-          String userType = 'user'; // القيمة الافتراضية
+          String userType = 'user';
 
-          // 👈 1. إذا كان الـ extra القادم عبارة عن نص عادي String
           if (state.extra is String) {
             userType = state.extra as String;
           }
-          // 👈 2. إذا قام مكان ما في التطبيق بإرسال الـ extra كـ Map بالخطأ
           else if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
-            // استخراج الـ userType من داخل الـ Map إذا كان موجوداً، وإلا نضع 'user'
             userType = data['userType'] as String? ?? 'user';
           }
 
-          // تمرير القيمة النصية الصافية والآمنة لشاشة الهوم
           return HomeView(userType: userType);
         },
       ),
@@ -194,10 +205,6 @@ abstract class AppRouter {
           return EditProfileLabourer(userData: userData, userType: userType);
         },
       ),
-      // GoRoute(
-      //   path: kfilterButtonSheet,
-      //   builder: (context, state) => FilterBottomSheet(),
-      // ),
     ],
   );
 }

@@ -7,10 +7,14 @@ import 'package:servi_go_app/core/localization/locale_cubit.dart';
 import 'package:servi_go_app/core/theme/app_theme.dart';
 import 'package:servi_go_app/core/theme/theme_bloc.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
-//import 'package:servi_go_app/core/utils/app_router.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
+
 import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await PrefHelper.init();
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
@@ -45,7 +49,7 @@ class MyApp extends StatelessWidget {
                 darkTheme: AppTheme.darkTheme,
                 themeMode: themeState.themeMode,
                 routerConfig: AppRouter.router,
-              
+
                 debugShowCheckedModeBanner: false,
               );
             },

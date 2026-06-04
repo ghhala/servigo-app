@@ -29,7 +29,7 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
       emit(RegisterUserFailure(e));
     } catch (e) {
       
-      emit(RegisterUserFailure(ApiError(message: "   unExpected error occured  : $e")));
+      emit(RegisterUserFailure(ApiError(message: " unExpected error occured  : $e")));
     }
   }
 }

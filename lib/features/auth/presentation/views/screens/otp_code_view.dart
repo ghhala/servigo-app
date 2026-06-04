@@ -8,14 +8,20 @@ import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart'; // 👈 استيراد الـ SuccessPopUp لعرضه عند نجاح الـ Sign Up
 
 class OtpCodeView extends StatelessWidget {
   final String receivedOtp;
   final String userEmail;
+  final String userType; 
+  final bool isForgetPassword; // 👈 إضافة علم تحديد الوجهة
+
   const OtpCodeView({
     super.key,
     required this.receivedOtp,
     required this.userEmail,
+    required this.userType, // تمريرها في الـ Constructor
+    required this.isForgetPassword, // تمريرها في الـ Constructor
   });
 
   @override
@@ -31,7 +37,10 @@ class OtpCodeView extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.arrow_back_ios),
+                  GestureDetector(
+                    onTap: () => context.pop(), // تفعيل زر العودة للخلف
+                    child: const Icon(Icons.arrow_back_ios),
+                  ),
                   Text(
                     AppLocalizations.of(context)!.otpCode,
                     style: TextStyles.font18BlackW500.copyWith(fontSize: 20.sp),
@@ -57,9 +66,10 @@ class OtpCodeView extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: userEmail,
+                      text: " $userEmail ",
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 12.sp,
+                        fontWeight: FontWeight.bold, // تمييز الإيميل برسمة عريضة
                       ),
                     ),
                     TextSpan(
@@ -74,8 +84,7 @@ class OtpCodeView extends StatelessWidget {
               Gap(21.h),
               OtpFields(
                 onCompleted: (value) {
-                  enteredOtp =
-                      value; // سيتم تحديث هذه القيمة تلقائياً كلما كتب المستخدم حرفاً
+                  enteredOtp = value; // تحديث كود الـ OTP المكتوب تلقائياً
                 },
               ),
               Gap(26.h),
@@ -85,17 +94,37 @@ class OtpCodeView extends StatelessWidget {
                 width: MediaQuery.sizeOf(context).width * 0.88,
                 height: 52.h,
                 onTap: () {
-                  if (enteredOtp == receivedOtp) {
-                    context.go(
-  AppRouter.kresetpassword,
-  extra: {
-    'otp': receivedOtp,
-    'email': userEmail,
-    'userType': 'user', // أو القيمة الديناميكية المتوفرة لديك
-  },
-);
+                  // الفحص الذكي: التحقق من صحة الكود المُدخل (أو تركه فارغاً إذا كان الفحص يتم بالكامل عبر السيرفر)
+                  // ملحوظة: إذا كان كود الـ Sign Up لا يعيد OTP لأن السيرفر يتحقق تلقائياً، يمكنك تعديل الشرط ليتناسب مع الباك آيند
+                  if (enteredOtp == receivedOtp || isForgetPassword == false) {
+                    
+                    if (isForgetPassword) {
+                      // 1️⃣ حالة نسيان كلمة المرور: نتوجه لصفحة إعادة التعيين مع الـ userType الحقيقي
+                      context.go(
+                        AppRouter.kresetpassword,
+                        extra: {
+                          'otp': enteredOtp.isNotEmpty ? enteredOtp : receivedOtp,
+                          'email': userEmail,
+                          'userType': userType,
+                        },
+                      );
+                    } else {
+                      // 2️⃣ حالة الـ Sign Up: نُظهر بوب آب النجاح ونمرر المعاملات المطلوبة داخله
+                      SuccessPopUp.show(
+                        context,
+                        userType,
+                        userEmail,
+                      );
+                    }
+
                   } else {
-                    // إظهار خطأ
+                    // في حالة عدم تطابق الكود (لمسار نسيان كلمة السر)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("كود التحقق غير صحيح، يرجى إعادة المحاولة"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
                   }
                 },
               ),
@@ -106,7 +135,7 @@ class OtpCodeView extends StatelessWidget {
                     AppLocalizations.of(context)!.resendCode,
                     style: TextStyles.font12GreyW400(context),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Text(
                     AppLocalizations.of(context)!.resendIn,
                     style: TextStyles.font16PrimaryColorW400,

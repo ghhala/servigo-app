@@ -4,7 +4,7 @@ class PrefHelper {
   static const String _tokenKey = 'auth_token';
   static late SharedPreferences _prefs;
 
-  // 1. دالة يتم استدعاؤها مرة واحدة فقط في الـ main.dart عند إقلاع التطبيق
+
   static Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }

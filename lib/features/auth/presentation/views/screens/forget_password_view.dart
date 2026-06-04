@@ -24,7 +24,6 @@ class ForgetPasswordView extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
       body: AppBackground(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 19.w),
@@ -34,7 +33,10 @@ class ForgetPasswordView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.arrow_back_ios),
+                    GestureDetector(
+                      onTap: () => context.pop(), // تفعيل زر العودة للخلف بأمان
+                      child: const Icon(Icons.arrow_back_ios),
+                    ),
                     Text(
                       AppLocalizations.of(context)!.forgetPassword,
                       style: TextStyles.font18BlackW500.copyWith(
@@ -73,26 +75,28 @@ class ForgetPasswordView extends StatelessWidget {
                   width: MediaQuery.sizeOf(context).width * 0.88,
                   height: 52.h,
                   onTap: () async {
-                    // 1. التحقق من صحة الحقول
                     if (formKey.currentState!.validate()) {
-                      // 2. إرسال الرمز عبر الـ ViewModel
-                      // نمرر الإيميل من الـ controller وننتظر النتيجة
+                      // 1. إرسال الرمز عبر الـ ViewModel وتحديث الـ userType من السيرفر
                       bool isSent = await authVM.sendOtpToUser(
                         emailController.text.trim(),
                       );
 
                       if (isSent) {
-                        // 3. النجاح: الانتقال لشاشة الـ OTP
-                        // نمرر الرمز والإيميل لكي نستخدمهم في الشاشة التالية للتحقق
+                        if (!context.mounted) return; // حماية السياق (Context Guard)
+
+                        // 2. الانتقال إلى شاشة الـ OTP مع تمرير المعاملات الجديدة بالكامل
                         GoRouter.of(context).pushReplacement(
                           AppRouter.kotpcode,
                           extra: {
                             'otp': authVM.generatedOtp,
                             'email': emailController.text.trim(),
+                           
+                            'isForgetPassword': true,         
                           },
                         );
                       } else {
-                        // 4. الفشل: إظهار رسالة خطأ للمستخدم
+                        if (!context.mounted) return;
+                        // 3. الفشل: إظهار رسالة خطأ للمخدم
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(

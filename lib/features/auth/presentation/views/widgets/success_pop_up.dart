@@ -7,21 +7,32 @@ import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 
 class SuccessPopUp extends StatelessWidget {
-  static Future<void> show(BuildContext context,String userType) {
+  // دالة العرض الثابتة (Static method)
+  static Future<void> show(
+    BuildContext context,
+    String userType,
+    String userEmail,
+  ) {
     return showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.45),
-      builder: (_) =>  SuccessPopUp(userType: userType),
+      builder: (_) => SuccessPopUp(userType: userType), // 👈 تمرير الـ userType هنا ليدخل في الـ Constructor
     );
   }
-final String userType;
-  const SuccessPopUp({super.key, required this.userType});
+
+  final String userType;
+ 
+  const SuccessPopUp({
+    super.key,
+    required this.userType,
+  });
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color onSurface = Theme.of(context).colorScheme.onSurface;
+
     return AppBackground(
       child: Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -73,8 +84,17 @@ final String userType;
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
+                    // التقاط الراوتر بأمان قبل إغلاق الـ Dialog لمنع فقدان الـ Context
+                    final router = GoRouter.of(context);
+
+                    // 1. إغلاق البوب آب
                     Navigator.of(context).pop();
-                    GoRouter.of(context).push(AppRouter.kHome, extra: userType);
+
+                    // 2. التوجيه إلى شاشة الهوم مع تمرير نوع المستخدم الحقيقي والآمن
+                    router.go(
+                      AppRouter.kHome,
+                      extra: userType, 
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF4F6EF7),

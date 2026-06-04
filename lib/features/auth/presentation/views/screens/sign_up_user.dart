@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // مكتبة الـ Bloc للتحكم بالحالة
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart'; // 👈 استيراد مكتبة الـ GoRouter للانتقال للشاشات
+import 'package:provider/provider.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
+import 'package:servi_go_app/features/auth/data/models/register_user_request_body.dart'; // موديل الـ Request Body
+import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart'; // الـ Cubit الجديد
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
 
-class SignUpUser extends StatelessWidget {
+class SignUpUser extends StatefulWidget {
   final String userType;
   SignUpUser({super.key, required this.userType});
+
+  @override
+  State<SignUpUser> createState() => _SignUpUserState();
+}
+
+class _SignUpUserState extends State<SignUpUser> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -39,7 +57,10 @@ class SignUpUser extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 45),
                   child: Row(
                     children: [
-                      Icon(Icons.arrow_back_ios),
+                      GestureDetector(
+                        onTap: () => context.pop(), // لكي يعمل زر الرجوع للخلف
+                        child: Icon(Icons.arrow_back_ios),
+                      ),
                       Text(
                         AppLocalizations.of(context)!.createUserAccount,
                         style: TextStyles.font18BlackW500,
@@ -53,17 +74,22 @@ class SignUpUser extends StatelessWidget {
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 45),
-
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text.rich(
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: AppLocalizations.of(context)!.welcomeCreateAccount,
+                            text: AppLocalizations.of(
+                              context,
+                            )!.welcomeCreateAccount,
                             style: TextStyles.font24PrimaryColorW800,
                           ),
-                          TextSpan(text: AppLocalizations.of(context)!.welcomeCreateAccount),
+                          TextSpan(
+                            text: AppLocalizations.of(
+                              context,
+                            )!.welcomeCreateAccount,
+                          ),
                         ],
                       ),
                     ),
@@ -91,8 +117,8 @@ class SignUpUser extends StatelessWidget {
                   children: [
                     CustomTextFormFiled(
                       validator: Validators.fullName,
+                      controller: nameController,
                       hintText: AppLocalizations.of(context)!.fullName,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/name_icon.svg"),
@@ -102,8 +128,8 @@ class SignUpUser extends StatelessWidget {
                     Gap(20.h),
                     CustomTextFormFiled(
                       validator: Validators.phone,
+                      controller: phoneController,
                       hintText: AppLocalizations.of(context)!.phoneNumber,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/phone_icon.svg"),
@@ -113,8 +139,8 @@ class SignUpUser extends StatelessWidget {
                     Gap(20.h),
                     CustomTextFormFiled(
                       validator: Validators.email,
+                      controller: emailController,
                       hintText: AppLocalizations.of(context)!.emailAddress,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/iconEmail.svg"),
@@ -125,8 +151,8 @@ class SignUpUser extends StatelessWidget {
 
                     CustomTextFormFiled(
                       validator: Validators.password,
+                      controller: passwordController,
                       hintText: AppLocalizations.of(context)!.password,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -137,6 +163,7 @@ class SignUpUser extends StatelessWidget {
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
+                      controller: confirmPasswordController,
                       hintText: AppLocalizations.of(context)!.confirmPassword,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
@@ -149,15 +176,77 @@ class SignUpUser extends StatelessWidget {
                     Gap(25.h),
                     TermsAndConditionsWidget(onChanged: (bool value) {}),
                     Gap(56.h),
-                    CustomButton(
-                      title: AppLocalizations.of(context)!.signUp,
-                      textstyle: TextStyles.font20White800,
-                      width: MediaQuery.sizeOf(context).width * 0.88,
-                      height: 52.h,
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          SuccessPopUp.show(context, userType);
+
+                    BlocConsumer<RegisterUserCubit, RegisterUserState>(
+                      listener: (context, state) {
+                        if (state is RegisterUserSuccess) {
+                          final authVM = Provider.of<AuthViewModel>(
+                            context,
+                            listen: false,
+                          );
+
+                        
+                          authVM.sendOtpToUser(emailController.text.trim()).then((
+                            isSent,
+                          ) {
+                          
+                            if (!context.mounted) return;
+
+                           
+                            context.go(
+                              AppRouter.kotpcode,
+                              extra: {
+                                'otp': authVM
+                                    .generatedOtp, 
+                                'email': emailController.text.trim(),
+                                'userType': widget.userType,
+                                'isForgetPassword': false,
+                              },
+                            );
+                          });
                         }
+
+                     
+                        if (state is RegisterUserFailure) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(state.error.message),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                  
+                        if (state is RegisterUserLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        return CustomButton(
+                          title: AppLocalizations.of(context)!.signUp,
+                          textstyle: TextStyles.font20White800,
+                          width: MediaQuery.sizeOf(context).width * 0.88,
+                          height: 52.h,
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              final signUpData = RegisterUserRequestBody(
+                                name: nameController.text.trim(),
+                                email: emailController.text.trim(),
+                                phone: phoneController.text.trim(),
+                                password: passwordController.text,
+                                passwordConfirmation:
+                                    confirmPasswordController.text,
+                              );
+
+                            
+                              context.read<RegisterUserCubit>().registerUser(
+                                signUpData,
+                              );
+                            }
+                          },
+                        );
                       },
                     ),
                     Gap(30.h),
