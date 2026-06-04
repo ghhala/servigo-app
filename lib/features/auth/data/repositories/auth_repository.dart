@@ -1,0 +1,29 @@
+import 'package:servi_go_app/core/network/api_error.dart';
+import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:servi_go_app/features/auth/data/models/register_user_request_body.dart';
+import 'package:servi_go_app/features/auth/data/models/user_sign_up_response_model.dart';
+
+class AuthRepository {
+  final AuthRemoteDataSource _authRemoteDataSource;
+
+ 
+  AuthRepository(this._authRemoteDataSource);
+
+  
+  Future<UserSignUpResponseModel> registerUser(RegisterUserRequestBody requestBody) async {
+    try {
+     
+      final rawData = await _authRemoteDataSource.registerUser(requestBody);
+
+      
+      return UserSignUpResponseModel.fromJson(rawData);
+      
+    } on ApiError catch (e) {
+    
+      throw e;
+    } catch (e) {
+      
+      throw ApiError(message: "unExpected error occured processing data : $e");
+    }
+  }
+}
