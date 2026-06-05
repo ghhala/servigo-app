@@ -94,12 +94,7 @@ class _CustomLocationState extends State<CustomLocation>
 
         final address = data['address'];
         final name = [
-         // address['amenity'],
-          // address['building'],
-          // address['shop'],
-          // address['leisure'],
-          // address['road'],
-          // address['neighbourhood'] ?? address['suburb'] ?? address['quarter'],
+         
           address['city'] ?? address['town'] ?? address['village'],
         ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
         if (mounted) {
@@ -216,30 +211,7 @@ class _CustomLocationState extends State<CustomLocation>
                     ),
                   ),
 
-                // زر التأكيد
-                // Positioned(
-                //   bottom: 20,
-                //   left: 20,
-                //   right: 20,
-                //   child: CustomButton(
-                //     width: double.infinity,
-                //     height: 50.h,
-                //     textstyle: TextStyles.font15WhiteColorW500,
-                //     title: "Confirmation",
-                //     onTap:
-                //         (selectedLocation != null &&
-                //             placeName != null &&
-                //             placeName != "جارٍ تحديد الموقع...")
-                //         ? () {
-                //             Navigator.pop(context, {
-                //               "lat": selectedLocation!.latitude,
-                //               "lng": selectedLocation!.longitude,
-                //               "name": placeName,
-                //             });
-                //           }
-                //         : null,
-                //   ),
-                // ),
+               
                 Positioned(
                   bottom: 20,
                   left: 20,

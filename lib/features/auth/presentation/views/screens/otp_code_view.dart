@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // 👈 استيراد مكتبة الـ Bloc للتحكم بالحالات
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -32,8 +32,41 @@ class OtpCodeView extends StatefulWidget {
 
 class _OtpCodeViewState extends State<OtpCodeView> {
   String enteredOtp = "";
+
+ 
+  void _handleNavigationOnSuccess() {
+    if (widget.isForgetPassword) {
+    
+      context.go(
+        AppRouter.kresetpassword,
+        extra: {
+          'otp': enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp,
+          'email': widget.userEmail,
+          'userType': widget.userType,
+        },
+      );
+    } else if (widget.userType == 'labourer' || widget.userType == 'provider') {
+     
+      context.go(
+        AppRouter.kCompliteProfile,
+        extra: {
+          'userType': widget.userType,
+          'userData': {'email': widget.userEmail},
+        },
+      );
+    } else {
+   
+      SuccessPopUp.show(context, widget.userType, widget.userEmail);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    
+    final isProviderFlow =
+        !widget.isForgetPassword &&
+        (widget.userType == 'labourer' || widget.userType == 'provider');
+
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -97,29 +130,12 @@ class _OtpCodeViewState extends State<OtpCodeView> {
               ),
               Gap(26.h),
 
+           
               BlocConsumer<RegisterUserCubit, RegisterUserState>(
                 listener: (context, state) {
                   if (state is VerifyOtpSuccess) {
-                    if (widget.isForgetPassword) {
-                      context.go(
-                        AppRouter.kresetpassword,
-                        extra: {
-                          'otp': enteredOtp.isNotEmpty
-                              ? enteredOtp
-                              : widget.receivedOtp,
-                          'email': widget.userEmail,
-                          'userType': widget.userType,
-                        },
-                      );
-                    } else {
-                      SuccessPopUp.show(
-                        context,
-                        widget.userType,
-                        widget.userEmail,
-                      );
-                    }
+                    _handleNavigationOnSuccess();
                   }
-
                   if (state is VerifyOtpFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -133,7 +149,9 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   if (state is VerifyOtpLoading) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(0xFFB38CF5),
+                        ),
                       ),
                     );
                   }
@@ -144,14 +162,12 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
                     onTap: () {
-                      print("==========================================");
-                      print("Entered OTP is: '$enteredOtp'");
-                      print("Email sending to: '${widget.userEmail}'");
-                      print("==========================================");
                       final codeToVerify = enteredOtp.isNotEmpty
                           ? enteredOtp
                           : widget.receivedOtp;
+
                       if (codeToVerify.isNotEmpty) {
+                     
                         context.read<RegisterUserCubit>().verifyOtp(
                           email: widget.userEmail,
                           otp: codeToVerify,

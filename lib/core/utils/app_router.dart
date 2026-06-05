@@ -3,9 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/login/login_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/register_provider/register_provider_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/auth_landing_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/forget_password_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/log_in.dart';
@@ -107,7 +109,6 @@ abstract class AppRouter {
         builder: (context, state) => const ForgetPasswordView(),
       ),
       
-      
       GoRoute(
         path: kotpcode,
         builder: (context, state) {
@@ -120,7 +121,7 @@ abstract class AppRouter {
             isForgetPassword: data['isForgetPassword'] as bool? ?? false, 
           );
 
-         
+        
           if (data.containsKey('registerCubit') && data['registerCubit'] is RegisterUserCubit) {
             return BlocProvider.value(
               value: data['registerCubit'] as RegisterUserCubit,
@@ -128,7 +129,15 @@ abstract class AppRouter {
             );
           }
 
-          // إذا كانت حالة نسيان كلمة المرور ولم نمرر Cubit، ننشئ نسخة جديدة للشاشة للتأكيد فقط
+         
+          if (data.containsKey('registerProviderCubit') && data['registerProviderCubit'] is RegisterProviderCubit) {
+            return BlocProvider.value(
+              value: data['registerProviderCubit'] as RegisterProviderCubit,
+              child: otpView,
+            );
+          }
+
+       
           return BlocProvider(
             create: (context) => RegisterUserCubit(
               AuthRepository(
@@ -164,7 +173,16 @@ abstract class AppRouter {
         path: kuserlabourer,
         builder: (context, state) {
           final userType = state.extra as String;
-          return SignUplabourerView(userType: userType);
+          return BlocProvider(
+            create: (context) => RegisterProviderCubit(
+              AuthRepository(
+                AuthRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: SignUplabourerView(userType: userType),
+          );
         },
       ),
       GoRoute(
@@ -172,17 +190,32 @@ abstract class AppRouter {
         builder: (context, state) {
           Map<String, dynamic> userData = {};
           String userType = 'user';
+          RegisterProviderRequestBody? requestBody;
 
           if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
             userData = data['initialData'] as Map<String, dynamic>? ?? {};
+            requestBody = data['requestBody'] as RegisterProviderRequestBody?;
+          }
+          else if (state.extra is RegisterProviderRequestBody) {
+            requestBody = state.extra as RegisterProviderRequestBody;
+            userType = 'labourer'; 
           }
           else if (state.extra is String) {
             userType = state.extra as String;
           }
 
-          return VervicitonView(userData: userData, userType: userType);
+          return BlocProvider(
+            create: (context) => RegisterProviderCubit(
+              AuthRepository(
+                AuthRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: VervicitonView(userData: userData, userType: userType, requestBody: requestBody),
+          );
         },
       ),
       GoRoute(

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
@@ -10,15 +11,19 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
+import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/register_provider/register_provider_cubit.dart';
 
 class VervicitonView extends StatefulWidget {
   final String userType;
   final Map<String, dynamic> userData;
+  final RegisterProviderRequestBody? requestBody;
 
   const VervicitonView({
     super.key,
     required this.userData,
     required this.userType,
+    this.requestBody,
   });
 
   @override
@@ -36,8 +41,14 @@ class _VervicitonViewState extends State<VervicitonView> {
       setState(() {
         if (isFront) {
           _frontImage = File(pickedFile.path);
+          if (widget.requestBody != null) {
+            widget.requestBody!.idPhotoFrontPath = pickedFile.path;
+          }
         } else {
           _backImage = File(pickedFile.path);
+          if (widget.requestBody != null) {
+            widget.requestBody!.idPhotoBackPath = pickedFile.path;
+          }
         }
       });
     }
@@ -75,6 +86,57 @@ class _VervicitonViewState extends State<VervicitonView> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.requestBody != null) {
+      return BlocListener<RegisterProviderCubit, RegisterProviderState>(
+        listener: (context, state) {
+          if (state is RegisterProviderLoading) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFB38CF5)),
+                ),
+              ),
+            );
+          } else if (state is RegisterProviderFailure) {
+            // للتأكد من إغلاق الـ Loading dialog فقط إذا كان مفتوحاً دون تدمير الشاشة الأصلية
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            }
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.apiError.message ?? 'Registration failed'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          } else if (state is RegisterProviderSuccess) {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context); // إغلاق الـ Loading dialog فقط
+            }
+
+            // 🚀 الانتقال المباشر والآمن باستخدام go لمنع تدمير الـ Cubit أثناء الـ Animation
+            context.go(
+              AppRouter.kotpcode,
+              extra: {
+                'email': widget.requestBody!.email,
+                'userType': widget.userType,
+                'type': 'register',
+                'isForgetPassword': false,
+                'receivedOtp': '', // سيتم استقباله من السيرفر تلقائياً
+              },
+            );
+          }
+        },
+        child: _buildScaffold(),
+      );
+    }
+
+    return _buildScaffold();
+  }
+
+  Widget _buildScaffold() {
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -133,18 +195,32 @@ class _VervicitonViewState extends State<VervicitonView> {
 
                     Gap(54.h),
                     CustomButton(
-                      title: AppLocalizations.of(context)!.submit,
+                      title: AppLocalizations.of(context)!.signUp,
                       textstyle: TextStyles.font20White800,
                       width: MediaQuery.sizeOf(context).width * 0.60,
                       height: 52.h,
                       onTap: () {
-                        GoRouter.of(
-                          context,
-                        ).push(AppRouter.kCompliteProfile, extra: {
-                          "userType": widget.userType,
-                          "userData": widget.userData
-                       
-                        });
+                        if (widget.requestBody != null) {
+                          if (_frontImage == null || _backImage == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please upload both ID photos'),
+                              ),
+                            );
+                            return;
+                          }
+                          context
+                              .read<RegisterProviderCubit>()
+                              .registerProvider(widget.requestBody!);
+                        } else {
+                          context.push(
+                            AppRouter.kCompliteProfile,
+                            extra: {
+                              "userType": widget.userType,
+                              "userData": widget.userData,
+                            },
+                          );
+                        }
                       },
                     ),
                   ],

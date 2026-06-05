@@ -1,5 +1,6 @@
 import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/features/auth/data/models/register_user_request_body.dart';
+import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 
 class AuthRemoteDataSource {
   final ApiService _apiService;
@@ -14,6 +15,17 @@ class AuthRemoteDataSource {
 
     return response;
   }
+
+  Future<dynamic> registerProvider(RegisterProviderRequestBody requestBody) async {
+    final formData = await requestBody.toFormData();
+    final response = await _apiService.postFormData(
+      'auth/register/provider',
+      formData,
+    );
+
+    return response;
+  }
+
 
   Future<dynamic> verifyOtp({
     required String email,

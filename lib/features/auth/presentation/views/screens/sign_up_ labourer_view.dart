@@ -15,6 +15,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/social_aut
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
+import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 
 class SignUplabourerView extends StatefulWidget {
   final String userType;
@@ -38,15 +39,20 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   String? selectedRegion;
   String? selectedService;
 
+  
+  double? selectedLatitude;
+  double? selectedLongitude;
+
   @override
   void dispose() {
-    locationController.dispose(); // ← مهم
+    locationController.dispose();
     regionController.dispose();
     serviceController.dispose();
     emailController.dispose();
     passwordController.dispose();
     fullNameController.dispose();
     phoneController.dispose();
+    locationDetailsController.dispose();
     super.dispose();
   }
 
@@ -54,7 +60,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-
       body: AppBackground(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -71,7 +76,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                   padding: EdgeInsets.symmetric(horizontal: 30.w),
                   child: Row(
                     children: [
-                      Icon(Icons.arrow_back_ios),
+                      const Icon(Icons.arrow_back_ios),
                       Text(
                         AppLocalizations.of(context)!.createLabourerAccount,
                         style: TextStyles.font18BlackW500,
@@ -82,10 +87,8 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                   ),
                 ),
                 Gap(11.h),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 45),
-
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text.rich(
@@ -96,9 +99,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             style: TextStyles.font24PrimaryColorW800,
                           ),
                           TextSpan(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.welcomeCreateAccount,
+                            text: AppLocalizations.of(context)!.welcomeCreateAccount,
                           ),
                         ],
                       ),
@@ -118,8 +119,8 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                   onPressed: () {},
                 ),
                 Gap(20.h),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   child: OrDivider(),
                 ),
                 Gap(20.h),
@@ -128,9 +129,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     CustomTextFormFiled(
                       validator: Validators.fullName,
                       controller: fullNameController,
-
                       hintText: AppLocalizations.of(context)!.fullName,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/name_icon.svg"),
@@ -142,7 +141,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       validator: Validators.phone,
                       controller: phoneController,
                       hintText: AppLocalizations.of(context)!.phoneNumber,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/phone_icon.svg"),
@@ -154,7 +152,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       validator: Validators.email,
                       controller: emailController,
                       hintText: AppLocalizations.of(context)!.emailAddress,
-
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
                         child: SvgPicture.asset("assets/images/iconEmail.svg"),
@@ -170,11 +167,13 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           ),
                         );
 
-                        debugPrint("Result received: $result");
+                        debugPrint("Result received from map: $result");
 
                         if (result != null && result is Map) {
                           if (mounted) {
                             setState(() {
+                              selectedLatitude = result['lat'];
+                              selectedLongitude = result['lng'];
                               locationController.text = result['name'] ?? '';
                             });
                           }
@@ -192,22 +191,14 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             ),
                           ),
                           textInputType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "الرجاء تحديد الموقع من الخريطة";
+                            }
+                            return null;
+                          },
                         ),
                       ),
-                    ),
-                    Gap(20.h),
-                    CustomTextFormFiled(
-                      validator: Validators.location,
-                      controller: locationDetailsController,
-                      hintText: AppLocalizations.of(context)!.locationDetails,
-
-                      prefixIcon: Padding(
-                        padding: EdgeInsets.all(10.w),
-                        child: SvgPicture.asset(
-                          "assets/images/location_icon.svg",
-                        ),
-                      ),
-                      textInputType: TextInputType.text,
                     ),
                     Gap(20.h),
                     CustomTextFormFiled(
@@ -221,12 +212,10 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       ),
                       isDropdown: true,
                       value: selectedService,
-                      items: ['Cleaning', 'Plumbing', 'Electrical'],
+                      items: const ['Cleaning', 'Plumbing', 'Electrical'],
                       validator: (value) {
                         if (value == null) {
-                          return AppLocalizations.of(
-                            context,
-                          )!.pleaseSelectService;
+                          return AppLocalizations.of(context)!.pleaseSelectService;
                         }
                         return null;
                       },
@@ -236,7 +225,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         });
                       },
                     ),
-
                     Gap(20.h),
                     CustomTextFormFiled(
                       controller: regionController,
@@ -249,12 +237,10 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       ),
                       isDropdown: true,
                       value: selectedRegion,
-                      items: ['Fixed', 'Mobile', 'Both'],
+                      items: const ['Fixed', 'Mobile', 'Both'],
                       validator: (value) {
                         if (value == null) {
-                          return AppLocalizations.of(
-                            context,
-                          )!.pleaseSelectRegion;
+                          return AppLocalizations.of(context)!.pleaseSelectRegion;
                         }
                         return null;
                       },
@@ -292,26 +278,49 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     TermsAndConditionsWidget(onChanged: (bool value) {}),
                     Gap(56.h),
                     CustomButton(
-                      title: AppLocalizations.of(context)!.signUp,
+                      title: AppLocalizations.of(context)!.next,
                       textstyle: TextStyles.font20White800,
                       width: MediaQuery.sizeOf(context).width * 0.88,
                       height: 52.h,
                       onTap: () {
                         if (formKey.currentState!.validate()) {
-                          Map<String, dynamic> initialData = {
-                            'full_name': fullNameController.text,
-                            'email': emailController.text,
-                            'phone': phoneController.text,
-                            'location': locationController.text,
-                            'service': serviceController.text,
-                            'region': regionController.text,
-                          };
-                          GoRouter.of(context).pushReplacement(
+                        
+                          if (selectedLatitude == null || selectedLongitude == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("الرجاء فتح الخريطة وتأكيد موقعك أولاً"),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
+                       
+                          String formattedWorkType = selectedRegion!.toLowerCase();
+
+                 
+                          String serviceId = "1"; 
+                          if (selectedService == 'Cleaning') serviceId = "1";
+                          if (selectedService == 'Plumbing') serviceId = "2";
+                          if (selectedService == 'Electrical') serviceId = "3";
+
+                         
+                          final requestBody = RegisterProviderRequestBody(
+                            name: fullNameController.text.trim(),
+                            email: emailController.text.trim(),
+                            phone: phoneController.text.trim(),
+                            password: passwordController.text.trim(),
+                            passwordConfirmation: passwordController.text.trim(),
+                            locationName: locationController.text.trim(),
+                            mainServiceId: serviceId, 
+                            workType: formattedWorkType, 
+                            latitude: selectedLatitude,  
+                            longitude: selectedLongitude, 
+                          );
+
+                          GoRouter.of(context).push(
                             AppRouter.kVerviciton,
-                            extra: {
-                              'initialData': initialData,
-                              'userType': widget.userType,
-                            },
+                            extra: requestBody,
                           );
                         }
                       },

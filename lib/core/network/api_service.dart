@@ -28,4 +28,13 @@ class ApiService {
       throw ApiException.handleError(e); 
     }
   }
+
+  Future<dynamic> postFormData(String endPoint, FormData formData) async {
+    try {
+      final response = await _dioClient.dio.post(endPoint, data: formData);
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.handleError(e);
+    }
+  }
 }
