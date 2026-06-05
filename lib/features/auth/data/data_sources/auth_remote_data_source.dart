@@ -26,4 +26,15 @@ class AuthRemoteDataSource {
     });
     return response;
   }
+
+  Future<dynamic> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await _apiService.post('auth/login', {
+      'email': email,
+      'password': password,
+    });
+    return response;
+  }
 }

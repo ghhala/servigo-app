@@ -4,6 +4,7 @@ import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/login/login_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/auth_landing_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/forget_password_view.dart';
@@ -89,7 +90,16 @@ abstract class AppRouter {
         path: klogIn,
         builder: (context, state) {
           final userType = state.extra as String;
-          return LogIn(userType: userType);
+          return BlocProvider(
+            create: (context) => LoginCubit(
+              AuthRepository(
+                AuthRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: LogIn(userType: userType),
+          );
         },
       ),
       GoRoute(

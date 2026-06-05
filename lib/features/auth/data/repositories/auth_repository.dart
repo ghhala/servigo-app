@@ -36,5 +36,16 @@ Future<void> verifyOtp({required String email, required String otp}) async {
     throw ApiError(message: "unExpected error occured processing data : $e");
   }
 }
+
+Future<dynamic> login({required String email, required String password}) async {
+  try {
+    final rawData = await _authRemoteDataSource.login(email: email, password: password);
+    return rawData;
+  } on ApiError catch (e) {
+    throw e;
+  } catch (e) {
+    throw ApiError(message: "unExpected error occured processing data : $e");
+  }
+}
   
 }
