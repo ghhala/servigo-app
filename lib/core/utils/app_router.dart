@@ -97,16 +97,37 @@ abstract class AppRouter {
         builder: (context, state) => const ForgetPasswordView(),
       ),
       
-      // 🌟 تم تعديل هذا المسار ليستقبل كل المعاملات الجديدة ويمررها لـ الـ OtpCodeView
+      
       GoRoute(
         path: kotpcode,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
-          return OtpCodeView(
+          
+          final otpView = OtpCodeView(
             receivedOtp: data['otp']?.toString() ?? '',
             userEmail: data['email']?.toString() ?? '',
-            userType: data['userType']?.toString() ?? 'user', // استخراج نوع المستخدم
-            isForgetPassword: data['isForgetPassword'] as bool? ?? false, // استخراج العلم
+            userType: data['userType']?.toString() ?? 'user', 
+            isForgetPassword: data['isForgetPassword'] as bool? ?? false, 
+          );
+
+         
+          if (data.containsKey('registerCubit') && data['registerCubit'] is RegisterUserCubit) {
+            return BlocProvider.value(
+              value: data['registerCubit'] as RegisterUserCubit,
+              child: otpView,
+            );
+          }
+
+          // إذا كانت حالة نسيان كلمة المرور ولم نمرر Cubit، ننشئ نسخة جديدة للشاشة للتأكيد فقط
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(
+                AuthRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: otpView,
           );
         },
       ),

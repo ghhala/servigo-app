@@ -32,4 +32,18 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
       emit(RegisterUserFailure(ApiError(message: " unExpected error occured  : $e")));
     }
   }
+  
+Future<void> verifyOtp({required String email, required String otp}) async {
+ 
+  emit(VerifyOtpLoading());
+
+  try {
+    await _authRepository.verifyOtp(email: email, otp: otp);
+    emit(VerifyOtpSuccess()); 
+  } on ApiError catch (e) {
+    emit(VerifyOtpFailure(e));
+  } catch (e) {
+    emit(VerifyOtpFailure(ApiError(message: "An unexpected error occurred: $e")));
+  }
+}
 }

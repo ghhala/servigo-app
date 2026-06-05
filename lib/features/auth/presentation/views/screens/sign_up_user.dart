@@ -4,14 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart'; // 👈 استيراد مكتبة الـ GoRouter للانتقال للشاشات
-import 'package:provider/provider.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/data/models/register_user_request_body.dart'; // موديل الـ Request Body
-import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart'; // الـ Cubit الجديد
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
@@ -180,33 +178,21 @@ class _SignUpUserState extends State<SignUpUser> {
                     BlocConsumer<RegisterUserCubit, RegisterUserState>(
                       listener: (context, state) {
                         if (state is RegisterUserSuccess) {
-                          final authVM = Provider.of<AuthViewModel>(
-                            context,
-                            listen: false,
+                          if (!context.mounted) return;
+
+                          context.push(
+                            AppRouter.kotpcode,
+                            extra: {
+                              'registerCubit': context
+                                  .read<RegisterUserCubit>(),
+                              'otp': '',
+                              'email': emailController.text.trim(),
+                              'userType': widget.userType,
+                              'isForgetPassword': false,
+                            },
                           );
-
-                        
-                          authVM.sendOtpToUser(emailController.text.trim()).then((
-                            isSent,
-                          ) {
-                          
-                            if (!context.mounted) return;
-
-                           
-                            context.go(
-                              AppRouter.kotpcode,
-                              extra: {
-                                'otp': authVM
-                                    .generatedOtp, 
-                                'email': emailController.text.trim(),
-                                'userType': widget.userType,
-                                'isForgetPassword': false,
-                              },
-                            );
-                          });
                         }
 
-                     
                         if (state is RegisterUserFailure) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -217,7 +203,6 @@ class _SignUpUserState extends State<SignUpUser> {
                         }
                       },
                       builder: (context, state) {
-                  
                         if (state is RegisterUserLoading) {
                           return const Center(
                             child: CircularProgressIndicator(),
@@ -240,7 +225,6 @@ class _SignUpUserState extends State<SignUpUser> {
                                     confirmPasswordController.text,
                               );
 
-                            
                               context.read<RegisterUserCubit>().registerUser(
                                 signUpData,
                               );

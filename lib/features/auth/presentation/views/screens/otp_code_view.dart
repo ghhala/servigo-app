@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // 👈 استيراد مكتبة الـ Bloc للتحكم بالحالات
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -8,26 +9,31 @@ import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart'; // 👈 استيراد الـ SuccessPopUp لعرضه عند نجاح الـ Sign Up
+import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
+import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
 
-class OtpCodeView extends StatelessWidget {
+class OtpCodeView extends StatefulWidget {
   final String receivedOtp;
   final String userEmail;
-  final String userType; 
-  final bool isForgetPassword; // 👈 إضافة علم تحديد الوجهة
+  final String userType;
+  final bool isForgetPassword;
 
   const OtpCodeView({
     super.key,
     required this.receivedOtp,
     required this.userEmail,
-    required this.userType, // تمريرها في الـ Constructor
-    required this.isForgetPassword, // تمريرها في الـ Constructor
+    required this.userType,
+    required this.isForgetPassword,
   });
 
   @override
-  Widget build(BuildContext context) {
-    String enteredOtp = "";
+  State<OtpCodeView> createState() => _OtpCodeViewState();
+}
 
+class _OtpCodeViewState extends State<OtpCodeView> {
+  String enteredOtp = "";
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -38,7 +44,7 @@ class OtpCodeView extends StatelessWidget {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: () => context.pop(), // تفعيل زر العودة للخلف
+                    onTap: () => context.pop(),
                     child: const Icon(Icons.arrow_back_ios),
                   ),
                   Text(
@@ -66,10 +72,10 @@ class OtpCodeView extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: " $userEmail ",
+                      text: " ${widget.userEmail} ",
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 12.sp,
-                        fontWeight: FontWeight.bold, // تمييز الإيميل برسمة عريضة
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
@@ -84,50 +90,87 @@ class OtpCodeView extends StatelessWidget {
               Gap(21.h),
               OtpFields(
                 onCompleted: (value) {
-                  enteredOtp = value; // تحديث كود الـ OTP المكتوب تلقائياً
+                  setState(() {
+                    enteredOtp = value;
+                  });
                 },
               ),
               Gap(26.h),
-              CustomButton(
-                title: AppLocalizations.of(context)!.verifyCode,
-                textstyle: TextStyles.font20White800,
-                width: MediaQuery.sizeOf(context).width * 0.88,
-                height: 52.h,
-                onTap: () {
-                  // الفحص الذكي: التحقق من صحة الكود المُدخل (أو تركه فارغاً إذا كان الفحص يتم بالكامل عبر السيرفر)
-                  // ملحوظة: إذا كان كود الـ Sign Up لا يعيد OTP لأن السيرفر يتحقق تلقائياً، يمكنك تعديل الشرط ليتناسب مع الباك آيند
-                  if (enteredOtp == receivedOtp || isForgetPassword == false) {
-                    
-                    if (isForgetPassword) {
-                      // 1️⃣ حالة نسيان كلمة المرور: نتوجه لصفحة إعادة التعيين مع الـ userType الحقيقي
+
+              BlocConsumer<RegisterUserCubit, RegisterUserState>(
+                listener: (context, state) {
+                  if (state is VerifyOtpSuccess) {
+                    if (widget.isForgetPassword) {
                       context.go(
                         AppRouter.kresetpassword,
                         extra: {
-                          'otp': enteredOtp.isNotEmpty ? enteredOtp : receivedOtp,
-                          'email': userEmail,
-                          'userType': userType,
+                          'otp': enteredOtp.isNotEmpty
+                              ? enteredOtp
+                              : widget.receivedOtp,
+                          'email': widget.userEmail,
+                          'userType': widget.userType,
                         },
                       );
                     } else {
-                      // 2️⃣ حالة الـ Sign Up: نُظهر بوب آب النجاح ونمرر المعاملات المطلوبة داخله
                       SuccessPopUp.show(
                         context,
-                        userType,
-                        userEmail,
+                        widget.userType,
+                        widget.userEmail,
                       );
                     }
+                  }
 
-                  } else {
-                    // في حالة عدم تطابق الكود (لمسار نسيان كلمة السر)
+                  if (state is VerifyOtpFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("كود التحقق غير صحيح، يرجى إعادة المحاولة"),
+                      SnackBar(
+                        content: Text(state.error.message),
                         backgroundColor: Colors.red,
                       ),
                     );
                   }
                 },
+                builder: (context, state) {
+                  if (state is VerifyOtpLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      ),
+                    );
+                  }
+
+                  return CustomButton(
+                    title: AppLocalizations.of(context)!.verifyCode,
+                    textstyle: TextStyles.font20White800,
+                    width: MediaQuery.sizeOf(context).width * 0.88,
+                    height: 52.h,
+                    onTap: () {
+                      print("==========================================");
+                      print("Entered OTP is: '$enteredOtp'");
+                      print("Email sending to: '${widget.userEmail}'");
+                      print("==========================================");
+                      final codeToVerify = enteredOtp.isNotEmpty
+                          ? enteredOtp
+                          : widget.receivedOtp;
+                      if (codeToVerify.isNotEmpty) {
+                        context.read<RegisterUserCubit>().verifyOtp(
+                          email: widget.userEmail,
+                          otp: codeToVerify,
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "الرجاء إدخال رمز التحقق كاملاً أولاً",
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
+                    },
+                  );
+                },
               ),
+
               Gap(16.h),
               Row(
                 children: [

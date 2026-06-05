@@ -26,4 +26,15 @@ class AuthRepository {
       throw ApiError(message: "unExpected error occured processing data : $e");
     }
   }
+  
+Future<void> verifyOtp({required String email, required String otp}) async {
+  try {
+    await _authRemoteDataSource.verifyOtp(email: email, otp: otp);
+  } on ApiError catch (e) {
+    throw e;
+  } catch (e) {
+    throw ApiError(message: "unExpected error occured processing data : $e");
+  }
+}
+  
 }
