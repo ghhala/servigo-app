@@ -17,6 +17,9 @@ import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_%2
 import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_user.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/user_type_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/verviciton_view.dart';
+import 'package:servi_go_app/features/home/data/data_sources/home_remote_data_source.dart';
+import 'package:servi_go_app/features/home/data/repositories/home_repository.dart';
+import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
@@ -49,6 +52,9 @@ abstract class AppRouter {
   static const kCompliteProfile = '/complite_profile';
   static const kEditProfileLabourer = '/EditProfileLabourer';
   static const kfilterButtonSheet = '/filter_bottom_sheet';
+
+  // 💡 إضافة اسم ثابت لسهولة استدعائه من شاشة الـ Login
+  static const kOtpVerification = kotpcode; 
 
   static final router = GoRouter(
     routes: [
@@ -121,7 +127,7 @@ abstract class AppRouter {
             isForgetPassword: data['isForgetPassword'] as bool? ?? false, 
           );
 
-        
+          // التحقق من وجود الكيوبيت للـ RegisterUser
           if (data.containsKey('registerCubit') && data['registerCubit'] is RegisterUserCubit) {
             return BlocProvider.value(
               value: data['registerCubit'] as RegisterUserCubit,
@@ -129,7 +135,7 @@ abstract class AppRouter {
             );
           }
 
-         
+          // التحقق من وجود الكيوبيت للـ Provider
           if (data.containsKey('registerProviderCubit') && data['registerProviderCubit'] is RegisterProviderCubit) {
             return BlocProvider.value(
               value: data['registerProviderCubit'] as RegisterProviderCubit,
@@ -137,7 +143,8 @@ abstract class AppRouter {
             );
           }
 
-       
+          // 💡 في حالة قمنا بالتوجيه من شاشة اللوجن، سنقوم بإنشاء الـ RegisterUserCubit تلقائياً هنا 
+          // لتستطيع شاشة الـ OTP استخدام دالة التحقق verifyOtp بشكل طبيعي جداً ومستقل
           return BlocProvider(
             create: (context) => RegisterUserCubit(
               AuthRepository(
@@ -234,13 +241,22 @@ abstract class AppRouter {
 
           if (state.extra is String) {
             userType = state.extra as String;
-          }
+          } 
           else if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
           }
 
-          return HomeView(userType: userType);
+          return BlocProvider(
+            create: (context) => HomeCubit(
+              HomeRepository(
+                HomeRemoteDataSource(
+                  ApiService(DioClient()), 
+                ),
+              ),
+            )..fetchHomeData(), 
+            child: HomeView(userType: userType),
+          );
         },
       ),
       GoRoute(

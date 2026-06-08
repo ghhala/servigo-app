@@ -67,7 +67,15 @@ class _LogInState extends State<LogIn> {
         } else if (state is LoginSuccess) {
           Navigator.pop(context);
 
-          GoRouter.of(context).go(AppRouter.kHome, extra: widget.userType);
+          // 💡 التعديل التوجيهي الذكي هنا:
+          // بدلاً من الذهاب للهوم مباشرة، نذهب لصفحة الـ OTP لتأكيد الرمز وجلب التوكن
+          GoRouter.of(context).push(
+            AppRouter.kotpcode, // تأكدي من مطابقة اسم المتغير داخل AppRouter لصفحة الـ OTP
+            extra: {
+              'email': _emailController.text,
+              'userType': widget.userType,
+            },
+          );
         }
       },
       child: Scaffold(

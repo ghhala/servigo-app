@@ -15,6 +15,7 @@ class ServiceCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 15),
       child: Container(
@@ -32,11 +33,41 @@ class ServiceCategoryCard extends StatelessWidget {
           ],
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(image),
-            Gap(16),
+          
+            SizedBox(
+              width: 50.w,
+              height: 50.h,
+          child: image.startsWith('http')
+    ? Image.network(
+     
+        image
+            .replaceAll('https://api.servigo.com', 'http://10.0.2.2')
+            .replaceAll('api.servigo.com', '10.0.2.2'), 
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          // إذا فشل تماماً تظهر الصورة الافتراضية
+          return Image.asset(
+            "assets/images/test.png",
+            fit: BoxFit.contain,
+          );
+        },
+      )
+    : Image.asset(
+        image,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return const Icon(Icons.image_not_supported, size: 30);
+        },
+      ),
+            ),
+            const Gap(12),
             Text(
               name,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyles.onCard(
                 context,
                 TextStyles.font14PrimaryColorW700.copyWith(fontSize: 12.sp),

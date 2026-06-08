@@ -30,11 +30,12 @@ class AuthRemoteDataSource {
   Future<dynamic> verifyOtp({
     required String email,
     required String otp,
+    required String type,
   }) async {
     final response = await _apiService.post('auth/verify-otp', {
       'email': email,
       'code': otp.toString(),
-      'type': 'register',
+      'type': type,
     });
     return response;
   }

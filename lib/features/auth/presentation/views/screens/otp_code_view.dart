@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -33,10 +34,8 @@ class OtpCodeView extends StatefulWidget {
 class _OtpCodeViewState extends State<OtpCodeView> {
   String enteredOtp = "";
 
- 
   void _handleNavigationOnSuccess() {
     if (widget.isForgetPassword) {
-    
       context.go(
         AppRouter.kresetpassword,
         extra: {
@@ -46,7 +45,6 @@ class _OtpCodeViewState extends State<OtpCodeView> {
         },
       );
     } else if (widget.userType == 'labourer' || widget.userType == 'provider') {
-     
       context.go(
         AppRouter.kCompliteProfile,
         extra: {
@@ -55,18 +53,12 @@ class _OtpCodeViewState extends State<OtpCodeView> {
         },
       );
     } else {
-   
       SuccessPopUp.show(context, widget.userType, widget.userEmail);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
-    final isProviderFlow =
-        !widget.isForgetPassword &&
-        (widget.userType == 'labourer' || widget.userType == 'provider');
-
     return Scaffold(
       body: AppBackground(
         child: Padding(
@@ -130,11 +122,20 @@ class _OtpCodeViewState extends State<OtpCodeView> {
               ),
               Gap(26.h),
 
-           
+              // 🛠️ تحديث الـ BlocConsumer للتحقق من حفظ الـ Token وتوجيه شاشة الـ Login
               BlocConsumer<RegisterUserCubit, RegisterUserState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is VerifyOtpSuccess) {
-                    _handleNavigationOnSuccess();
+                    if (!context.mounted) return;
+
+                    // 💡 فحص ذكي: إذا كان المستخدم عادي (User) وليس في مسار نسيان كلمة المرور
+                    // فهذا يعني أنه جاء من اللوجن أو التسجيل وجلب التوكن بنجاح، فيذهب للهوم مباشرة!
+                    if (widget.userType == 'user' && !widget.isForgetPassword) {
+                      context.go(AppRouter.kHome, extra: widget.userType);
+                    } else {
+                      // المسار الطبيعي لـ (Labourer ليرفع مستنداته) أو (ForgetPassword ليعيد تعيين كلمته)
+                      _handleNavigationOnSuccess();
+                    }
                   }
                   if (state is VerifyOtpFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -161,28 +162,26 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                     textstyle: TextStyles.font20White800,
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
-                    onTap: () {
-                      final codeToVerify = enteredOtp.isNotEmpty
-                          ? enteredOtp
-                          : widget.receivedOtp;
+                  
+onTap: () {
+  final codeToVerify = enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp;
 
-                      if (codeToVerify.isNotEmpty) {
-                     
-                        context.read<RegisterUserCubit>().verifyOtp(
-                          email: widget.userEmail,
-                          otp: codeToVerify,
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "الرجاء إدخال رمز التحقق كاملاً أولاً",
-                            ),
-                            backgroundColor: Colors.orange,
-                          ),
-                        );
-                      }
-                    },
+  if (codeToVerify.isNotEmpty) {
+    // 💡 تحديد الـ type ديناميكياً
+    // إذا كان ForgetPassword نرسل 'forget'، وإلا نرسل الـ userType القادم (أو تحديداً 'login' / 'register' حسب الباكيند)
+    // بناءً على البوست مان، الباكيند يتوقع 'login' في حالة اللوجن، دعينا نمرر الـ flow الصحيح:
+    final String currentType = widget.isForgetPassword ? 'forget' : 'login'; 
+    // ملاحظة: إذا كانت الشاشة تُستخدم للتسجيل أيضاً، يمكنكِ جعل التحديد أكثر دقة بناءً على الحاجة.
+
+    context.read<RegisterUserCubit>().verifyOtp(
+      email: widget.userEmail,
+      otp: codeToVerify,
+      type: currentType, 
+    );
+  } else {
+   
+  }
+}
                   );
                 },
               ),

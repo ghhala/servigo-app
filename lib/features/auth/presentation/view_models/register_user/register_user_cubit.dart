@@ -33,13 +33,15 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
     }
   }
   
-Future<void> verifyOtp({required String email, required String otp}) async {
- 
+Future<void> verifyOtp({
+  required String email, 
+  required String otp, 
+  required String type, 
+}) async {
   emit(VerifyOtpLoading());
-
   try {
-    await _authRepository.verifyOtp(email: email, otp: otp);
-    emit(VerifyOtpSuccess()); 
+    await _authRepository.verifyOtp(email: email, otp: otp, type: type); // 👈 تمريره هنا
+    emit(VerifyOtpSuccess());
   } on ApiError catch (e) {
     emit(VerifyOtpFailure(e));
   } catch (e) {

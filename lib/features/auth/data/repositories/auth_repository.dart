@@ -1,4 +1,5 @@
 import 'package:servi_go_app/core/network/api_error.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:servi_go_app/features/auth/data/models/register_user_request_body.dart';
 import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
@@ -39,9 +40,23 @@ class AuthRepository {
     }
   }
   
-Future<void> verifyOtp({required String email, required String otp}) async {
+ Future<void> verifyOtp({
+  required String email, 
+  required String otp, 
+  required String type,
+}) async {
   try {
-    await _authRemoteDataSource.verifyOtp(email: email, otp: otp);
+    final rawData = await _authRemoteDataSource.verifyOtp(
+      email: email, 
+      otp: otp, 
+      type: type,
+    );
+    
+    // حفظ التوكن في الكاش إذا رجع بنجاح (حالة اللوجن)
+    if (rawData != null && rawData['data'] != null && rawData['data']['token'] != null) {
+      final String token = rawData['data']['token'].toString();
+      await PrefHelper.saveToken(token);
+    }
   } on ApiError catch (e) {
     throw e;
   } catch (e) {

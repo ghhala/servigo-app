@@ -8,7 +8,7 @@ class ApiService {
   
   ApiService(this._dioClient);
 
-  // دالة الـ GET
+  
   Future<dynamic> get(String endPoint) async {
     try {
       final response = await _dioClient.dio.get(endPoint);

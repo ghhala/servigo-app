@@ -6,6 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart'; // 👈 استيراد مكتبة الـ GoRouter للانتقال للشاشات
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -176,8 +177,9 @@ class _SignUpUserState extends State<SignUpUser> {
                     Gap(56.h),
 
                     BlocConsumer<RegisterUserCubit, RegisterUserState>(
-                      listener: (context, state) {
+                      listener: (context, state) async {
                         if (state is RegisterUserSuccess) {
+                          await PrefHelper.saveString('user_name', nameController.text.trim());
                           if (!context.mounted) return;
 
                           context.push(

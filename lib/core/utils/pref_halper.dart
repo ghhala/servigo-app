@@ -9,7 +9,7 @@ class PrefHelper {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  // 2. دالة حفظ التوكن (تبقى Future لأن الكتابة على القرص تحتاج وقت)
+  
   static Future<bool> saveToken(String token) async {
     return await _prefs.setString(_tokenKey, token);
   }
@@ -22,5 +22,14 @@ class PrefHelper {
   // 4. دالة حذف التوكن عند تسجيل الخروج
   static Future<bool> clearToken() async {
     return await _prefs.remove(_tokenKey);
+  }
+ 
+  static Future<bool> saveString(String key, String value) async {
+    return await _prefs.setString(key, value);
+  }
+
+  // 6 // دالة عامة لجلب أي نص تم حفظه مسبقاً باستخدام الـ key
+  static String? getString(String key) {
+    return _prefs.getString(key);
   }
 }
