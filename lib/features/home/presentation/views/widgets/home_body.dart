@@ -25,19 +25,19 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   @override
+  void initState() {
+    super.initState();
+    // 🚀 بمجرد أن يفتح المستخدم تبويب الهوم، سينطلق هذا السطر تلقائياً ويجلب البيانات المحدثة!
+    BlocProvider.of<HomeCubit>(context).fetchHomeData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String userName = PrefHelper.getString('user_name') ?? 'User';
-
-    final String firstLetter = userName.trim().isNotEmpty
-        ? userName.trim()[0].toUpperCase()
-        : 'U';
-
     return AppBackground(
       withScaffold: false,
       padding: EdgeInsets.only(left: 9.w, top: 50.h),
       child: BlocBuilder<HomeCubit, HomeState>(
         builder: (context, state) {
-        
           if (state is HomeLoading) {
             return const Center(
               child: CircularProgressIndicator(
@@ -46,7 +46,6 @@ class _HomeBodyState extends State<HomeBody> {
             );
           }
 
-         
           if (state is HomeFailure) {
             return Center(
               child: Column(
@@ -68,11 +67,19 @@ class _HomeBodyState extends State<HomeBody> {
             );
           }
 
-        
           if (state is HomeSuccess) {
             final mainServices = state.homeData.data?.mainServices ?? [];
             final favorites = state.homeData.data?.favorites ?? [];
             final ads = state.homeData.data?.ads ?? [];
+
+          
+          
+            final String userName = PrefHelper.getString('user_name') ?? 'User';
+            print("🕵️‍♂️ الاسم المقروء الآن من الكاش في الهوم هو: $userName");
+
+            final String firstLetter = userName.trim().isNotEmpty
+                ? userName.trim()[0].toUpperCase()
+                : 'U';
 
             return SingleChildScrollView(
               child: Column(
@@ -89,7 +96,7 @@ class _HomeBodyState extends State<HomeBody> {
                           radius: 35.r,
                           backgroundColor: Colors.deepPurpleAccent,
                           child: Text(
-                            firstLetter,
+                            firstLetter, // 🚀 سيتحدث الحرف الأول تلقائياً هنا
                             style: TextStyle(
                               fontSize: 24.sp,
                               fontWeight: FontWeight.bold,
@@ -99,7 +106,7 @@ class _HomeBodyState extends State<HomeBody> {
                         ),
                   const Gap(16),
                   Text(
-                    "Welcome ${PrefHelper.getString('user_name') ?? 'User'}",
+                    "Welcome $userName", // 🚀 سيتحدث الاسم تلقائياً هنا
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   Text(
@@ -144,8 +151,6 @@ class _HomeBodyState extends State<HomeBody> {
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(12),
-                  
-                 
                   Container(
                     width: 353.w,
                     height: 150.h,
@@ -167,14 +172,13 @@ class _HomeBodyState extends State<HomeBody> {
                             physics: const ClampingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: mainServices.length,
-                           itemBuilder: (context, index) {
-  final service = mainServices[index];
-  return ServiceCategoryCard(
-    name: service.nameEn ?? 'Service',
- 
-    image: service.photo ?? "assets/images/test.png", 
-  );
-},
+                            itemBuilder: (context, index) {
+                              final service = mainServices[index];
+                              return ServiceCategoryCard(
+                                name: service.nameEn ?? 'Service',
+                                image: service.photo ?? "assets/images/test.png",
+                              );
+                            },
                           ),
                   ),
                   const Gap(20),
@@ -183,8 +187,6 @@ class _HomeBodyState extends State<HomeBody> {
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(20),
-
-                  // ✨ القسم الثاني: المفضلات (Favorite Providers) ديناميكياً
                   favorites.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -207,9 +209,7 @@ class _HomeBodyState extends State<HomeBody> {
                           }),
                         ),
                   const Gap(20),
-
-              
-                  ads.isEmpty 
+                  ads.isEmpty
                       ? const SizedBox.shrink()
                       : Column(
                           children: List.generate(ads.length, (index) {
@@ -269,13 +269,12 @@ class _HomeBodyState extends State<HomeBody> {
                                         ],
                                       ),
                                     ),
-                                    // عرض صورة الإعلان من السيرفر أو صورة افتراضية في حال الفشل
-                                    ad.photo != null 
+                                    ad.photo != null
                                         ? Image.network(
                                             ad.photo!,
                                             width: 120.w,
                                             fit: BoxFit.contain,
-                                            errorBuilder: (context, error, stackTrace) => 
+                                            errorBuilder: (context, error, stackTrace) =>
                                                 Image.asset("assets/images/test2.png"),
                                           )
                                         : Image.asset("assets/images/test2.png"),
@@ -290,7 +289,6 @@ class _HomeBodyState extends State<HomeBody> {
             );
           }
 
-          // الحالة الافتراضية الاحتياطية
           return const SizedBox.shrink();
         },
       ),

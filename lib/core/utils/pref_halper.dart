@@ -28,7 +28,7 @@ class PrefHelper {
     return await _prefs.setString(key, value);
   }
 
-  // 6 // دالة عامة لجلب أي نص تم حفظه مسبقاً باستخدام الـ key
+  
   static String? getString(String key) {
     return _prefs.getString(key);
   }

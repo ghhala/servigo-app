@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart'; 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
@@ -29,6 +29,10 @@ import 'package:servi_go_app/features/provider_profile/presentation/views/screen
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/splash/presentation/views/widgets/splash_view.dart';
+import 'package:servi_go_app/features/user_profile/data/data_sources/user_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/user_profile/data/models/user_profile_model.dart';
+import 'package:servi_go_app/features/user_profile/data/repositories/user_profile_repository.dart';
+import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/edit%20_profile_user.dart';
 
 abstract class AppRouter {
@@ -53,8 +57,7 @@ abstract class AppRouter {
   static const kEditProfileLabourer = '/EditProfileLabourer';
   static const kfilterButtonSheet = '/filter_bottom_sheet';
 
-  // 💡 إضافة اسم ثابت لسهولة استدعائه من شاشة الـ Login
-  static const kOtpVerification = kotpcode; 
+  static const kOtpVerification = kotpcode;
 
   static final router = GoRouter(
     routes: [
@@ -84,11 +87,7 @@ abstract class AppRouter {
           final userType = state.extra as String;
           return BlocProvider(
             create: (context) => RegisterUserCubit(
-              AuthRepository(
-                AuthRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
-              ),
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
             ),
             child: SignUpUser(userType: userType),
           );
@@ -100,11 +99,7 @@ abstract class AppRouter {
           final userType = state.extra as String;
           return BlocProvider(
             create: (context) => LoginCubit(
-              AuthRepository(
-                AuthRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
-              ),
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
             ),
             child: LogIn(userType: userType),
           );
@@ -114,50 +109,44 @@ abstract class AppRouter {
         path: kforgetPassword,
         builder: (context, state) => const ForgetPasswordView(),
       ),
-      
+
       GoRoute(
         path: kotpcode,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
-          
+
           final otpView = OtpCodeView(
             receivedOtp: data['otp']?.toString() ?? '',
             userEmail: data['email']?.toString() ?? '',
-            userType: data['userType']?.toString() ?? 'user', 
-            isForgetPassword: data['isForgetPassword'] as bool? ?? false, 
+            userType: data['userType']?.toString() ?? 'user',
+            isForgetPassword: data['isForgetPassword'] as bool? ?? false,
           );
 
-          // التحقق من وجود الكيوبيت للـ RegisterUser
-          if (data.containsKey('registerCubit') && data['registerCubit'] is RegisterUserCubit) {
+          if (data.containsKey('registerCubit') &&
+              data['registerCubit'] is RegisterUserCubit) {
             return BlocProvider.value(
               value: data['registerCubit'] as RegisterUserCubit,
               child: otpView,
             );
           }
 
-          // التحقق من وجود الكيوبيت للـ Provider
-          if (data.containsKey('registerProviderCubit') && data['registerProviderCubit'] is RegisterProviderCubit) {
+          if (data.containsKey('registerProviderCubit') &&
+              data['registerProviderCubit'] is RegisterProviderCubit) {
             return BlocProvider.value(
               value: data['registerProviderCubit'] as RegisterProviderCubit,
               child: otpView,
             );
           }
 
-          // 💡 في حالة قمنا بالتوجيه من شاشة اللوجن، سنقوم بإنشاء الـ RegisterUserCubit تلقائياً هنا 
-          // لتستطيع شاشة الـ OTP استخدام دالة التحقق verifyOtp بشكل طبيعي جداً ومستقل
           return BlocProvider(
             create: (context) => RegisterUserCubit(
-              AuthRepository(
-                AuthRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
-              ),
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
             ),
             child: otpView,
           );
         },
       ),
-      
+
       GoRoute(
         path: kresetpassword,
         builder: (context, state) {
@@ -182,11 +171,7 @@ abstract class AppRouter {
           final userType = state.extra as String;
           return BlocProvider(
             create: (context) => RegisterProviderCubit(
-              AuthRepository(
-                AuthRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
-              ),
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
             ),
             child: SignUplabourerView(userType: userType),
           );
@@ -204,24 +189,22 @@ abstract class AppRouter {
             userType = data['userType'] as String? ?? 'user';
             userData = data['initialData'] as Map<String, dynamic>? ?? {};
             requestBody = data['requestBody'] as RegisterProviderRequestBody?;
-          }
-          else if (state.extra is RegisterProviderRequestBody) {
+          } else if (state.extra is RegisterProviderRequestBody) {
             requestBody = state.extra as RegisterProviderRequestBody;
-            userType = 'labourer'; 
-          }
-          else if (state.extra is String) {
+            userType = 'labourer';
+          } else if (state.extra is String) {
             userType = state.extra as String;
           }
 
           return BlocProvider(
             create: (context) => RegisterProviderCubit(
-              AuthRepository(
-                AuthRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
-              ),
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
             ),
-            child: VervicitonView(userData: userData, userType: userType, requestBody: requestBody),
+            child: VervicitonView(
+              userData: userData,
+              userType: userType,
+              requestBody: requestBody,
+            ),
           );
         },
       ),
@@ -241,28 +224,41 @@ abstract class AppRouter {
 
           if (state.extra is String) {
             userType = state.extra as String;
-          } 
-          else if (state.extra is Map<String, dynamic>) {
+          } else if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
           }
 
           return BlocProvider(
             create: (context) => HomeCubit(
-              HomeRepository(
-                HomeRemoteDataSource(
-                  ApiService(DioClient()), 
-                ),
-              ),
-            )..fetchHomeData(), 
+              HomeRepository(HomeRemoteDataSource(ApiService(DioClient()))),
+            )..fetchHomeData(),
             child: HomeView(userType: userType),
           );
         },
       ),
-      GoRoute(
-        path: AppRouter.kEditeProfile,
-        builder: (context, state) => const EditProfileUser(),
+    GoRoute(
+  path: AppRouter.kEditeProfile,
+  builder: (context, state) {
+   
+    final userModel = state.extra as UserProfileData; 
+
+    return BlocProvider(
+      create: (context) => EditProfileCubit(
+        UserProfileRepository(
+          UserProfileRemoteDataSource(
+            ApiService(DioClient()),
+          ),
+        ),
       ),
+      child: EditProfileUser(
+       
+        currentName: userModel.name,   
+        currentPhone: userModel.phone, 
+      ),
+    );
+  },
+),
       GoRoute(
         path: AppRouter.kProfileLabourer,
         builder: (context, state) => const ProfileLabourerView(),

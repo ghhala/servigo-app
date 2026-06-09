@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:servi_go_app/core/network/api_error.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart'; // 👈 تأكدي من إضافة هذا الاستيراد في الأعلى
 import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
 
@@ -16,6 +17,11 @@ class RegisterProviderCubit extends Cubit<RegisterProviderState> {
 
     try {
       final result = await _authRepository.registerProvider(requestBody);
+      
+      // 🚀 حفظ اسم المستخدم الجديد في الكاش فوراً قبل بث حالة النجاح
+      // (تأكدي من أن المتغير داخل الـ requestBody اسمه name، إذا كان فرست ونيم ولاست نيم يمكنكِ دمجهم)
+      await PrefHelper.saveString('user_name', requestBody.name ?? 'User');
+
       emit(RegisterProviderSuccess(result));
     } on ApiError catch (e) {
       emit(RegisterProviderFailure(e));

@@ -8,27 +8,21 @@ import 'package:servi_go_app/features/auth/data/models/user_sign_up_response_mod
 class AuthRepository {
   final AuthRemoteDataSource _authRemoteDataSource;
 
- 
   AuthRepository(this._authRemoteDataSource);
 
-  
+  // 1️⃣ دالة تسجيل مستخدم جديد
   Future<UserSignUpResponseModel> registerUser(RegisterUserRequestBody requestBody) async {
     try {
-     
       final rawData = await _authRemoteDataSource.registerUser(requestBody);
-
-      
       return UserSignUpResponseModel.fromJson(rawData);
-      
     } on ApiError catch (e) {
-    
       throw e;
     } catch (e) {
-      
       throw ApiError(message: "unExpected error occured processing data : $e");
     }
   }
 
+  // 2️⃣ دالة تسجيل مزود خدمة جديد
   Future<dynamic> registerProvider(RegisterProviderRequestBody requestBody) async {
     try {
       final result = await _authRemoteDataSource.registerProvider(requestBody);
@@ -40,39 +34,57 @@ class AuthRepository {
     }
   }
   
- Future<void> verifyOtp({
-  required String email, 
-  required String otp, 
-  required String type,
-}) async {
-  try {
-    final rawData = await _authRemoteDataSource.verifyOtp(
-      email: email, 
-      otp: otp, 
-      type: type,
-    );
-    
-    // حفظ التوكن في الكاش إذا رجع بنجاح (حالة اللوجن)
-    if (rawData != null && rawData['data'] != null && rawData['data']['token'] != null) {
-      final String token = rawData['data']['token'].toString();
-      await PrefHelper.saveToken(token);
-    }
-  } on ApiError catch (e) {
-    throw e;
-  } catch (e) {
-    throw ApiError(message: "unExpected error occured processing data : $e");
-  }
-}
+  // 3️⃣ دالة التحقق من كود الـ OTP وحفظ بيانات المستخدم الجديد في الكاش
+  Future<dynamic> verifyOtp({
+    required String email, 
+    required String otp, 
+    required String type,
+  }) async {
+    try {
+      final rawData = await _authRemoteDataSource.verifyOtp(
+        email: email, 
+        otp: otp, 
+        type: type,
+      );
+      
+      // حفظ التوكن في الكاش إذا رجع بنجاح
+      if (rawData != null && rawData['data'] != null && rawData['data']['token'] != null) {
+        final String token = rawData['data']['token'].toString();
+        await PrefHelper.saveToken(token);
+      }
 
-Future<dynamic> login({required String email, required String password}) async {
-  try {
-    final rawData = await _authRemoteDataSource.login(email: email, password: password);
-    return rawData;
-  } on ApiError catch (e) {
-    throw e;
-  } catch (e) {
-    throw ApiError(message: "unExpected error occured processing data : $e");
+      // حفظ الاسم في الكاش فوراً إذا كان قادماً مع بيانات الـ OTP
+      if (rawData != null && rawData['data'] != null) {
+        if (rawData['data']['user'] != null && rawData['data']['user']['name'] != null) {
+          await PrefHelper.saveString('user_name', rawData['data']['user']['name'].toString());
+        } else if (rawData['data']['name'] != null) {
+          await PrefHelper.saveString('user_name', rawData['data']['name'].toString());
+        }
+      }
+
+      return rawData;
+    } on ApiError catch (e) {
+      throw e;
+    } catch (e) {
+      throw ApiError(message: "unExpected error occured processing data : $e");
+    }
   }
-}
-  
+
+  // 4️⃣ 🚀 الدالة المفقودة والسحرية: تسجيل الدخول (login) بحروف صغيرة لتطابق الكيوبيت
+  Future<dynamic> login({
+    required String email, 
+    required String password,
+  }) async {
+    try {
+      final rawData = await _authRemoteDataSource.login(
+        email: email, 
+        password: password,
+      );
+      return rawData;
+    } on ApiError catch (e) {
+      throw e;
+    } catch (e) {
+      throw ApiError(message: "unExpected error occured processing data : $e");
+    }
+  }
 }

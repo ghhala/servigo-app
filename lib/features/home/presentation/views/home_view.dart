@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:servi_go_app/core/network/api_service.dart';
+import 'package:servi_go_app/core/network/dio_client.dart';
 
 import 'package:servi_go_app/features/home/presentation/views/widgets/custom_bottom_nav_bar.dart';
 import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
@@ -6,6 +9,9 @@ import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.
 import 'package:servi_go_app/features/messaging/presentation/views/messages_screen.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
+import 'package:servi_go_app/features/user_profile/data/data_sources/user_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/user_profile/data/repositories/user_profile_repository.dart';
+import 'package:servi_go_app/features/user_profile/presentation/view_models/user_profile/user_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/user_profile_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -29,14 +35,27 @@ class _HomeViewState extends State<HomeView> {
         SettingsView(),
       ];
     } else {
-      return  [HomeBody(userType: "user",), UserProfileView(), MessagesScreen(), SettingsView()];
+      return  [HomeBody(userType: "user",), 
+     BlocProvider(
+    create: (context) {
+      final dioClient = DioClient(); 
+      final apiService = ApiService(dioClient); 
+      final remoteDataSource = UserProfileRemoteDataSource(apiService);
+      final repository = UserProfileRepository(remoteDataSource); 
+      
+      
+      return UserProfileCubit(repository)..fetchUserProfile();
+    },
+    child: const UserProfileView(),
+  ),
+      MessagesScreen(), SettingsView()];
     }
   }
 
   @override
 
   Widget build(BuildContext context) {
-    print("Current User Type in HomeView is: ${widget.userType}");
+  
   return Scaffold(
     extendBody: true,
     bottomNavigationBar: CustomBottomNavBar(
@@ -45,7 +64,9 @@ class _HomeViewState extends State<HomeView> {
         setState(() {
           _selectedIndex = index;
         });
+        
       },
+      
     ),
   
     body: _pages[_selectedIndex], 
