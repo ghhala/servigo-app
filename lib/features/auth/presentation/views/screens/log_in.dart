@@ -67,13 +67,14 @@ class _LogInState extends State<LogIn> {
         } else if (state is LoginSuccess) {
           Navigator.pop(context);
 
-          // 💡 التعديل التوجيهي الذكي هنا:
-          // بدلاً من الذهاب للهوم مباشرة، نذهب لصفحة الـ OTP لتأكيد الرمز وجلب التوكن
+        
           GoRouter.of(context).push(
-            AppRouter.kotpcode, // تأكدي من مطابقة اسم المتغير داخل AppRouter لصفحة الـ OTP
+            AppRouter.kotpcode, 
             extra: {
               'email': _emailController.text,
               'userType': widget.userType,
+              'isForgetPassword': false, 
+              'authAction': 'login',   
             },
           );
         }

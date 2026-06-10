@@ -35,4 +35,21 @@ class UserProfileRemoteDataSource {
 
     return EditProfileResponseModel.fromJson(response);
   }
+  Future<dynamic> uploadAvatar({required String imagePath}) async {
+    
+    final formData = FormData.fromMap({
+      'photo': await MultipartFile.fromFile(
+        imagePath,
+        filename: imagePath.split('/').last,
+      ),
+    });
+
+  
+    final response = await _apiService.post(
+      'customer/profile/avatar', 
+      formData, 
+    );
+
+    return response; 
+  }
 }

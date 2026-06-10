@@ -13,3 +13,14 @@ class EditProfileFailure extends EditProfileState {
   final String errorMessage;
   EditProfileFailure(this.errorMessage);
 }
+class UploadAvatarLoading extends EditProfileState {}
+
+class UploadAvatarSuccess extends EditProfileState {
+  final dynamic response;
+  UploadAvatarSuccess(this.response);
+}
+
+class UploadAvatarFailure extends EditProfileState {
+  final String errorMessage;
+  UploadAvatarFailure(this.errorMessage);
+}

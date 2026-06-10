@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_state.dart';
-
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -32,18 +32,15 @@ class _EditProfileUserState extends State<EditProfileUser> {
   final TextEditingController _emailController = TextEditingController();
 
   File? _pickedImage; 
+  bool _isImageLoading = false; 
 
-  // 💡 تعريف المتغير المحلي للـ Cubit لضمان ثبات الوصول إليه من أي مكان داخل الشجرة
   late EditProfileCubit _editProfileCubit;
 
   @override
   void initState() {
     super.initState();
-    // ملء الحقول تلقائياً بالبيانات الحالية للمستخدم
     _nameController = TextEditingController(text: widget.currentName);
     _phoneController = TextEditingController(text: widget.currentPhone);
-
-    // 💡 جلب وحفظ كائن الـ Cubit فوراً عند تهيئة الشاشة لحل مشكلة الـ Context
     _editProfileCubit = BlocProvider.of<EditProfileCubit>(context);
   }
 
@@ -55,6 +52,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
       setState(() {
         _pickedImage = File(image.path);
       });
+      _editProfileCubit.uploadAvatar(imagePath: image.path);
     }
   }
 
@@ -66,9 +64,20 @@ class _EditProfileUserState extends State<EditProfileUser> {
     super.dispose();
   }
 
+  String _formatImageUrl(String url) {
+    if (url.isEmpty) return '';
+    if (url.contains('localhost')) {
+      return url.replaceAll('localhost', '10.0.2.2');
+    }
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
    
+    String cachedImageUrl = PrefHelper.getUserImage(); 
+    String formattedUrl = _formatImageUrl(cachedImageUrl);
+
     String firstLetter = (widget.currentName != null && widget.currentName!.isNotEmpty)
         ? widget.currentName![0].toUpperCase()
         : "U";
@@ -83,12 +92,10 @@ class _EditProfileUserState extends State<EditProfileUser> {
               if (state is EditProfileSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(state.responseModel.message ?? "تم تحديث البيانات بنجاح"),
+                    content: Text(state.responseModel.message ?? " data updated successfully"),
                     backgroundColor: Colors.green,
                   ),
                 );
-                
-                // 💡 التعديل هنا: نغلق الشاشة ونمرر true لكي تلتقطها شاشة الـ Profile وتقوم بالتحديث تلقائياً
                 Navigator.pop(context, true);
               } else if (state is EditProfileFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -98,18 +105,51 @@ class _EditProfileUserState extends State<EditProfileUser> {
                   ),
                 );
               }
+              
+              if (state is UploadAvatarLoading) {
+                setState(() {
+                  _isImageLoading = true; 
+                });
+              } else if (state is UploadAvatarSuccess) {
+                setState(() {
+                  _isImageLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("upload photo successfully"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else if (state is UploadAvatarFailure) {
+                setState(() {
+                  _isImageLoading = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("Failed to upload photo: ${state.errorMessage}"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                
                   Stack(
                     children: [
                       CircleAvatar(
                         radius: 60.r,
-                        backgroundColor: _pickedImage == null ? Colors.deepPurpleAccent : const Color(0xFFF3F2F2),
-                        backgroundImage: _pickedImage != null ? FileImage(_pickedImage!) : null,
-                        child: _pickedImage == null
+                        backgroundColor: (_pickedImage == null && formattedUrl.isEmpty) 
+                            ? Colors.deepPurpleAccent 
+                            : const Color(0xFFF3F2F2),
+                        
+                      
+                        backgroundImage: _pickedImage != null 
+                            ? FileImage(_pickedImage!) 
+                            : (formattedUrl.isNotEmpty 
+                                ? NetworkImage('$formattedUrl?v=${DateTime.now().millisecondsSinceEpoch}') 
+                                : null),
+                        child: (_pickedImage == null && formattedUrl.isEmpty)
                             ? Text(
                                 firstLetter, 
                                 style: TextStyle(
@@ -120,27 +160,34 @@ class _EditProfileUserState extends State<EditProfileUser> {
                               )
                             : null,
                       ),
-                      // أيقونة الكاميرا للتعديل
                       Positioned(
                         bottom: 0,
                         right: 4.w,
                         child: GestureDetector(
-                          onTap: _pickImage,
+                          onTap: _isImageLoading ? null : _pickImage, 
                           child: CircleAvatar(
                             radius: 18.r,
                             backgroundColor: Theme.of(context).primaryColor,
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                              size: 18.sp,
-                            ),
+                            child: _isImageLoading
+                                ? SizedBox(
+                                    width: 16.w,
+                                    height: 16.h,
+                                    child: const CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 18.sp,
+                                  ),
                           ),
                         ),
                       ),
                     ],
                   ),
                   const Gap(30),
-
                   Container(
                     width: 353.w,
                     height: 380.h,
@@ -179,7 +226,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "ghhala02@gmail.com",
+                                hintText: "user@servigo.com",
                                 controller: _emailController,
                               ),
                               const Gap(15),
@@ -198,7 +245,6 @@ class _EditProfileUserState extends State<EditProfileUser> {
                     ),
                   ),
                   const Gap(40),
-                  
                   BlocBuilder<EditProfileCubit, EditProfileState>(
                     builder: (context, state) {
                       if (state is EditProfileLoading) {
@@ -214,7 +260,6 @@ class _EditProfileUserState extends State<EditProfileUser> {
                           if (_nameController.text.trim().isNotEmpty &&
                               _phoneController.text.trim().isNotEmpty) {
                             
-                            // 💡 التعديل هنا: استدعاء الدالة عبر المتغير المحلي المثبت في الـ initState بأمان تام
                             _editProfileCubit.updateProfile(
                               name: _nameController.text.trim(),
                               phone: _phoneController.text.trim(),

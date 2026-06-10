@@ -72,10 +72,9 @@ class _HomeBodyState extends State<HomeBody> {
             final favorites = state.homeData.data?.favorites ?? [];
             final ads = state.homeData.data?.ads ?? [];
 
-          
-          
             final String userName = PrefHelper.getString('user_name') ?? 'User';
-            print("🕵️‍♂️ الاسم المقروء الآن من الكاش في الهوم هو: $userName");
+            // 💡 جلب رابط الصورة المخزن كاش محلياً للحساب الحالي
+            final String userImage = PrefHelper.getUserImage();
 
             final String firstLetter = userName.trim().isNotEmpty
                 ? userName.trim()[0].toUpperCase()
@@ -94,19 +93,29 @@ class _HomeBodyState extends State<HomeBody> {
                         )
                       : CircleAvatar(
                           radius: 35.r,
-                          backgroundColor: Colors.deepPurpleAccent,
-                          child: Text(
-                            firstLetter, // 🚀 سيتحدث الحرف الأول تلقائياً هنا
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                          // 💡 إذا كانت الصورة فارغة، نضع اللون البنفسجي، وإذا وُجدت نضع خلفية رمادية خفيفة للحماية
+                          backgroundColor: userImage.isEmpty 
+                              ? Colors.deepPurpleAccent 
+                              : const Color(0xFFF3F2F2),
+                          // 💡 عرض صورة الشبكة في حال توفر الرابط مع كسر الكاش لمنع التجميد المعتاد بالفلاتر
+                          backgroundImage: userImage.isNotEmpty
+                              ? NetworkImage('$userImage?v=${DateTime.now().millisecondsSinceEpoch}')
+                              : null,
+                          // 💡 إذا لم تكن هناك صورة، نعرض أول حرف من الاسم كبديل أنيق
+                          child: userImage.isEmpty
+                              ? Text(
+                                  firstLetter,
+                                  style: TextStyle(
+                                    fontSize: 24.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : null,
                         ),
                   const Gap(16),
                   Text(
-                    "Welcome $userName", // 🚀 سيتحدث الاسم تلقائياً هنا
+                    "Welcome $userName",
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   Text(

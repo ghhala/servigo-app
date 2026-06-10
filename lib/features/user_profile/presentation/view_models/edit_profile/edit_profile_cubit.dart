@@ -29,4 +29,18 @@ class EditProfileCubit extends Cubit<EditProfileState> {
       emit(EditProfileFailure(e.toString()));
     }
   }
+  Future<void> uploadAvatar({required String imagePath}) async {
+    emit(UploadAvatarLoading()); 
+    try {
+      final response = await _repository.uploadAvatar(imagePath: imagePath);
+
+      if (response != null && response['success'] == true) {
+        emit(UploadAvatarSuccess(response));
+      } else {
+        emit(UploadAvatarFailure(response?['message'] ?? "فشل رفع الصورة"));
+      }
+    } catch (e) {
+      emit(UploadAvatarFailure(e.toString()));
+    }
+  }
 }

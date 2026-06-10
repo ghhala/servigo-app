@@ -14,6 +14,14 @@ import 'package:servi_go_app/features/user_profile/presentation/view_models/user
 class UserProfileView extends StatelessWidget {
   const UserProfileView({super.key});
 
+  String _formatImageUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.contains('localhost')) {
+      return url.replaceAll('localhost', '10.0.2.2');
+    }
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,6 +35,10 @@ class UserProfileView extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserProfileSuccess) {
               final user = state.userData;
+              
+             
+              final String imageUrl = _formatImageUrl(user.photo);
+
               return Column(
                 children: [
                   Padding(
@@ -43,43 +55,47 @@ class UserProfileView extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 50.r,
-
-                            backgroundImage: user.photo != null
-                                ? NetworkImage(user.photo!)
+                            backgroundColor: imageUrl.isEmpty 
+                                ? Colors.deepPurpleAccent 
+                                : const Color(0xFFF3F2F2),
+                          
+                           
+                            backgroundImage: imageUrl.isNotEmpty
+                                ? NetworkImage('$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}')
                                 : null,
-                            child: user.photo == null
+                            child: imageUrl.isEmpty
                                 ? Text(
                                     user.name?[0].toUpperCase() ?? "U",
                                     style: TextStyle(
                                       fontSize: 28.sp,
                                       fontWeight: FontWeight.bold,
+                                      color: Colors.white,
                                     ),
                                   )
                                 : null,
                           ),
                           SizedBox(height: 10.h),
                           Text(
-                            user.name ?? "لا يوجد اسم",
+                            user.name ?? "No Name ",
                             style: TextStyles.font18BlackW500.copyWith(
                               fontSize: 18.sp,
                             ),
                           ),
-                          Gap(5),
+                          const Gap(5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.phone, size: 17.sp),
-                              Gap(5),
-                              Text(user.phone ?? "لا يوجد رقم هاتف"),
+                              const Gap(5),
+                              Text(user.phone ?? "No Phone Number"),
                             ],
                           ),
-                          Gap(5),
+                          const Gap(5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.email, size: 17.sp),
-                              Gap(5),
-
+                              const Gap(5),
                               const Text("user@servigo.com"),
                             ],
                           ),
@@ -87,7 +103,7 @@ class UserProfileView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Gap(50),
+                  const Gap(50),
                   CustomButton(
                     width: 140.w,
                     height: 30.h,
@@ -104,6 +120,7 @@ class UserProfileView extends StatelessWidget {
                         context,
                       ).push(AppRouter.kEditeProfile, extra: user);
 
+                    
                       userProfileCubit.fetchUserProfile();
                       homeCubit.fetchHomeData();
                     },
@@ -127,7 +144,7 @@ class UserProfileView extends StatelessWidget {
                           context,
                         ).fetchUserProfile();
                       },
-                      child: const Text("إعادة المحاولة"),
+                      child: const Text("try again"),
                     ),
                   ],
                 ),

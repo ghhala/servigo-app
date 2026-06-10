@@ -14,12 +14,12 @@ class PrefHelper {
     return await _prefs.setString(_tokenKey, token);
   }
 
-  // 3. دالة جلب التوكن (أصبحت سريعة ومباشرة بدون Future أو async!)
+
   static String? getToken() {
     return _prefs.getString(_tokenKey);
   }
 
-  // 4. دالة حذف التوكن عند تسجيل الخروج
+ 
   static Future<bool> clearToken() async {
     return await _prefs.remove(_tokenKey);
   }
@@ -31,5 +31,16 @@ class PrefHelper {
   
   static String? getString(String key) {
     return _prefs.getString(key);
+  }
+  static Future<void> saveUserImage(String imageUrl) async {
+    await _prefs.setString('user_image', imageUrl);
+  }
+
+ 
+  static String getUserImage() {
+    return _prefs.getString('user_image') ?? '';
+  }
+  static Future<bool> clearUserImage() async {
+    return await _prefs.remove('user_image');
   }
 }

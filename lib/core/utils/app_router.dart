@@ -111,42 +111,42 @@ abstract class AppRouter {
       ),
 
       GoRoute(
-        path: kotpcode,
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
+  path: kotpcode,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>;
 
-          final otpView = OtpCodeView(
-            receivedOtp: data['otp']?.toString() ?? '',
-            userEmail: data['email']?.toString() ?? '',
-            userType: data['userType']?.toString() ?? 'user',
-            isForgetPassword: data['isForgetPassword'] as bool? ?? false,
-          );
+    final otpView = OtpCodeView(
+      receivedOtp: data['otp']?.toString() ?? '',
+      userEmail: data['email']?.toString() ?? '',
+      userType: data['userType']?.toString() ?? 'user',
+      isForgetPassword: data['isForgetPassword'] as bool? ?? false,
+      authAction: data['authAction']?.toString(), 
+    );
 
-          if (data.containsKey('registerCubit') &&
-              data['registerCubit'] is RegisterUserCubit) {
-            return BlocProvider.value(
-              value: data['registerCubit'] as RegisterUserCubit,
-              child: otpView,
-            );
-          }
+    if (data.containsKey('registerCubit') &&
+        data['registerCubit'] is RegisterUserCubit) {
+      return BlocProvider.value(
+        value: data['registerCubit'] as RegisterUserCubit,
+        child: otpView,
+      );
+    }
 
-          if (data.containsKey('registerProviderCubit') &&
-              data['registerProviderCubit'] is RegisterProviderCubit) {
-            return BlocProvider.value(
-              value: data['registerProviderCubit'] as RegisterProviderCubit,
-              child: otpView,
-            );
-          }
+    if (data.containsKey('registerProviderCubit') &&
+        data['registerProviderCubit'] is RegisterProviderCubit) {
+      return BlocProvider.value(
+        value: data['registerProviderCubit'] as RegisterProviderCubit,
+        child: otpView,
+      );
+    }
 
-          return BlocProvider(
-            create: (context) => RegisterUserCubit(
-              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
-            ),
-            child: otpView,
-          );
-        },
+    return BlocProvider(
+      create: (context) => RegisterUserCubit(
+        AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
       ),
-
+      child: otpView,
+    );
+  },
+),
       GoRoute(
         path: kresetpassword,
         builder: (context, state) {

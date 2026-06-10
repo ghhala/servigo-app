@@ -57,7 +57,7 @@ class _SignUpUserState extends State<SignUpUser> {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: () => context.pop(), // لكي يعمل زر الرجوع للخلف
+                        onTap: () => context.pop(), 
                         child: Icon(Icons.arrow_back_ios),
                       ),
                       Text(
@@ -179,6 +179,7 @@ class _SignUpUserState extends State<SignUpUser> {
                     BlocConsumer<RegisterUserCubit, RegisterUserState>(
                       listener: (context, state) async {
                         if (state is RegisterUserSuccess) {
+                          await PrefHelper.clearUserImage();
                           await PrefHelper.saveString('user_name', nameController.text.trim());
                           if (!context.mounted) return;
 
@@ -191,6 +192,7 @@ class _SignUpUserState extends State<SignUpUser> {
                               'email': emailController.text.trim(),
                               'userType': widget.userType,
                               'isForgetPassword': false,
+                              'authAction': 'register',
                             },
                           );
                         }

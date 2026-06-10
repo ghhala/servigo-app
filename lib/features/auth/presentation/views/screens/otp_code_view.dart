@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
-import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -18,6 +17,8 @@ class OtpCodeView extends StatefulWidget {
   final String userEmail;
   final String userType;
   final bool isForgetPassword;
+  // 💡 أضفت هذا المتغير الاختياري لكي تحددي صراحة إن كانت العملية تسجيل دخول أم حساب جديد
+  final String? authAction; 
 
   const OtpCodeView({
     super.key,
@@ -25,6 +26,7 @@ class OtpCodeView extends StatefulWidget {
     required this.userEmail,
     required this.userType,
     required this.isForgetPassword,
+    this.authAction, // يمكن تمرير 'login' أو 'register' من الشاشات السابقة
   });
 
   @override
@@ -122,18 +124,14 @@ class _OtpCodeViewState extends State<OtpCodeView> {
               ),
               Gap(26.h),
 
-              // 🛠️ تحديث الـ BlocConsumer للتحقق من حفظ الـ Token وتوجيه شاشة الـ Login
               BlocConsumer<RegisterUserCubit, RegisterUserState>(
                 listener: (context, state) async {
                   if (state is VerifyOtpSuccess) {
                     if (!context.mounted) return;
 
-                    // 💡 فحص ذكي: إذا كان المستخدم عادي (User) وليس في مسار نسيان كلمة المرور
-                    // فهذا يعني أنه جاء من اللوجن أو التسجيل وجلب التوكن بنجاح، فيذهب للهوم مباشرة!
                     if (widget.userType == 'user' && !widget.isForgetPassword) {
                       context.go(AppRouter.kHome, extra: widget.userType);
                     } else {
-                      // المسار الطبيعي لـ (Labourer ليرفع مستنداته) أو (ForgetPassword ليعيد تعيين كلمته)
                       _handleNavigationOnSuccess();
                     }
                   }
@@ -162,26 +160,30 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                     textstyle: TextStyles.font20White800,
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
-                  
-onTap: () {
-  final codeToVerify = enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp;
+                    onTap: () {
+                      final codeToVerify = enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp;
 
-  if (codeToVerify.isNotEmpty) {
-    // 💡 تحديد الـ type ديناميكياً
-    // إذا كان ForgetPassword نرسل 'forget'، وإلا نرسل الـ userType القادم (أو تحديداً 'login' / 'register' حسب الباكيند)
-    // بناءً على البوست مان، الباكيند يتوقع 'login' في حالة اللوجن، دعينا نمرر الـ flow الصحيح:
-    final String currentType = widget.isForgetPassword ? 'forget' : 'login'; 
-    // ملاحظة: إذا كانت الشاشة تُستخدم للتسجيل أيضاً، يمكنكِ جعل التحديد أكثر دقة بناءً على الحاجة.
+                      if (codeToVerify.isNotEmpty) {
+                        // 🚀 تحديد الـ type ديناميكياً وبشكل مرن لحل المشكلتين معاً
+                        String currentType = 'login';
+                        
+                        if (widget.isForgetPassword) {
+                          currentType = 'forget';
+                        } else if (widget.authAction != null) {
+                          currentType = widget.authAction!;
+                        } else {
+                          // فحص احتياطي: إذا لم يتم تمرير authAction، نعتمد على المسار الافتراضي
+                          // يمكنك تعديل هذا الفحص الاحتياطي بناءً على شاشات التطبيق لديكِ
+                          currentType = 'register'; 
+                        }
 
-    context.read<RegisterUserCubit>().verifyOtp(
-      email: widget.userEmail,
-      otp: codeToVerify,
-      type: currentType, 
-    );
-  } else {
-   
-  }
-}
+                        context.read<RegisterUserCubit>().verifyOtp(
+                          email: widget.userEmail,
+                          otp: codeToVerify,
+                          type: currentType, 
+                        );
+                      }
+                    },
                   );
                 },
               ),
