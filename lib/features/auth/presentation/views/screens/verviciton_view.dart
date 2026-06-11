@@ -100,7 +100,6 @@ class _VervicitonViewState extends State<VervicitonView> {
               ),
             );
           } else if (state is RegisterProviderFailure) {
-            // للتأكد من إغلاق الـ Loading dialog فقط إذا كان مفتوحاً دون تدمير الشاشة الأصلية
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             }
@@ -113,18 +112,19 @@ class _VervicitonViewState extends State<VervicitonView> {
             );
           } else if (state is RegisterProviderSuccess) {
             if (Navigator.canPop(context)) {
-              Navigator.pop(context); // إغلاق الـ Loading dialog فقط
+              Navigator.pop(context);
             }
 
-            // 🚀 الانتقال المباشر والآمن باستخدام go لمنع تدمير الـ Cubit أثناء الـ Animation
+          
             context.go(
               AppRouter.kotpcode,
               extra: {
                 'email': widget.requestBody!.email,
+                'main_service_id': widget.requestBody!.mainServiceId, 
                 'userType': widget.userType,
                 'type': 'register',
                 'isForgetPassword': false,
-                'receivedOtp': '', // سيتم استقباله من السيرفر تلقائياً
+                'receivedOtp': '', 
               },
             );
           }
@@ -178,9 +178,7 @@ class _VervicitonViewState extends State<VervicitonView> {
                         fontSize: 13.sp,
                       ),
                     ),
-
                     Gap(30.h),
-
                     GestureDetector(
                       onTap: () => showImageSourceActionSheet(context, false),
                       child: _buildImagePlaceHolder(_backImage),
@@ -192,7 +190,6 @@ class _VervicitonViewState extends State<VervicitonView> {
                         fontSize: 13.sp,
                       ),
                     ),
-
                     Gap(54.h),
                     CustomButton(
                       title: AppLocalizations.of(context)!.signUp,
@@ -213,11 +210,14 @@ class _VervicitonViewState extends State<VervicitonView> {
                               .read<RegisterProviderCubit>()
                               .registerProvider(widget.requestBody!);
                         } else {
+                       
+                          final Map<String, dynamic> deepCopyData = Map.from(widget.userData);
+                          
                           context.push(
-                            AppRouter.kCompliteProfile,
+                            AppRouter.kmoveToComplite,
                             extra: {
                               "userType": widget.userType,
-                              "userData": widget.userData,
+                              "userData": deepCopyData,
                             },
                           );
                         }

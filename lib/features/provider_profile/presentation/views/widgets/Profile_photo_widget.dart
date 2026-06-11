@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfilePhotoWidget extends StatefulWidget {
-  const ProfilePhotoWidget({super.key});
+  // 1. إضافة الـ Callback لتمرير الصورة المخطارة إلى الشاشة الأساسية
+  final Function(File file) onPhotoSelected;
+
+  const ProfilePhotoWidget({super.key, required this.onPhotoSelected});
 
   @override
   State<ProfilePhotoWidget> createState() => _ProfilePhotoWidgetState();
@@ -19,6 +22,8 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
       setState(() {
         _image = File(picked.path);
       });
+      // 2. تمرير الملف المختار للأعلى فوراً ليستقبله الـ Controller في الشاشة الأساسية
+      widget.onPhotoSelected(_image!);
     }
   }
 
@@ -152,10 +157,6 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
           ],
         ),
         const SizedBox(height: 8),
-        // const Text(
-        //   'Press to change profile picture',
-        //   style: TextStyle(fontSize: 12, color: Colors.grey),
-        // ),
       ],
     );
   }

@@ -17,8 +17,8 @@ class OtpCodeView extends StatefulWidget {
   final String userEmail;
   final String userType;
   final bool isForgetPassword;
-  // 💡 أضفت هذا المتغير الاختياري لكي تحددي صراحة إن كانت العملية تسجيل دخول أم حساب جديد
-  final String? authAction; 
+  final String? authAction;
+  final int? mainServiceId; // 👈 إضافة استقبال معرف الخدمة الأساسية السحري هنا
 
   const OtpCodeView({
     super.key,
@@ -26,7 +26,8 @@ class OtpCodeView extends StatefulWidget {
     required this.userEmail,
     required this.userType,
     required this.isForgetPassword,
-    this.authAction, // يمكن تمرير 'login' أو 'register' من الشاشات السابقة
+    this.authAction,
+    this.mainServiceId, // تذكر تمريره في الـ AppRouter إن كان يتم استخراجه من الـ extra
   });
 
   @override
@@ -48,10 +49,13 @@ class _OtpCodeViewState extends State<OtpCodeView> {
       );
     } else if (widget.userType == 'labourer' || widget.userType == 'provider') {
       context.go(
-        AppRouter.kCompliteProfile,
+        AppRouter.kmoveToComplite,
         extra: {
           'userType': widget.userType,
-          'userData': {'email': widget.userEmail},
+          'userData': {
+            'email': widget.userEmail,
+            'main_service_id': widget.mainServiceId, // 👈 الحفاظ على تمرير معرف الخدمة للبروفايل
+          },
         },
       );
     } else {
@@ -161,26 +165,25 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
                     onTap: () {
-                      final codeToVerify = enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp;
+                      final codeToVerify = enteredOtp.isNotEmpty
+                          ? enteredOtp
+                          : widget.receivedOtp;
 
                       if (codeToVerify.isNotEmpty) {
-                        // 🚀 تحديد الـ type ديناميكياً وبشكل مرن لحل المشكلتين معاً
                         String currentType = 'login';
-                        
+
                         if (widget.isForgetPassword) {
                           currentType = 'forget';
                         } else if (widget.authAction != null) {
                           currentType = widget.authAction!;
                         } else {
-                          // فحص احتياطي: إذا لم يتم تمرير authAction، نعتمد على المسار الافتراضي
-                          // يمكنك تعديل هذا الفحص الاحتياطي بناءً على شاشات التطبيق لديكِ
-                          currentType = 'register'; 
+                          currentType = 'register';
                         }
 
                         context.read<RegisterUserCubit>().verifyOtp(
                           email: widget.userEmail,
                           otp: codeToVerify,
-                          type: currentType, 
+                          type: currentType,
                         );
                       }
                     },

@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CertificatesSection extends StatefulWidget {
-  const CertificatesSection({super.key});
+  // الكولباك المطلوب لربط قائمة الملفات بالشاشة الرئيسية
+  final Function(List<File> files) onCertificatesChanged;
+
+  const CertificatesSection({super.key, required this.onCertificatesChanged});
 
   @override
   State<CertificatesSection> createState() => _CertificatesSectionState();
@@ -26,11 +29,17 @@ class _CertificatesSectionState extends State<CertificatesSection> {
       setState(() {
         _portfolioImages.addAll(picked.map((x) => File(x.path)));
       });
+      // إرسال القائمة المحدثة للشاشة الرئيسية
+      widget.onCertificatesChanged(_portfolioImages);
     }
   }
 
   void _removeImage(int index) {
-    setState(() => _portfolioImages.removeAt(index));
+    setState(() {
+      _portfolioImages.removeAt(index);
+    });
+    // إرسال القائمة المحدثة بعد الحذف للشاشة الرئيسية
+    widget.onCertificatesChanged(_portfolioImages);
   }
 
   void _viewImage(int index) {

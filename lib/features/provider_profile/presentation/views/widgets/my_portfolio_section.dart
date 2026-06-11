@@ -4,9 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
-// =============================================
-// MODEL
-// =============================================
 
 enum MediaType { image, video }
 
@@ -22,12 +19,11 @@ class PortfolioItem {
   });
 }
 
-// =============================================
-// MAIN WIDGET
-// =============================================
-
 class MyPortfolioSection extends StatefulWidget {
-  const MyPortfolioSection({super.key});
+  // 1. إضافة الـ Callback لتمرير البيانات للشاشة الرئيسية
+  final Function(List<PortfolioItem> items) onPortfolioChanged;
+
+  const MyPortfolioSection({super.key, required this.onPortfolioChanged});
 
   @override
   State<MyPortfolioSection> createState() => _MyPortfolioSectionState();
@@ -44,6 +40,11 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
   static const Color _textMid   = Color(0xFF6B6B8A);
   static const Color _danger    = Color(0xFFE84040);
 
+  // دالة مساعدة لتحديث الحالة وتمرير القائمة المحدثة للأعلى مباشرة
+  void _updateParent() {
+    widget.onPortfolioChanged(_items);
+  }
+
   // ── Pickers ────────────────────────────────────────────────────────────
 
   Future<void> _pickImages() async {
@@ -54,6 +55,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
         _items.add(PortfolioItem(file: File(x.path), type: MediaType.image));
       }
     });
+    _updateParent(); // 👈 تمرير القائمة بعد الإضافة
   }
 
   Future<void> _pickVideo() async {
@@ -63,6 +65,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
     setState(() {
       _items.add(PortfolioItem(file: File(picked.path), type: MediaType.video));
     });
+    _updateParent(); // 👈 تمرير القائمة بعد الإضافة
   }
 
   void _showAddOptions() {
@@ -166,53 +169,70 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
 
   void _removeItem(int index) {
     setState(() => _items.removeAt(index));
+    _updateParent(); // 👈 تمرير القائمة المحدثة بعد الحذف
   }
 
   void _editDescription(int index) {
     final ctrl = TextEditingController(text: _items[index].description);
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (_) => Dialog( // تم استبداله بـ Dialog عادي لتجنب أي تضارب ثيمات
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Text('Add Description',
-            style: TextStyle(color: _textDark, fontSize: 16, fontWeight: FontWeight.bold)),
-        content: TextField(
-          controller: ctrl,
-          maxLines: 3,
-          maxLength: 150,
-          decoration: InputDecoration(
-            hintText: 'Describe this work...',
-            hintStyle: TextStyle(color: _textMid.withOpacity(0.6)),
-            filled: true,
-            fillColor: _bg,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: _primary.withOpacity(0.5)),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Add Description',
+                  style: TextStyle(color: _textDark, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: ctrl,
+                maxLines: 3,
+                maxLength: 150,
+                decoration: InputDecoration(
+                  hintText: 'Describe this work...',
+                  hintStyle: TextStyle(color: _textMid.withOpacity(0.6)),
+                  filled: true,
+                  fillColor: _bg,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: _primary.withOpacity(0.5)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel', style: TextStyle(color: _textMid)),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () {
+                      setState(() => _items[index].description = ctrl.text.trim());
+                      _updateParent(); // 👈 تمرير البيانات بعد تعديل الوصف
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Save', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: _textMid)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: _primary,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            onPressed: () {
-              setState(() => _items[index].description = ctrl.text.trim());
-              Navigator.pop(context);
-            },
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
@@ -259,8 +279,6 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
       );
     }
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +356,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.add_rounded, color: Colors.white, size: 16),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text('Add',
                     style: TextStyle(
                         color: Colors.white,
@@ -399,7 +417,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
         crossAxisCount: 2,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
-        childAspectRatio: 0.78,   // تسمح بمساحة للوصف
+        childAspectRatio: 0.78,
       ),
       itemCount: _items.length,
       itemBuilder: (context, index) => _buildGridItem(index),
@@ -419,8 +437,6 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          // ── Thumbnail ──────────────────────────────────────
           Expanded(
             child: Stack(
               children: [
@@ -439,8 +455,6 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                           ),
                   ),
                 ),
-
-                // Video badge
                 if (isVideo)
                   Positioned(
                     bottom: 6, left: 6,
@@ -464,8 +478,6 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                       ),
                     ),
                   ),
-
-                // Delete button
                 Positioned(
                   top: 6, right: 6,
                   child: GestureDetector(
@@ -484,8 +496,6 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               ],
             ),
           ),
-
-          // ── Description area ───────────────────────────────
           GestureDetector(
             onTap: () => _editDescription(index),
             child: Container(

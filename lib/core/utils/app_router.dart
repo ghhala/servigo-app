@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
@@ -24,8 +25,16 @@ import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
-import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_view.dart';
-import 'package:servi_go_app/features/provider_profile/presentation/views/screens/edit_profile_labourer.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/complete_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/complete_profile_repository.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
+
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/completeprofile/complete_profile_cubit.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
+
+import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/screens/move_to_complite.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/splash/presentation/views/widgets/splash_view.dart';
@@ -53,8 +62,8 @@ abstract class AppRouter {
   static const kHome = '/home';
   static const kEditeProfile = '/edit_profile';
   static const kProfileLabourer = '/profile_labourer';
-  static const kCompliteProfile = '/complite_profile';
-  static const kEditProfileLabourer = '/EditProfileLabourer';
+  static const kmoveToComplite = '/move_to_complite';
+  static const kCompliteProfileProviderView = '/complite_profile_provider';
   static const kfilterButtonSheet = '/filter_bottom_sheet';
 
   static const kOtpVerification = kotpcode;
@@ -111,42 +120,46 @@ abstract class AppRouter {
       ),
 
       GoRoute(
-  path: kotpcode,
-  builder: (context, state) {
-    final data = state.extra as Map<String, dynamic>;
+        path: kotpcode,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
 
-    final otpView = OtpCodeView(
-      receivedOtp: data['otp']?.toString() ?? '',
-      userEmail: data['email']?.toString() ?? '',
-      userType: data['userType']?.toString() ?? 'user',
-      isForgetPassword: data['isForgetPassword'] as bool? ?? false,
-      authAction: data['authAction']?.toString(), 
-    );
+      
+          final otpView = OtpCodeView(
+            receivedOtp: data['otp']?.toString() ?? '',
+            userEmail: data['email']?.toString() ?? '',
+            userType: data['userType']?.toString() ?? 'user',
+            isForgetPassword: data['isForgetPassword'] as bool? ?? false,
+            authAction: data['authAction']?.toString(), 
+         mainServiceId: data['main_service_id'] != null 
+    ? int.tryParse(data['main_service_id'].toString()) 
+    : null,
+          );
 
-    if (data.containsKey('registerCubit') &&
-        data['registerCubit'] is RegisterUserCubit) {
-      return BlocProvider.value(
-        value: data['registerCubit'] as RegisterUserCubit,
-        child: otpView,
-      );
-    }
+          if (data.containsKey('registerCubit') &&
+              data['registerCubit'] is RegisterUserCubit) {
+            return BlocProvider.value(
+              value: data['registerCubit'] as RegisterUserCubit,
+              child: otpView,
+            );
+          }
 
-    if (data.containsKey('registerProviderCubit') &&
-        data['registerProviderCubit'] is RegisterProviderCubit) {
-      return BlocProvider.value(
-        value: data['registerProviderCubit'] as RegisterProviderCubit,
-        child: otpView,
-      );
-    }
+          if (data.containsKey('registerProviderCubit') &&
+              data['registerProviderCubit'] is RegisterProviderCubit) {
+            return BlocProvider.value(
+              value: data['registerProviderCubit'] as RegisterProviderCubit,
+              child: otpView,
+            );
+          }
 
-    return BlocProvider(
-      create: (context) => RegisterUserCubit(
-        AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
+            ),
+            child: otpView,
+          );
+        },
       ),
-      child: otpView,
-    );
-  },
-),
       GoRoute(
         path: kresetpassword,
         builder: (context, state) {
@@ -237,48 +250,65 @@ abstract class AppRouter {
           );
         },
       ),
-    GoRoute(
-  path: AppRouter.kEditeProfile,
-  builder: (context, state) {
-   
-    final userModel = state.extra as UserProfileData; 
+      GoRoute(
+        path: AppRouter.kEditeProfile,
+        builder: (context, state) {
+          final userModel = state.extra as UserProfileData; 
 
-    return BlocProvider(
-      create: (context) => EditProfileCubit(
-        UserProfileRepository(
-          UserProfileRemoteDataSource(
-            ApiService(DioClient()),
-          ),
-        ),
+          return BlocProvider(
+            create: (context) => EditProfileCubit(
+              UserProfileRepository(
+                UserProfileRemoteDataSource(
+                  ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: EditProfileUser(
+              currentName: userModel.name,   
+              currentPhone: userModel.phone, 
+            ),
+          );
+        },
       ),
-      child: EditProfileUser(
-       
-        currentName: userModel.name,   
-        currentPhone: userModel.phone, 
-      ),
-    );
-  },
-),
       GoRoute(
         path: AppRouter.kProfileLabourer,
         builder: (context, state) => const ProfileLabourerView(),
       ),
       GoRoute(
-        path: AppRouter.kCompliteProfile,
+        path: AppRouter.kmoveToComplite,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>?;
           final userType = data?['userType'] as String? ?? 'user';
           final userData = data?['userData'] as Map<String, dynamic>?;
-          return CompliteProfileView(userData: userData, userType: userType);
+          return MoveToComplite(userData: userData, userType: userType);
         },
       ),
       GoRoute(
-        path: AppRouter.kEditProfileLabourer,
+        path: AppRouter.kCompliteProfileProviderView,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>?;
           final userType = data?['userType'] as String? ?? 'labourer';
           final userData = data?['userData'] as Map<String, dynamic>?;
-          return EditProfileLabourer(userData: userData, userType: userType);
+          
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<SubServicesCubit>(
+                create: (context) => SubServicesCubit(
+                  SubServicesRepository(
+                    SubServicesRemoteDataSource(ApiService(DioClient())),
+                  ),
+                ),
+              ),
+              BlocProvider<CompleteProfileCubit>(
+                create: (context) => CompleteProfileCubit(
+                  CompleteProfileRepository(
+                    CompleteProfileRemoteDataSource(ApiService(DioClient())),
+                  ),
+                ),
+              ),
+            ],
+            child: CompliteProfileProviderView(userData: userData, userType: userType),
+          );
         },
       ),
     ],

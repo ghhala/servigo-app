@@ -39,7 +39,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   String? selectedRegion;
   String? selectedService;
 
-  
   double? selectedLatitude;
   double? selectedLongitude;
 
@@ -284,7 +283,6 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       height: 52.h,
                       onTap: () {
                         if (formKey.currentState!.validate()) {
-                        
                           if (selectedLatitude == null || selectedLongitude == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -295,16 +293,13 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             return;
                           }
 
-                       
                           String formattedWorkType = selectedRegion!.toLowerCase();
 
-                 
-                          String serviceId = "1"; 
+                          String serviceId = "1";
                           if (selectedService == 'Cleaning') serviceId = "1";
                           if (selectedService == 'Plumbing') serviceId = "2";
                           if (selectedService == 'Electrical') serviceId = "3";
 
-                         
                           final requestBody = RegisterProviderRequestBody(
                             name: fullNameController.text.trim(),
                             email: emailController.text.trim(),
@@ -312,11 +307,14 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             password: passwordController.text.trim(),
                             passwordConfirmation: passwordController.text.trim(),
                             locationName: locationController.text.trim(),
-                            mainServiceId: serviceId, 
-                            workType: formattedWorkType, 
-                            latitude: selectedLatitude,  
-                            longitude: selectedLongitude, 
+                            mainServiceId: serviceId,
+                            workType: formattedWorkType,
+                            latitude: selectedLatitude,
+                            longitude: selectedLongitude,
                           );
+
+                        
+                        
 
                           GoRouter.of(context).push(
                             AppRouter.kVerviciton,

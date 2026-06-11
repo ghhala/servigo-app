@@ -8,10 +8,10 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 
-class CompliteProfileView extends StatelessWidget {
+class MoveToComplite extends StatelessWidget {
   final String userType;
   final Map<String, dynamic>? userData;
-  const CompliteProfileView({super.key, this.userData, required this.userType});
+  const MoveToComplite({super.key, this.userData, required this.userType});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class CompliteProfileView extends StatelessWidget {
                     onTap: () {
                       GoRouter.of(
                         context,
-                      ).push(AppRouter.kEditProfileLabourer,
+                      ).push(AppRouter.kCompliteProfileProviderView,
                       extra: {
                         'userType': userType,
                         'userData': userData,

@@ -30,6 +30,11 @@ class ApiService {
       final response = await _dioClient.dio.post(endPoint, data: formData);
       return response.data;
     } on DioException catch (e) {
+     
+      if (e.response != null) {
+        print("🚨🚨🚨 BACKEND VALIDATION ERRORS: ${e.response?.data} 🚨🚨🚨");
+      }
+      
       throw ApiException.handleError(e);
     }
   }
