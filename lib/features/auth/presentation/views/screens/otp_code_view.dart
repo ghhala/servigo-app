@@ -18,7 +18,7 @@ class OtpCodeView extends StatefulWidget {
   final String userType;
   final bool isForgetPassword;
   final String? authAction;
-  final int? mainServiceId; // 👈 إضافة استقبال معرف الخدمة الأساسية السحري هنا
+  final int? mainServiceId; 
 
   const OtpCodeView({
     super.key,
@@ -27,7 +27,7 @@ class OtpCodeView extends StatefulWidget {
     required this.userType,
     required this.isForgetPassword,
     this.authAction,
-    this.mainServiceId, // تذكر تمريره في الـ AppRouter إن كان يتم استخراجه من الـ extra
+    this.mainServiceId, 
   });
 
   @override
@@ -48,16 +48,22 @@ class _OtpCodeViewState extends State<OtpCodeView> {
         },
       );
     } else if (widget.userType == 'labourer' || widget.userType == 'provider') {
-      context.go(
-        AppRouter.kmoveToComplite,
-        extra: {
-          'userType': widget.userType,
-          'userData': {
-            'email': widget.userEmail,
-            'main_service_id': widget.mainServiceId, // 👈 الحفاظ على تمرير معرف الخدمة للبروفايل
+      // 🛠️ الفحص الجديد: إذا كان صاحب مهنة ويقوم بتسجيل الدخول، ينتقل للبروفايل مباشرة
+      if (widget.authAction == 'login') {
+        context.go(AppRouter.kProfileLabourer);
+      } else {
+        // إذا كان تسجيلاً جديداً (Register)، يذهب لإكمال البيانات
+        context.go(
+          AppRouter.kmoveToComplite,
+          extra: {
+            'userType': widget.userType,
+            'userData': {
+              'email': widget.userEmail,
+              'main_service_id': widget.mainServiceId, 
+            },
           },
-        },
-      );
+        );
+      }
     } else {
       SuccessPopUp.show(context, widget.userType, widget.userEmail);
     }
@@ -113,7 +119,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                       text: AppLocalizations.of(context)!.changeIt,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 14.sp,
-                      ),
+                  ),
                     ),
                   ],
                 ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
+import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_state.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/availability_selector.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/price_range_slider.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/rating_selector.dart';
@@ -8,21 +11,34 @@ import 'package:servi_go_app/features/filter/presentation/views/widgets/work_typ
 import '../../domain/entities/sub_service_entity.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  final List<SubServiceEntity> subServices;
+  final List<SubServiceEntity>? subServices;
+  
+  final int? initialSubServiceId;
+  final double? initialMinPrice;
+  final double? initialMaxPrice;
+  final int? initialRating;
+  final String? initialAvailability;
+  final String? initialWorkType;
+
   final Function({
-    required int subServiceId,
+    int? subServiceId, 
     double? minPrice,
     double? maxPrice,
-    int? rating,
+    int? rating, 
     String? availability,
     String? workType,
-  })
-  onApply;
+  }) onApply;
 
   const FilterBottomSheet({
     super.key,
-    required this.subServices,
+    this.subServices,
     required this.onApply,
+    this.initialSubServiceId,
+    this.initialMinPrice,
+    this.initialMaxPrice,
+    this.initialRating,
+    this.initialAvailability,
+    this.initialWorkType,
   });
 
   @override
@@ -39,6 +55,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   static const primary = Color(0xFF6C5CE7);
 
   @override
+  void initState() {
+    super.initState();
+    selectedSubServiceId = widget.initialSubServiceId;
+    priceRange = RangeValues(
+      widget.initialMinPrice ?? 0,
+      widget.initialMaxPrice ?? 100000,
+    );
+    selectedRating = widget.initialRating;
+    selectedAvailability = widget.initialAvailability;
+    selectedWorkType = widget.initialWorkType;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
@@ -48,7 +77,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle
+          // خط السحب العلوي (Handle)
           Container(
             width: 40.w,
             height: 4.h,
@@ -59,7 +88,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
           ),
 
-          // Header
+          // الرأس (Header)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -79,44 +108,78 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           const Divider(height: 1),
 
-          // ✅ Content — كل قسم widget مستقل
+          // المحتوى الداخلي للفلترة
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SubServiceSelector(
-                    subServices: widget.subServices,
-                    selectedId: selectedSubServiceId,
-                    onSelect: (id) => setState(() => selectedSubServiceId = id),
+                  // ── استماع وقراءة الخدمات الفرعية الحية من الـ State الموحد ──
+                  BlocBuilder<FilterCubit, FilterState>(
+                    builder: (context, state) {
+                      // قراءة القائمة الفرعية مباشرة من الستيت الموحد الجديد بأمان
+                      List<SubServiceEntity> availableSubServices = widget.subServices ?? state.subServices;
+
+                      // إظهار مؤشر التحميل فقط لو كانت القائمة فارغة والوضع هو loading
+                      if (availableSubServices.isEmpty && state.status == FilterStatus.loading) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: CircularProgressIndicator(color: primary),
+                          ),
+                        );
+                      }
+
+                      // التعامل مع حالة الخطأ في جلب البيانات الفرعية
+                      if (availableSubServices.isEmpty && state.status == FilterStatus.error) {
+                        return Center(
+                          child: Text(
+                            state.errorMessage ?? 'Failed to load sub-services',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        );
+                      }
+
+                      // عرض قائمة اختيار الخدمات الفرعية
+                      return SubServiceSelector(
+                        subServices: availableSubServices,
+                        selectedId: selectedSubServiceId,
+                        onSelect: (id) => setState(() => selectedSubServiceId = id),
+                      );
+                    },
                   ),
                   const SizedBox(height: 20),
 
+                  // منزلق تحديد مدى السعر
                   PriceRangeSlider(
                     values: priceRange,
                     onChanged: (v) => setState(() => priceRange = v),
                   ),
                   const SizedBox(height: 20),
 
+                  // اختيار التقييم
                   RatingSelector(
                     selectedRating: selectedRating,
                     onSelect: (v) => setState(() => selectedRating = v),
                   ),
                   const SizedBox(height: 20),
 
+                  // اختيار توفر العامل
                   AvailabilitySelector(
                     selectedValue: selectedAvailability,
                     onSelect: (v) => setState(() => selectedAvailability = v),
                   ),
                   const SizedBox(height: 20),
 
+                  // اختيار نوع العمل
                   WorkTypeSelector(
                     selectedValue: selectedWorkType,
                     onSelect: (v) => setState(() => selectedWorkType = v),
                   ),
                   const SizedBox(height: 24),
 
+                  // أزرار التحكم (إعادة تعيين وتطبيق)
                   Row(
                     children: [
                       Expanded(
@@ -178,24 +241,24 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     });
   }
 
-  void _applyFilter() {
-    if (selectedSubServiceId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a sub-service'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-    widget.onApply(
-      subServiceId: selectedSubServiceId!,
-      minPrice: priceRange.start,
-      maxPrice: priceRange.end,
-      rating: selectedRating,
-      availability: selectedAvailability,
-      workType: selectedWorkType,
+ void _applyFilter() {
+  if (selectedSubServiceId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('يرجى اختيار نوع الخدمة الفرعية أولاً'),
+        backgroundColor: Colors.red,
+      ),
     );
-    Navigator.pop(context);
+    return;
   }
+  widget.onApply(
+    subServiceId: selectedSubServiceId,
+    minPrice: priceRange.start,
+    maxPrice: priceRange.end,
+    rating: selectedRating,
+    availability: selectedAvailability,
+    workType: selectedWorkType,
+  );
+  Navigator.pop(context);
+}
 }

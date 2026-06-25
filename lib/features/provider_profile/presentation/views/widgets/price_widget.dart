@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // 👈 قمنا بإضافة هذه المكتبة للتحكم بمدخلات النص
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
@@ -28,21 +29,24 @@ class PriceWidget extends StatelessWidget {
 
     return Row(
       children: [
-        // حقل السعر الأدنى (Minimum Price)
+        // ── حقل السعر الأدنى (Minimum Price) ──
         CustomTextFormFiled(
-          hintText: "20.000",
+          hintText: "10000", // 👈 تعديل الـ Hint ليصبح رقماً صحيحاً بدون نقطة ليفهم المستخدم التنسيق
           hintStyle: TextStyles.font12PrimaryColorW600,
           textInputType: TextInputType.number,
+          // 👇 هذا الفلتر يمنع كتابة أي شيء عدا الأرقام (يمنع الفاصلة والنقطة تماماً)
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           fillColor: fillColor,
           width: 100.w,
           height: 20.h,
           borderSide: borderSide,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
-          // 2. إرسال القيمة عند التعديل
           onChanged: (value) {
-  _currentMin = value ?? ''; // 👈 أضفنا ?? '' لحل مشكلة الـ Null Safety
-  onPriceChanged(_currentMin, _currentMax);
-},
+            _currentMin = value ?? ''; 
+            onPriceChanged(_currentMin, _currentMax);
+          },
         ),
         const Gap(2),
         Text(
@@ -55,21 +59,24 @@ class PriceWidget extends StatelessWidget {
           style: TextStyle(color: textColor),
         ),
         const Gap(8),
-        // حقل السعر الأعلى (Maximum Price)
+       
         CustomTextFormFiled(
-          hintText: "20.000",
+          hintText: "20000", // 👈 تعديل الـ Hint ليصبح رقماً صحيحاً بدون نقطة
           hintStyle: TextStyles.font12PrimaryColorW600,
           textInputType: TextInputType.number,
+          // 👇 يمنع إدخال الرموز والنقاط العشرية لمنع تشوه الرقم في قاعدة البيانات
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
           fillColor: fillColor,
           width: 100.w,
           height: 20.h,
           borderSide: borderSide,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
-         
           onChanged: (value) {
-  _currentMax = value ?? ''; // 👈 أضفنا ?? '' لحل مشكلة الـ Null Safety
-  onPriceChanged(_currentMin, _currentMax);
-},
+            _currentMax = value ?? ''; 
+            onPriceChanged(_currentMin, _currentMax);
+          },
         ),
         const Gap(5),
         Text(

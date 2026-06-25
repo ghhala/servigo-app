@@ -13,7 +13,7 @@ class CompleteProfileRepository {
     try {
       return await _remoteDataSource.completeProfile(params);
     } catch (e) {
-      // الـ ApiService يقوم بعمل handle للـ DioException مسبقاً لذا نمرر الخطأ كما هو
+    
       rethrow;
     }
   }

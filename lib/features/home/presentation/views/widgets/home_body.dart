@@ -1,7 +1,10 @@
+import 'dart:io'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
@@ -16,18 +19,19 @@ import 'package:servi_go_app/features/home/presentation/views/widgets/service_ca
 
 class HomeBody extends StatefulWidget {
   final String userType;
+  final dynamic userData; 
 
-  const HomeBody({super.key, required this.userType});
+  const HomeBody({super.key, required this.userType, this.userData});
 
   @override
   State<HomeBody> createState() => _HomeBodyState();
 }
 
 class _HomeBodyState extends State<HomeBody> {
+  
   @override
   void initState() {
     super.initState();
-    // 🚀 بمجرد أن يفتح المستخدم تبويب الهوم، سينطلق هذا السطر تلقائياً ويجلب البيانات المحدثة!
     BlocProvider.of<HomeCubit>(context).fetchHomeData();
   }
 
@@ -73,8 +77,22 @@ class _HomeBodyState extends State<HomeBody> {
             final ads = state.homeData.data?.ads ?? [];
 
             final String userName = PrefHelper.getString('user_name') ?? 'User';
-            // 💡 جلب رابط الصورة المخزن كاش محلياً للحساب الحالي
-            final String userImage = PrefHelper.getUserImage();
+
+           
+            String? finalPhotoPath;
+            final String localCachedImage = PrefHelper.getUserImage();
+            
+            if (localCachedImage.isNotEmpty) {
+              finalPhotoPath = localCachedImage;
+            }
+
+           
+            String? fullUserImageUrl;
+            if (finalPhotoPath != null) {
+              fullUserImageUrl = finalPhotoPath.startsWith('http') || finalPhotoPath.startsWith('/') && !finalPhotoPath.contains('data/')
+                  ? (finalPhotoPath.startsWith('http') ? finalPhotoPath : 'http://10.0.2.2:8000$finalPhotoPath')
+                  : finalPhotoPath; 
+            }
 
             final String firstLetter = userName.trim().isNotEmpty
                 ? userName.trim()[0].toUpperCase()
@@ -86,33 +104,66 @@ class _HomeBodyState extends State<HomeBody> {
                 children: [
                   const LangagueThemeWidget(),
                   const Gap(16),
-                  (widget.userType == 'labourer')
-                      ? CircleAvatar(
-                          radius: 45.r,
-                          backgroundImage: const AssetImage("assets/images/avatar2.jpg"),
-                        )
-                      : CircleAvatar(
-                          radius: 35.r,
-                          // 💡 إذا كانت الصورة فارغة، نضع اللون البنفسجي، وإذا وُجدت نضع خلفية رمادية خفيفة للحماية
-                          backgroundColor: userImage.isEmpty 
-                              ? Colors.deepPurpleAccent 
-                              : const Color(0xFFF3F2F2),
-                          // 💡 عرض صورة الشبكة في حال توفر الرابط مع كسر الكاش لمنع التجميد المعتاد بالفلاتر
-                          backgroundImage: userImage.isNotEmpty
-                              ? NetworkImage('$userImage?v=${DateTime.now().millisecondsSinceEpoch}')
-                              : null,
-                          // 💡 إذا لم تكن هناك صورة، نعرض أول حرف من الاسم كبديل أنيق
-                          child: userImage.isEmpty
-                              ? Text(
-                                  firstLetter,
-                                  style: TextStyle(
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                  
+             
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(widget.userType == 'labourer' ? 45.r : 35.r),
+                    child: Container(
+                      width: widget.userType == 'labourer' ? 90.w : 70.w,
+                      height: widget.userType == 'labourer' ? 90.h : 70.h,
+                      color: fullUserImageUrl == null ? Colors.deepPurpleAccent : const Color(0xFFF3F2F2),
+                      child: fullUserImageUrl != null
+                          ? (fullUserImageUrl.startsWith('http')
+                              ? Image.network(
+                                  fullUserImageUrl,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) => Center(
+                                    child: Text(
+                                      firstLetter,
+                                      style: TextStyle(
+                                        fontSize: 24.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 )
-                              : null,
-                        ),
+                              : Image.file(
+                                  File(fullUserImageUrl), 
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Center(
+                                    child: Text(
+                                      firstLetter,
+                                      style: TextStyle(
+                                        fontSize: 24.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ))
+                          : Center(
+                              child: Text(
+                                firstLetter,
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                  
                   const Gap(16),
                   Text(
                     "Welcome $userName",
@@ -181,13 +232,26 @@ class _HomeBodyState extends State<HomeBody> {
                             physics: const ClampingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: mainServices.length,
-                            itemBuilder: (context, index) {
-                              final service = mainServices[index];
-                              return ServiceCategoryCard(
-                                name: service.nameEn ?? 'Service',
-                                image: service.photo ?? "assets/images/test.png",
-                              );
-                            },
+                          itemBuilder: (context, index) {
+  final service = mainServices[index];
+  
+ return GestureDetector(
+  onTap: () {
+
+    context.push(
+     AppRouter.kFilterView, 
+      extra: {
+        'mainServiceId': service.id ?? 0,
+        'mainServiceName': service.nameEn ?? 'Service',
+      },
+    );
+  },
+  child: ServiceCategoryCard(
+    name: service.nameEn ?? 'Service',
+    image: service.photo ?? "assets/images/test.png",
+  ),
+);
+},
                           ),
                   ),
                   const Gap(20),

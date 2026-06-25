@@ -1,52 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/filter/domain/entities/provider_entity.dart';
-import 'package:servi_go_app/features/filter/domain/entities/sub_service_entity.dart';
+import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
+import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_state.dart';
 import 'package:servi_go_app/features/filter/presentation/views/filter_bottom_sheet.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/provider_card_widget.dart';
+import '../../data/models/filter_request_model.dart';
+import '../../data/models/provider_filter_model.dart';
 
 class FilterView extends StatefulWidget {
-  const FilterView({super.key});
+  final int mainServiceId;
+  final String mainServiceName;
+
+  const FilterView({
+    super.key,
+    required this.mainServiceId,
+    required this.mainServiceName,
+  });
 
   @override
   State<FilterView> createState() => _FilterViewState();
 }
 
 class _FilterViewState extends State<FilterView> {
-  // ✅ State
   bool isFiltered = false;
   String? sortBy;
 
-  final List<ProviderEntity> providers = [
-    const ProviderEntity(
-      id: 1,
-      name: 'jon doe',
-      photo: null,
-      subServiceName: 'تنظيف منازل',
-      locationName: 'Hama',
-      workType: 'mobile',
-      minPrice: 10000,
-      maxPrice: 30000,
-      avgRating: 4.8,
-      isAvailable: true,
-    ),
-    const ProviderEntity(
-      id: 2,
-      name: 'Sara Ahmad',
-      photo: null,
-      subServiceName: 'تنظيف مكاتب',
-      locationName: 'Homs',
-      workType: 'both',
-      minPrice: 15000,
-      maxPrice: 40000,
-      avgRating: 4.6,
-      isAvailable: true,
-    ),
-  ];
+  int? currentSubServiceId;
+  double? currentMinPrice;
+  double? currentMaxPrice;
+  String? currentRating;
+  bool? currentAvailability;
+  String? currentWorkType;
 
-  // ✅ Sort By Options
   final List<Map<String, String>> _sortOptions = const [
     {'label': 'price ↑', 'value': 'price'},
     {'label': 'rating ↓', 'value': 'rating'},
@@ -54,33 +43,42 @@ class _FilterViewState extends State<FilterView> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    context.read<FilterCubit>().loadTopProviders(widget.mainServiceId);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
         withScaffold: false,
-        padding: EdgeInsetsGeometry.only(top: 65.h),
+        padding: EdgeInsets.only(top: 65.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             // ── Filter Icon ──
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 7.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    width: 35.w,
-                    height: 35.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C5CE7),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: IconButton(
-                      onPressed: _openFilter,
-                      icon: const Icon(
-                        Icons.filter_list,
-                        color: Colors.white,
-                        size: 23,
+                  Builder(
+                    builder: (context) => Container(
+                      width: 35.w,
+                      height: 35.h,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6C5CE7),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: IconButton(
+                        onPressed: () => _openFilter(context),
+                        icon: const Icon(
+                          Icons.filter_list,
+                          color: Colors.white,
+                          size: 23,
+                        ),
                       ),
                     ),
                   ),
@@ -90,33 +88,119 @@ class _FilterViewState extends State<FilterView> {
 
             Gap(12.h),
 
-            // ✅ Sort By — يظهر فقط بعد الضغط على Apply
-            if (isFiltered) _buildSortBy(),
+            // ── Sort By (يظهر فقط بعد الفلترة) ──
+            if (isFiltered)
+              Builder(
+                builder: (context) => _buildSortBy(context),
+              ),
 
             // ── Label ──
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: Text(
-                isFiltered ? 'Results ' : ' Top 5 providers',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                isFiltered ? 'Results' : 'Top 5 providers',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
 
-            // ── List ──
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              itemCount: providers.length,
-              separatorBuilder: (context, _) => SizedBox(height: 8.h),
-              itemBuilder: (context, index) {
-                return ProviderCardWidget(
-                  provider: providers[index],
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/provider-profile',
-                      arguments: providers[index].id,
+            // ── BlocBuilder ──
+            BlocBuilder<FilterCubit, FilterState>(
+              builder: (context, state) {
+
+                // ── Loading ──
+                if (state.status == FilterStatus.loading) {
+                  return SizedBox(
+                    height: 300.h,
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF6C5CE7),
+                      ),
+                    ),
+                  );
+                }
+
+                // ── Error ──
+                if (state.status == FilterStatus.error) {
+                  return SizedBox(
+                    height: 200.h,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            state.errorMessage ?? 'An error occurred',
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: () => context
+                                .read<FilterCubit>()
+                                .loadTopProviders(widget.mainServiceId),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6C5CE7),
+                            ),
+                            child: const Text(
+                              'Retry',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                // ── قراءة القائمة الحالية ──
+                final List<ProviderFilterModel> currentProviders = isFiltered
+                    ? state.filteredProviders
+                    : state.topProviders;
+
+                // ── Empty ──
+                if (currentProviders.isEmpty) {
+                  return SizedBox(
+                    height: 200.h,
+                    child: const Center(
+                      child: Text("No providers found matching these criteria"),
+                    ),
+                  );
+                }
+
+                // ── Results ──
+                return ListView.separated(
+                  shrinkWrap: true,                               // ✅ ضروري
+                  physics: const NeverScrollableScrollPhysics(),  // ✅ ضروري
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  itemCount: currentProviders.length,
+                  separatorBuilder: (context, _) => SizedBox(height: 8.h),
+                  itemBuilder: (context, index) {
+                    final item = currentProviders[index];
+
+                    final entity = ProviderEntity(
+                      id: item.providerUserId ?? 0,
+                      name: item.name ?? 'No Name',
+                      photo: item.photo,
+                      subServiceName: item.workType ?? '',
+                      locationName: item.locationName ?? 'Unknown',
+                      workType: item.workType ?? 'both',
+                      minPrice: item.minPrice?.toDouble() ?? 0.0,
+                      maxPrice: item.maxPrice?.toDouble() ?? 0.0,
+                      avgRating: item.avgRating?.toDouble() ?? 0.0,
+                      isAvailable: item.isAvailable ?? false,
+                    );
+
+                    return ProviderCardWidget(
+                      provider: entity,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/provider-profile',
+                          arguments: entity.id,
+                        );
+                      },
                     );
                   },
                 );
@@ -128,8 +212,8 @@ class _FilterViewState extends State<FilterView> {
     );
   }
 
-  // ✅ Sort By Widget
-  Widget _buildSortBy() {
+  // ── Sort By Widget ──
+  Widget _buildSortBy(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
       child: Column(
@@ -145,7 +229,22 @@ class _FilterViewState extends State<FilterView> {
               final value = o['value']!;
               final isSelected = sortBy == value;
               return GestureDetector(
-                onTap: () => setState(() => sortBy = value),
+                onTap: () {
+                  if (isSelected) return;
+                  setState(() => sortBy = value);
+                  context.read<FilterCubit>().fetchFilteredProviders(
+                    FilterRequestModel(
+                      mainServiceId: widget.mainServiceId,
+                      subServiceId: currentSubServiceId,
+                      minPrice: currentMinPrice,
+                      maxPrice: currentMaxPrice,
+                      rating: currentRating,
+                      isAvailableNow: currentAvailability,
+                      workType: currentWorkType,
+                      sortBy: value,
+                    ),
+                  );
+                },
                 child: Container(
                   margin: EdgeInsets.only(right: 8.w),
                   padding: EdgeInsets.symmetric(
@@ -178,42 +277,66 @@ class _FilterViewState extends State<FilterView> {
             }).toList(),
           ),
           SizedBox(height: 8.h),
-          // ── Divider ──
           Divider(color: Colors.grey.shade200, height: 1),
         ],
       ),
     );
   }
 
-  // ✅ فتح الفلتر
-  void _openFilter() {
+  // ── فتح الفلتر ──
+  void _openFilter(BuildContext parentContext) {
+    parentContext.read<FilterCubit>().loadSubServices(widget.mainServiceId);
+
     showModalBottomSheet(
-      context: context,
+      context: parentContext,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => FilterBottomSheet(
-        subServices: [
-          const SubServiceEntity(id: 1, name: 'تنظيف منازل'),
-          const SubServiceEntity(id: 2, name: 'تنظيف مكاتب'),
-          const SubServiceEntity(id: 3, name: 'تنظيف سيارات'),
-        ],
-        onApply:
-            ({
-              required subServiceId,
-              minPrice,
-              maxPrice,
-              rating,
-              availability,
-              workType,
-            }) {
-              // ✅ بعد Apply يظهر Sort By
-              setState(() {
-                isFiltered = true;
-                sortBy = null; // reset الترتيب عند كل فلتر جديد
-              });
-            },
+      builder: (_) => BlocProvider.value(
+        value: parentContext.read<FilterCubit>(),
+        child: FilterBottomSheet(
+          initialSubServiceId: currentSubServiceId,
+          initialMinPrice: currentMinPrice,
+          initialMaxPrice: currentMaxPrice,
+          initialRating: currentRating != null
+              ? int.tryParse(currentRating!)
+              : null,
+          initialAvailability:
+              currentAvailability == true ? "Available Now" : "Any",
+          initialWorkType: currentWorkType,
+          onApply: ({
+            int? subServiceId,
+            minPrice,
+            maxPrice,
+            rating,
+            availability,
+            workType,
+          }) {
+            setState(() {
+              isFiltered = true;
+              sortBy = null;
+              currentSubServiceId = subServiceId;
+              currentMinPrice = minPrice;
+              currentMaxPrice = maxPrice;
+              currentRating = rating?.toString();
+              currentAvailability = availability == "Available Now";
+              currentWorkType = workType;
+            });
+
+            parentContext.read<FilterCubit>().fetchFilteredProviders(
+              FilterRequestModel(
+                mainServiceId: widget.mainServiceId,
+                subServiceId: subServiceId,
+                minPrice: minPrice,
+                maxPrice: maxPrice,
+                rating: rating?.toString(),
+                isAvailableNow: currentAvailability,
+                workType: workType,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

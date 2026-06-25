@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
@@ -98,16 +99,21 @@ class _CompliteProfileProviderViewState extends State<CompliteProfileProviderVie
 
     return Scaffold(
       body: BlocListener<CompleteProfileCubit, CompleteProfileState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is CompleteProfileSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.response.message), backgroundColor: Colors.green),
             );
+            if (_profilePhoto != null) {
+    await PrefHelper.saveUserImage(_profilePhoto!.path);
+    if (!context.mounted) return;
+  }
+         
             GoRouter.of(context).push(
               AppRouter.kHome,
               extra: {
                 "userType": widget.userType,
-                "userData": widget.userData,
+                "userData":state.response,
               },
             );
           } else if (state is CompleteProfileFailure) {
@@ -225,15 +231,18 @@ class _CompliteProfileProviderViewState extends State<CompliteProfileProviderVie
                               style: TextStyles.onCard(context, TextStyles.font14PrimaryColorW700),
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.h),
-                            child: PriceWidget(
-                              onPriceChanged: (min, max) {
-                                _minPrice = double.tryParse(min) ?? 0.0;
-                                _maxPrice = double.tryParse(max) ?? 0.0;
-                              },
-                            ),
-                          ),
+                        Padding(
+  padding: EdgeInsets.symmetric(horizontal: 10.h),
+  child: PriceWidget(
+    onPriceChanged: (min, max) {
+     
+      setState(() {
+        _minPrice = double.tryParse(min) ?? 0.0;
+        _maxPrice = double.tryParse(max) ?? 0.0;
+      });
+    },
+  ),
+),
                           Gap(20),
                           CustomTimePicker(
                             onTimeChanged: (startHour, startPeriod, endHour, endPeriod) {
@@ -313,8 +322,8 @@ class _CompliteProfileProviderViewState extends State<CompliteProfileProviderVie
                             offDays: userHolidayDays,
                             workStartTime: _startTime24,
                             workEndTime: _endTime24,
-                            minPrice: _minPrice <= 0.0 ? 1.0 : _minPrice,
-                            maxPrice: _maxPrice <= 0.0 ? 100.0 : _maxPrice,
+                           minPrice: _minPrice == 0.0 ? 10000.0 : _minPrice, 
+  maxPrice: _maxPrice == 0.0 ? 20000.0 : _maxPrice,
                             portfolio: _portfolioItems.map((item) => PortfolioInput(
                               file: item.file,
                               description: item.description, 

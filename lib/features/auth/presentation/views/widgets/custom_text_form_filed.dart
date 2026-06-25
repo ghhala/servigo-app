@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
@@ -6,12 +7,14 @@ class CustomTextFormFiled extends StatelessWidget {
   const CustomTextFormFiled({
     super.key,
     required this.hintText,
+    
     this.prefixIcon,
     this.textInputType,
     this.validator,
     this.controller,
     this.width,
     this.height,
+    VoidCallback? onTap_,
 
     /// 🔽 Dropdown props
     this.isDropdown = false,
@@ -23,6 +26,7 @@ class CustomTextFormFiled extends StatelessWidget {
     this.borderSide,
     this.fillColor,
     this.hintStyle,
+    this.inputFormatters,
   });
 
   final String hintText;
@@ -37,6 +41,7 @@ class CustomTextFormFiled extends StatelessWidget {
   final double? height;
   final Color? fillColor;
   final TextStyle? hintStyle;
+  final List<TextInputFormatter>? inputFormatters;
 
   /// 🔽 Dropdown
   final bool isDropdown;
@@ -92,6 +97,7 @@ class CustomTextFormFiled extends StatelessWidget {
               validator: validator,
               controller: controller,
               keyboardType: textInputType,
+              inputFormatters: inputFormatters,
 
               decoration: InputDecoration(
                 isDense: true,

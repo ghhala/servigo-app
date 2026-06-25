@@ -10,9 +10,9 @@ class ApiService {
   Future<dynamic> get(String endPoint) async {
     try {
       final response = await _dioClient.dio.get(endPoint);
-      return response.data; 
+      return response.data;
     } on DioException catch (e) {
-      throw ApiException.handleError(e); 
+      throw ApiException.handleError(e);
     }
   }
 
@@ -21,7 +21,7 @@ class ApiService {
       final response = await _dioClient.dio.post(endPoint, data: body);
       return response.data;
     } on DioException catch (e) {
-      throw ApiException.handleError(e); 
+      throw ApiException.handleError(e);
     }
   }
 
@@ -30,16 +30,14 @@ class ApiService {
       final response = await _dioClient.dio.post(endPoint, data: formData);
       return response.data;
     } on DioException catch (e) {
-     
       if (e.response != null) {
         print("🚨🚨🚨 BACKEND VALIDATION ERRORS: ${e.response?.data} 🚨🚨🚨");
       }
-      
+
       throw ApiException.handleError(e);
     }
   }
 
-  
   Future<dynamic> put(String endPoint, dynamic body) async {
     try {
       final response = await _dioClient.dio.put(endPoint, data: body);
@@ -49,7 +47,6 @@ class ApiService {
     }
   }
 
- 
   Future<dynamic> putFormData(String endPoint, FormData formData) async {
     try {
       final response = await _dioClient.dio.put(endPoint, data: formData);

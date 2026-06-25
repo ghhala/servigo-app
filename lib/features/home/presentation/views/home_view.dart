@@ -7,6 +7,9 @@ import 'package:servi_go_app/features/home/presentation/views/widgets/custom_bot
 import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
 
 import 'package:servi_go_app/features/messaging/presentation/views/messages_screen.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/user_profile/data/data_sources/user_profile_remote_data_source.dart';
@@ -16,7 +19,8 @@ import 'package:servi_go_app/features/user_profile/presentation/views/user_profi
 
 class HomeView extends StatefulWidget {
   final String userType;
-  const HomeView({super.key, required this.userType});
+  final dynamic userData;
+  const HomeView({super.key, required this.userType, this.userData});
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -29,8 +33,17 @@ class _HomeViewState extends State<HomeView> {
   List<Widget> get _pages {
     if (widget.userType == 'labourer') {
       return [
-        HomeBody(userType: "labourer",),
-        ProfileLabourerView(),
+        HomeBody(userType: "labourer", userData: widget.userData),
+          BlocProvider(
+        create: (context) => ProviderProfileCubit(
+          ProviderProfileRepository(
+            ProviderProfileRemoteDataSource(
+              ApiService(DioClient()),
+            ),
+          ),
+        )..fetchProviderProfile(), 
+        child: const ProfileLabourerView(),
+      ),
         MessagesScreen(),
         SettingsView(),
       ];

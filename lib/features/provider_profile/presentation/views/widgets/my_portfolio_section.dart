@@ -20,7 +20,7 @@ class PortfolioItem {
 }
 
 class MyPortfolioSection extends StatefulWidget {
-  // 1. إضافة الـ Callback لتمرير البيانات للشاشة الرئيسية
+  
   final Function(List<PortfolioItem> items) onPortfolioChanged;
 
   const MyPortfolioSection({super.key, required this.onPortfolioChanged});

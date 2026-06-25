@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
@@ -18,6 +18,7 @@ import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_%2
 import 'package:servi_go_app/features/auth/presentation/views/screens/sign_up_user.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/user_type_view.dart';
 import 'package:servi_go_app/features/auth/presentation/views/screens/verviciton_view.dart';
+import 'package:servi_go_app/features/filter/data/data_sources/filter_remote_data_source.dart';
 import 'package:servi_go_app/features/home/data/data_sources/home_remote_data_source.dart';
 import 'package:servi_go_app/features/home/data/repositories/home_repository.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
@@ -29,10 +30,8 @@ import 'package:servi_go_app/features/provider_profile/data/data_sources/complet
 import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/complete_profile_repository.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
-
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/completeprofile/complete_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
-
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/move_to_complite.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
@@ -43,6 +42,11 @@ import 'package:servi_go_app/features/user_profile/data/models/user_profile_mode
 import 'package:servi_go_app/features/user_profile/data/repositories/user_profile_repository.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/edit%20_profile_user.dart';
+
+// 👈 إضافة استيرادات ميزة الفلترة الجديدة
+import 'package:servi_go_app/features/filter/data/repositories/filter_repository_impl.dart';
+import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
+import 'package:servi_go_app/features/filter/presentation/views/filter_view.dart';
 
 abstract class AppRouter {
   static const kOnboarding1 = '/onboarding1';
@@ -65,6 +69,7 @@ abstract class AppRouter {
   static const kmoveToComplite = '/move_to_complite';
   static const kCompliteProfileProviderView = '/complite_profile_provider';
   static const kfilterButtonSheet = '/filter_bottom_sheet';
+  static const kFilterView = '/filter_view'; 
 
   static const kOtpVerification = kotpcode;
 
@@ -123,7 +128,6 @@ abstract class AppRouter {
         path: kotpcode,
         builder: (context, state) {
           final data = state.extra as Map<String, dynamic>;
-
       
           final otpView = OtpCodeView(
             receivedOtp: data['otp']?.toString() ?? '',
@@ -131,9 +135,9 @@ abstract class AppRouter {
             userType: data['userType']?.toString() ?? 'user',
             isForgetPassword: data['isForgetPassword'] as bool? ?? false,
             authAction: data['authAction']?.toString(), 
-         mainServiceId: data['main_service_id'] != null 
-    ? int.tryParse(data['main_service_id'].toString()) 
-    : null,
+            mainServiceId: data['main_service_id'] != null 
+                ? int.tryParse(data['main_service_id'].toString()) 
+                : null,
           );
 
           if (data.containsKey('registerCubit') &&
@@ -234,19 +238,24 @@ abstract class AppRouter {
         path: kHome,
         builder: (context, state) {
           String userType = 'user';
+          dynamic userData; 
 
           if (state.extra is String) {
             userType = state.extra as String;
           } else if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
+            userData = data['userData']; 
           }
 
           return BlocProvider(
             create: (context) => HomeCubit(
               HomeRepository(HomeRemoteDataSource(ApiService(DioClient()))),
             )..fetchHomeData(),
-            child: HomeView(userType: userType),
+            child: HomeView(
+              userType: userType, 
+              userData: userData, 
+            ),
           );
         },
       ),
@@ -311,6 +320,59 @@ abstract class AppRouter {
           );
         },
       ),
+
+      // 🚀 ──── الـ Route الجديد الخاص بشاشة الفلترة ────
+//    GoRoute(
+//   path: kFilterView,
+//   builder: (context, state) {
+//     final data = state.extra as Map<String, dynamic>;
+//     final mainServiceId = data['mainServiceId'] as int;
+//     final mainServiceName = data['mainServiceName'] as String;
+
+//     return BlocProvider(
+//       create: (context) => FilterCubit(
+//         filterRepository: FilterRepository(
+//           remoteDataSource: FilterRemoteDataSourceImpl(
+//             apiService: ApiService(DioClient()),
+//           ),
+//         ),
+//       ),
+//       child: FilterView(
+//         mainServiceId: mainServiceId,
+//         mainServiceName: mainServiceName,
+//       ),
+//     );
+//   },
+// ),
+GoRoute(
+  path: kFilterView,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>?;  // ✅ nullable
+
+    if (data == null) {
+      return const Scaffold(
+        body: Center(child: Text('خطأ: لم تصل بيانات الخدمة')),
+      );
+    }
+
+    final mainServiceId = data['mainServiceId'] as int? ?? 0;
+    final mainServiceName = data['mainServiceName'] as String? ?? 'Service';
+
+    return BlocProvider(
+      create: (context) => FilterCubit(
+        filterRepository: FilterRepository(
+          remoteDataSource: FilterRemoteDataSourceImpl(
+            apiService: ApiService(DioClient()),
+          ),
+        ),
+      ),
+      child: FilterView(
+        mainServiceId: mainServiceId,
+        mainServiceName: mainServiceName,
+      ),
+    );
+  },
+),
     ],
   );
 }
