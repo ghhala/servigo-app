@@ -80,6 +80,7 @@
   "onBoardingDescription2": "أهلا بك في ServiGo التي توفر لك الخدمات بسهولة وبساطة أينما كنت.",
   "getStarted": "ابدأ الآن"
     ,
-  "locationDetails": " تفاصيل الموقع"
+  "locationDetails": " تفاصيل الموقع",
+  "pleaseSelectLocationFromMap": "الرجاء تحديد الموقع من الخريطة"
  
 }

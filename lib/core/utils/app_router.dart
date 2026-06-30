@@ -231,7 +231,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRouter.kSettings,
-        builder: (context, state) => const SettingsView(),
+        builder: (context, state) => const SettingsView(isProvider: true,),
       ),
 
       GoRoute(

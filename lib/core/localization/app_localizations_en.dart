@@ -252,4 +252,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationDetails => 'Location Details';
+
+  @override
+  String get pleaseSelectLocationFromMap =>
+      'Please select your location from the map';
 }

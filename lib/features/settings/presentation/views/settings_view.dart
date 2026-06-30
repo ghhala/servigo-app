@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
-
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/settings/presentation/widgets/custom_Row_widget.dart';
 
 class SettingsView extends StatefulWidget {
-  const SettingsView({super.key});
+ 
+  final bool isProvider; 
+
+  const SettingsView({super.key, required this.isProvider,  });
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -19,6 +20,8 @@ class SettingsView extends StatefulWidget {
 
 class _SettingsViewState extends State<SettingsView> {
   bool _isAvailable = false;
+  bool _overnight = false; 
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -31,14 +34,15 @@ class _SettingsViewState extends State<SettingsView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(l10n.settings, style: TextStyles.font22PrimaryColorW700),
-                  Gap(20),
+                  const Gap(20),
                   SvgPicture.asset("assets/images/setting_icon.svg"),
                 ],
               ),
-              Gap(90),
+              const Gap(90),
               Container(
                 width: 353.w,
-                height: 293.h,
+                // 🚀 تعديل الارتفاع ديناميكياً ليناسب المحتوى حسب نوع الحساب ومنع الفراغات الزائدة
+                height: widget.isProvider ? 390.h : 260.h, 
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -55,6 +59,7 @@ class _SettingsViewState extends State<SettingsView> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
+                        // ── العناصر المشتركة (تظهر لليوزر ولصاحب المهنة) ──
                         CustomRowWidget(
                           text: l10n.editProfile,
                           iconPath: 'assets/images/profile_icon.svg',
@@ -63,42 +68,61 @@ class _SettingsViewState extends State<SettingsView> {
                           text: l10n.logOut,
                           iconPath: 'assets/images/log_out_icon.svg',
                           style: TextStyles.font16PrimaryColorW600.copyWith(
-                            color: Color(0xFFFF0000),
+                            color: const Color(0xFFFF0000),
                           ),
                         ),
                         CustomRowWidget(
                           text: l10n.deleteAccount,
                           iconPath: 'assets/images/delete_icon.svg',
                           style: TextStyles.font16PrimaryColorW600.copyWith(
-                            color: Color(0xFFFF0000),
+                            color: const Color(0xFFFF0000),
                           ),
                         ),
                         CustomRowWidget(
-                          text: l10n.visitWebsite,
+                          text: l10n.visitWebsite, // أو لترجمتها لو مدعومة بالملف l10n.visitWebsite
                           iconPath: 'assets/images/visite_icon.svg',
                           style: TextStyles.font16PrimaryColorW600,
                         ),
-                        CustomRowWidget(
-                          text: 'is available ',
-                          iconPath: 'assets/images/avaliableIcon.png',
-                          style: TextStyles.font16PrimaryColorW600,
-                          trailing: CupertinoSwitch(
-                            activeColor: Colors.green,
-                            inactiveThumbColor: Colors.grey,
-                            value: _isAvailable,
-                            onChanged: (value) {
-                              setState(() {
-                                _isAvailable = value;
-                              });
-                            },
+
+                        // ── عناصر صاحب المهنة فقط (تظهر إذا كان isProvider == true) ──
+                        if (widget.isProvider) ...[
+                          CustomRowWidget(
+                            text: 'Available Now',
+                            iconPath: 'assets/images/checked.png', // تأكدي من امتداد الأيقونة لديكِ svg أم png
+                            style: TextStyles.font16PrimaryColorW600,
+                            trailing: CupertinoSwitch(
+                              activeColor: Colors.green,
+                              inactiveThumbColor: Colors.grey,
+                              value: _isAvailable,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isAvailable = value;
+                                });
+                              },
+                            ),
                           ),
-                        ),
+                          CustomRowWidget(
+                            text: 'Overnight Service',
+                            iconPath: 'assets/images/setting_icon.svg', // يمكنك تغيير مسار الأيقونة للـ overnight هنا
+                            style: TextStyles.font16PrimaryColorW600,
+                            trailing: CupertinoSwitch(
+                              activeColor: Colors.green,
+                              inactiveThumbColor: Colors.grey,
+                              value: _overnight,
+                              onChanged: (value) {
+                                setState(() {
+                                  _overnight = value;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
                 ),
               ),
-              Gap(20),
+              const Gap(20),
             ],
           ),
         ),

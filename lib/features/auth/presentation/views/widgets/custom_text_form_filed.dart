@@ -91,13 +91,14 @@ class CustomTextFormFiled extends StatelessWidget {
 
               icon: const Icon(Icons.keyboard_arrow_down),
             )
-          //TextField
+          
           : TextFormField(
               readOnly: readOnly ?? false,
               validator: validator,
               controller: controller,
               keyboardType: textInputType,
               inputFormatters: inputFormatters,
+              onChanged: onChanged,
 
               decoration: InputDecoration(
                 isDense: true,

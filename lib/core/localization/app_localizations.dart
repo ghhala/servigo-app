@@ -577,6 +577,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location Details'**
   String get locationDetails;
+
+  /// No description provided for @pleaseSelectLocationFromMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your location from the map'**
+  String get pleaseSelectLocationFromMap;
 }
 
 class _AppLocalizationsDelegate

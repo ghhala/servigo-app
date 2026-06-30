@@ -67,11 +67,14 @@ class _CustomLocationState extends State<CustomLocation>
     }
   }
 
-  Future<void> _getPlaceName(LatLng location) async {
+  // ← التعديل الوحيد المهم: الدالة الآن تستقبل كود اللغة الحالي للتطبيق
+  Future<void> _getPlaceName(LatLng location, String languageCode) async {
     try {
       if (mounted) {
         setState(() {
-          placeName = "جارٍ تحديد الموقع...";
+          placeName = languageCode == 'ar'
+              ? "جارٍ تحديد الموقع..."
+              : "Locating...";
         });
       }
 
@@ -80,7 +83,7 @@ class _CustomLocationState extends State<CustomLocation>
         "?lat=${location.latitude}"
         "&lon=${location.longitude}"
         "&format=json"
-        "&accept-language=ar",
+        "&accept-language=$languageCode", // ← هنا بدل "ar" الثابتة
       );
 
       final response = await http
@@ -94,7 +97,6 @@ class _CustomLocationState extends State<CustomLocation>
 
         final address = data['address'];
         final name = [
-         
           address['city'] ?? address['town'] ?? address['village'],
         ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
         if (mounted) {
@@ -123,8 +125,14 @@ class _CustomLocationState extends State<CustomLocation>
 
   @override
   Widget build(BuildContext context) {
+    // ← نحدد لغة التطبيق الحالية من الـ context (ar أو en)
+    final String languageCode = Localizations.localeOf(context).languageCode;
+    final bool isArabic = languageCode == 'ar';
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Select Location")),
+      appBar: AppBar(
+        title: Text(isArabic ? "حدد الموقع" : "Select Location"),
+      ),
       body: initialLocation == null
           ? const Center(child: CircularProgressIndicator())
           : Stack(
@@ -134,18 +142,19 @@ class _CustomLocationState extends State<CustomLocation>
                     initialCenter: initialLocation!,
                     initialZoom: 15,
                     onTap: (tapPosition, point) async {
-                      debugPrint("Map tapped: $point"); // ← أضف
+                      debugPrint("Map tapped: $point");
                       if (mounted) {
                         setState(() {
                           selectedLocation = point;
-                          placeName = "جارٍ تحديد الموقع...";
+                          placeName = isArabic
+                              ? "جارٍ تحديد الموقع..."
+                              : "Locating...";
                         });
                       }
-                      await _getPlaceName(point);
-                      debugPrint(
-                        "selectedLocation: $selectedLocation",
-                      );
-                      debugPrint("placeName after fetch: $placeName");  
+                      // ← مررنا كود اللغة هنا
+                      await _getPlaceName(point, languageCode);
+                      debugPrint("selectedLocation: $selectedLocation");
+                      debugPrint("placeName after fetch: $placeName");
                     },
                   ),
                   children: [
@@ -185,20 +194,23 @@ class _CustomLocationState extends State<CustomLocation>
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 5,
-                            color: Theme.of(context).shadowColor.withOpacity(0.2),
+                            color:
+                                Theme.of(context).shadowColor.withOpacity(0.2),
                           ),
                         ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (placeName == "جارٍ تحديد الموقع...")
+                          if (placeName == "جارٍ تحديد الموقع..." ||
+                              placeName == "Locating...")
                             const SizedBox(
                               width: 14,
                               height: 14,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
-                          if (placeName == "جارٍ تحديد الموقع...")
+                          if (placeName == "جارٍ تحديد الموقع..." ||
+                              placeName == "Locating...")
                             const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -211,21 +223,21 @@ class _CustomLocationState extends State<CustomLocation>
                     ),
                   ),
 
-               
                 Positioned(
                   bottom: 20,
                   left: 20,
                   right: 20,
                   child: ElevatedButton(
-                    onPressed:
-                        (selectedLocation != null &&
+                    onPressed: (selectedLocation != null &&
                             placeName != null &&
-                            placeName != "جارٍ تحديد الموقع...")
+                            placeName != "جارٍ تحديد الموقع..." &&
+                            placeName != "Locating...")
                         ? () {
                             debugPrint("Button pressed!");
-                            debugPrint("selectedLocation: $selectedLocation");
+                            debugPrint(
+                                "selectedLocation: $selectedLocation");
                             debugPrint("placeName: $placeName");
-                            debugPrint("Sending back: $placeName"); // ← للتأكد
+                            debugPrint("Sending back: $placeName");
                             Navigator.pop(context, {
                               "lat": selectedLocation!.latitude,
                               "lng": selectedLocation!.longitude,
@@ -233,7 +245,7 @@ class _CustomLocationState extends State<CustomLocation>
                             });
                           }
                         : null,
-                    child: const Text("Confirmation"),
+                    child: Text(isArabic ? "تأكيد" : "Confirmation"),
                   ),
                 ),
               ],

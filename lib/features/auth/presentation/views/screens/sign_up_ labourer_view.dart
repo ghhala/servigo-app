@@ -159,46 +159,46 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ),
                     Gap(20.h),
                     GestureDetector(
-                      onTap: () async {
-                        final result = await Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const CustomLocation(),
-                          ),
-                        );
+  onTap: () async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const CustomLocation(), // ← لا تغيير هنا
+      ),
+    );
 
-                        debugPrint("Result received from map: $result");
+    debugPrint("Result received from map: $result");
 
-                        if (result != null && result is Map) {
-                          if (mounted) {
-                            setState(() {
-                              selectedLatitude = result['lat'];
-                              selectedLongitude = result['lng'];
-                              locationController.text = result['name'] ?? '';
-                            });
-                          }
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: CustomTextFormFiled(
-                          controller: locationController,
-                          hintText: AppLocalizations.of(context)!.location,
-                          readOnly: true,
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.all(11.w),
-                            child: SvgPicture.asset(
-                              "assets/images/location_icon.svg",
-                            ),
-                          ),
-                          textInputType: TextInputType.text,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "الرجاء تحديد الموقع من الخريطة";
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
+    if (result != null && result is Map) {
+      if (mounted) {
+        setState(() {
+          selectedLatitude = result['lat'];
+          selectedLongitude = result['lng'];
+          locationController.text = result['name'] ?? '';
+        });
+      }
+    }
+  },
+  child: AbsorbPointer(
+    child: CustomTextFormFiled(
+      controller: locationController,
+      hintText: AppLocalizations.of(context)!.location,
+      readOnly: true,
+      prefixIcon: Padding(
+        padding: EdgeInsets.all(11.w),
+        child: SvgPicture.asset(
+          "assets/images/location_icon.svg",
+        ),
+      ),
+      textInputType: TextInputType.text,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return AppLocalizations.of(context)!.pleaseSelectLocationFromMap;
+        }
+        return null;
+      },
+    ),
+  ),
+),
                     Gap(20.h),
                     CustomTextFormFiled(
                       controller: serviceController,

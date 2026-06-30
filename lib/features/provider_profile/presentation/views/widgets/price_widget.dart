@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // 👈 قمنا بإضافة هذه المكتبة للتحكم بمدخلات النص
+import 'package:flutter/services.dart'; 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
 
 class PriceWidget extends StatelessWidget {
-  // 1. إضافة الـ Callback لاستقبال التغييرات وتمريرها للشاشة الأساسية
+  
   final Function(String minPrice, String maxPrice) onPriceChanged;
 
-  // سنقوم بتعريف متغيرين محليين لتخزين القيم أثناء الكتابة
+ 
   static String _currentMin = '';
   static String _currentMax = '';
 
@@ -61,10 +61,10 @@ class PriceWidget extends StatelessWidget {
         const Gap(8),
        
         CustomTextFormFiled(
-          hintText: "20000", // 👈 تعديل الـ Hint ليصبح رقماً صحيحاً بدون نقطة
+          hintText: "20000", 
           hintStyle: TextStyles.font12PrimaryColorW600,
           textInputType: TextInputType.number,
-          // 👇 يمنع إدخال الرموز والنقاط العشرية لمنع تشوه الرقم في قاعدة البيانات
+        
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],

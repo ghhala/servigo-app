@@ -79,6 +79,8 @@
   "next": "Next",
   "onBoardingDescription2": " Welcome to the ServiGo which provides \n   you with services easily and simply\n  wherever you are.",
   "getStarted": "Get Started",
-  "locationDetails": "Location Details"
+  "locationDetails": "Location Details",
+  "pleaseSelectLocationFromMap": "Please select your location from the map"
+
 
 }

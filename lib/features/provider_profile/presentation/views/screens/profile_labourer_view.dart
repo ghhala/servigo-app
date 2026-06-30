@@ -6,8 +6,18 @@ import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
+import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
+import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_state.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_state.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_state.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
+import 'package:servi_go_app/features/home/data/repositories/home_repository.dart';
+import 'package:servi_go_app/features/home/data/data_sources/home_remote_data_source.dart';
+import 'package:servi_go_app/core/network/api_service.dart';
+import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/container_widget.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/custom_container.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/my_protifolio.dart';
@@ -21,10 +31,13 @@ class ProfileLabourerView extends StatefulWidget {
 }
 
 class _ProfileLabourerViewState extends State<ProfileLabourerView> {
+  
+  int? _lastFetchedMainServiceId;
+
   @override
   void initState() {
     super.initState();
-    // جلب بيانات الحساب فور فتح الشاشة لضمان عدم بقائها فارغة
+
     context.read<ProviderProfileCubit>().fetchProviderProfile();
   }
 
@@ -41,7 +54,29 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SubServicesCubit>(
+          create: (_) => SubServicesCubit(
+            SubServicesRepository(
+              SubServicesRemoteDataSource(
+                ApiService(DioClient()),
+              ),
+            ),
+          ),
+        ),
+        BlocProvider<HomeCubit>(
+          create: (_) => HomeCubit(
+            HomeRepository(
+              HomeRemoteDataSource(
+                ApiService(DioClient()),
+              ),
+            ),
+          )..fetchHomeData(), 
+        ),
+      ],
+      child: Scaffold(
       body: AppBackground(
         withScaffold: false,
         padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 50.h),
@@ -113,6 +148,79 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               final user = profileData?.user;
               final provider = profileData?.provider;
 
+              // ✅ بمجرد توفر main_service_id، نطلب قائمة الـ sub-services
+              // الخاصة بهذه الخدمة الرئيسية (نفس الـ Cubit المستخدم في شاشة
+              // إكمال البروفايل) لنتمكن من ترجمة subServiceId إلى اسم بلغتين.
+              final mainServiceId = provider?.mainServiceId;
+              if (mainServiceId != null &&
+                  mainServiceId != _lastFetchedMainServiceId) {
+                _lastFetchedMainServiceId = mainServiceId;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    context
+                        .read<SubServicesCubit>()
+                        .fetchSubServices(mainServiceId);
+                  }
+                });
+              }
+
+           
+              final String languageCode =
+                  Localizations.localeOf(context).languageCode;
+              final bool isArabic = languageCode == 'ar';
+
+                        Widget buildServiceLine() {
+                return BlocBuilder<HomeCubit, HomeState>(
+                  builder: (context, homeState) {
+                    String mainServiceText =
+                        provider?.mainServiceName ?? ''; // fallback مؤقت
+
+                    if (homeState is HomeSuccess) {
+                      final mainServicesList =
+                          homeState.homeData.data?.mainServices ?? [];
+                      final mainMatch = mainServicesList.where(
+                        (s) => s.id == provider?.mainServiceId,
+                      );
+                      if (mainMatch.isNotEmpty) {
+                        final service = mainMatch.first;
+                        mainServiceText =
+                            (isArabic ? service.nameAr : service.nameEn) ??
+                                mainServiceText;
+                      }
+                    }
+
+                    return BlocBuilder<SubServicesCubit, SubServicesState>(
+                      builder: (context, subState) {
+                        String subServiceText =
+                            provider?.subServiceName ?? ''; // fallback مؤقت
+
+                        if (subState is SubServicesSuccess) {
+                          final match = subState.subServices.where(
+                            (s) => s.id == provider?.subServiceId,
+                          );
+                          if (match.isNotEmpty) {
+                            final service = match.first;
+                            subServiceText =
+                                (isArabic ? service.nameAr : service.nameEn) ??
+                                    '';
+                          }
+                        }
+
+                        return Text(
+                          "$mainServiceText | $subServiceText",
+                          style: TextStyles.onCard(
+                            context,
+                            TextStyles.font12PrimaryColorW600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      },
+                    );
+                  },
+                );
+              }
+
               // ── أيام العمل ──
               const allDays = [
                 'sunday', 'monday', 'tuesday',
@@ -156,8 +264,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 child: Column(
                   children: [
                     const LangagueThemeWidget(),
-                    Gap(20.h), // تقليل الـ Gap العلوي لأن التمرير يأخذ مساحة مريحة الآن
-
+                    Gap(20.h), 
                   
                     CustomContainer(
                       width: 360.w,
@@ -187,15 +294,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Gap(5.h),
-                            Text(
-                              "${provider?.mainServiceName ?? ''} | ${provider?.subServiceName ?? ''}",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font12PrimaryColorW600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                           
+                            buildServiceLine(),
                             Gap(4.h),
                             Text(
                               user?.phone ?? "No Phone",
@@ -217,7 +317,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             ),
                             Gap(20.h),
 
-                            // ── Stats Row 1: Rating + Work Type ──
+                          
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8).r,
                               child: Row(
@@ -394,11 +494,11 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
   padding: EdgeInsets.symmetric(horizontal: 10.w),
   child: Builder(
     builder: (context) {
-      // 1. جلب القيم وتحويلها لنصوص نظيفة من أي مسافات
+    
       String minStr = provider?.minPrice?.toString().trim() ?? '0';
       String maxStr = provider?.maxPrice?.toString().trim() ?? '0';
 
-      // 2. إذا كان النص يحتوي على نقطة عشرية (مثل 1.00 أو 100.00)، نأخذ الجزء الصحيح فقط قبل النقطة
+     
       if (minStr.contains('.')) {
         minStr = minStr.split('.').first;
       }
@@ -529,6 +629,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
           },
         ),
       ),
+      ), 
     );
   }
 }

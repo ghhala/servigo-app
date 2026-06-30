@@ -45,7 +45,7 @@ class _HomeViewState extends State<HomeView> {
         child: const ProfileLabourerView(),
       ),
         MessagesScreen(),
-        SettingsView(),
+        SettingsView(isProvider: true,),
       ];
     } else {
       return  [HomeBody(userType: "user",), 
@@ -61,7 +61,7 @@ class _HomeViewState extends State<HomeView> {
     },
     child: const UserProfileView(),
   ),
-      MessagesScreen(), SettingsView()];
+      MessagesScreen(), SettingsView(isProvider: false,)];
     }
   }
 

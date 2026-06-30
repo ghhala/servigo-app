@@ -251,4 +251,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get locationDetails => ' تفاصيل الموقع';
+
+  @override
+  String get pleaseSelectLocationFromMap => 'الرجاء تحديد الموقع من الخريطة';
 }

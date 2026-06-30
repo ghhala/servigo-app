@@ -195,6 +195,7 @@ class _FilterViewState extends State<FilterView> {
                     return ProviderCardWidget(
                       provider: entity,
                       onTap: () {
+                        
                         Navigator.pushNamed(
                           context,
                           '/provider-profile',
