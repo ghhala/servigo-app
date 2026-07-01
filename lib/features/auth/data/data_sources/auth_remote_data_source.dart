@@ -40,6 +40,17 @@ class AuthRemoteDataSource {
     return response;
   }
 
+  Future<dynamic> resendOtp({
+    required String email,
+    required String type,
+  }) async {
+    final response = await _apiService.post('auth/resend-otp', {
+      'email': email,
+      'type': type,
+    });
+    return response;
+  }
+
   Future<dynamic> login({
     required String email,
     required String password,

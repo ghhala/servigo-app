@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/filter/domain/entities/provider_entity.dart';
 import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
@@ -194,14 +196,14 @@ class _FilterViewState extends State<FilterView> {
 
                     return ProviderCardWidget(
                       provider: entity,
-                      onTap: () {
-                        
-                        Navigator.pushNamed(
-                          context,
-                          '/provider-profile',
-                          arguments: entity.id,
-                        );
-                      },
+                   onTap: () {
+                    GoRouter.of(context).push(
+                      AppRouter.kProfileLabourer,
+                      extra: entity.id,
+                    );
+  
+   
+  },
                     );
                   },
                 );

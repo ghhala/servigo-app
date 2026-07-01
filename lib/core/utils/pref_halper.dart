@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefHelper {
   static const String _tokenKey = 'auth_token';
+  static const String _emailKey = 'user_email';
   static late SharedPreferences _prefs;
 
 
@@ -42,5 +43,17 @@ class PrefHelper {
   }
   static Future<bool> clearUserImage() async {
     return await _prefs.remove('user_image');
+  }
+
+  static Future<bool> saveEmail(String email) async {
+    return await _prefs.setString(_emailKey, email);
+  }
+
+  static String? getEmail() {
+    return _prefs.getString(_emailKey);
+  }
+
+  static Future<bool> clearEmail() async {
+    return await _prefs.remove(_emailKey);
   }
 }

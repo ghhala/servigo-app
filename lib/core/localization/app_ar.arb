@@ -34,7 +34,7 @@
   "changeIt": "تغييره؟",
   "verifyCode": "التحقق من الرمز",
   "resendCode": "إعادة إرسال الرمز؟",
-  "resendIn": "إعادة إرسال في 00:12 ثانية",
+  "resendIn": "إعادة إرسال في",
   "resetPassword": "إعادة تعيين كلمة المرور",
   "resetPasswordLabel": "إعادة تعيين كلمة المرور",
   "pleaseEnterNewPassword": "الرجاء إدخال كلمة مرور جديدة وحاول عدم نسيانها",

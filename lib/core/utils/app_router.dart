@@ -35,6 +35,7 @@ import 'package:servi_go_app/features/provider_profile/presentation/view_models/
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/move_to_complite.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
+
 import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
 import 'package:servi_go_app/features/splash/presentation/views/widgets/splash_view.dart';
 import 'package:servi_go_app/features/user_profile/data/data_sources/user_profile_remote_data_source.dart';
@@ -43,7 +44,7 @@ import 'package:servi_go_app/features/user_profile/data/repositories/user_profil
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/edit%20_profile_user.dart';
 
-// 👈 إضافة استيرادات ميزة الفلترة الجديدة
+
 import 'package:servi_go_app/features/filter/data/repositories/filter_repository_impl.dart';
 import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
 import 'package:servi_go_app/features/filter/presentation/views/filter_view.dart';
@@ -229,10 +230,13 @@ abstract class AppRouter {
         path: kkLocation,
         builder: (context, state) => const CustomLocation(),
       ),
-      GoRoute(
-        path: AppRouter.kSettings,
-        builder: (context, state) => const SettingsView(isProvider: true,),
-      ),
+   GoRoute(
+  path: AppRouter.kSettings,
+  builder: (context, state) {
+    final isProvider = state.extra as bool? ?? false;
+    return SettingsView(isProvider: isProvider);
+  },
+),
 
       GoRoute(
         path: kHome,
@@ -279,10 +283,17 @@ abstract class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: AppRouter.kProfileLabourer,
-        builder: (context, state) => const ProfileLabourerView(),
-      ),
+    GoRoute(
+  path: AppRouter.kProfileLabourer,
+  builder: (context, state) {
+    // 🚀 استقبال الـ id الذي قمنا بتمريره عبر الـ extra بنجاح
+    final providerId = state.extra as int;
+
+    return ProfileLabourerView(
+      providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
+    );
+  },
+),
       GoRoute(
         path: AppRouter.kmoveToComplite,
         builder: (context, state) {
@@ -321,29 +332,7 @@ abstract class AppRouter {
         },
       ),
 
-      // 🚀 ──── الـ Route الجديد الخاص بشاشة الفلترة ────
-//    GoRoute(
-//   path: kFilterView,
-//   builder: (context, state) {
-//     final data = state.extra as Map<String, dynamic>;
-//     final mainServiceId = data['mainServiceId'] as int;
-//     final mainServiceName = data['mainServiceName'] as String;
-
-//     return BlocProvider(
-//       create: (context) => FilterCubit(
-//         filterRepository: FilterRepository(
-//           remoteDataSource: FilterRemoteDataSourceImpl(
-//             apiService: ApiService(DioClient()),
-//           ),
-//         ),
-//       ),
-//       child: FilterView(
-//         mainServiceId: mainServiceId,
-//         mainServiceName: mainServiceName,
-//       ),
-//     );
-//   },
-// ),
+ 
 GoRoute(
   path: kFilterView,
   builder: (context, state) {

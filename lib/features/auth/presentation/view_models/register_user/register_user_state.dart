@@ -29,3 +29,10 @@ final class VerifyOtpFailure extends RegisterUserState {
   final ApiError error;
   VerifyOtpFailure(this.error);
 }
+
+class ResendOtpLoading extends RegisterUserState {}
+class ResendOtpSuccess extends RegisterUserState {}
+class ResendOtpFailure extends RegisterUserState {
+  final ApiError error;
+  ResendOtpFailure(this.error);
+}

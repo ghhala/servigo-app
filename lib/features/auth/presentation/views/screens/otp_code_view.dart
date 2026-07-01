@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +19,7 @@ class OtpCodeView extends StatefulWidget {
   final String userType;
   final bool isForgetPassword;
   final String? authAction;
-  final int? mainServiceId; 
+  final int? mainServiceId;
 
   const OtpCodeView({
     super.key,
@@ -27,7 +28,7 @@ class OtpCodeView extends StatefulWidget {
     required this.userType,
     required this.isForgetPassword,
     this.authAction,
-    this.mainServiceId, 
+    this.mainServiceId,
   });
 
   @override
@@ -37,7 +38,65 @@ class OtpCodeView extends StatefulWidget {
 class _OtpCodeViewState extends State<OtpCodeView> {
   String enteredOtp = "";
 
+  // ⏱️ متغيرات العداد التنازلي
+  static const int _resendDuration = 60; // ثانية
+  int _secondsLeft = _resendDuration;
+  Timer? _timer;
+
+  // ✅ يحدد إذا كانت هذه الشاشة تُستخدم لتأكيد حذف الحساب
+  bool get isDeleteAccountFlow => widget.authAction == 'delete_account';
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    setState(() => _secondsLeft = _resendDuration);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsLeft <= 1) {
+        timer.cancel();
+        setState(() => _secondsLeft = 0);
+      } else {
+        setState(() => _secondsLeft--);
+      }
+    });
+  }
+
+  // ✅ نفس منطق تحديد نوع العملية، مستخدم في verify و resend معاً
+  String _resolveCurrentType() {
+    if (isDeleteAccountFlow) {
+      return 'delete_account';
+    } else if (widget.isForgetPassword) {
+      return 'forget';
+    } else if (widget.authAction != null) {
+      return widget.authAction!;
+    } else {
+      return 'register';
+    }
+  }
+
   void _handleNavigationOnSuccess() {
+    
+    if (isDeleteAccountFlow) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم حذف الحساب نهائياً'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(AppRouter.kusertypeview);
+      return;
+    }
+
     if (widget.isForgetPassword) {
       context.go(
         AppRouter.kresetpassword,
@@ -47,19 +106,18 @@ class _OtpCodeViewState extends State<OtpCodeView> {
           'userType': widget.userType,
         },
       );
-    } else if (widget.userType == 'labourer' || widget.userType == 'provider') {
-      // 🛠️ الفحص الجديد: إذا كان صاحب مهنة ويقوم بتسجيل الدخول، ينتقل للبروفايل مباشرة
+    } else if (widget.userType == 'labourer' ||
+        widget.userType == 'provider') {
       if (widget.authAction == 'login') {
         context.go(AppRouter.kProfileLabourer);
       } else {
-        // إذا كان تسجيلاً جديداً (Register)، يذهب لإكمال البيانات
         context.go(
           AppRouter.kmoveToComplite,
           extra: {
             'userType': widget.userType,
             'userData': {
               'email': widget.userEmail,
-              'main_service_id': widget.mainServiceId, 
+              'main_service_id': widget.mainServiceId,
             },
           },
         );
@@ -119,7 +177,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                       text: AppLocalizations.of(context)!.changeIt,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 14.sp,
-                  ),
+                      ),
                     ),
                   ],
                 ),
@@ -139,13 +197,37 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   if (state is VerifyOtpSuccess) {
                     if (!context.mounted) return;
 
-                    if (widget.userType == 'user' && !widget.isForgetPassword) {
+                   
+                    if (widget.userType == 'user' &&
+                        !widget.isForgetPassword &&
+                        !isDeleteAccountFlow) {
                       context.go(AppRouter.kHome, extra: widget.userType);
                     } else {
                       _handleNavigationOnSuccess();
                     }
                   }
                   if (state is VerifyOtpFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.error.message),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+
+               
+                  if (state is ResendOtpSuccess) {
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(' otp resend again successfully '),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    _startTimer(); 
+                  }
+                  if (state is ResendOtpFailure) {
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.error.message),
@@ -176,20 +258,10 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                           : widget.receivedOtp;
 
                       if (codeToVerify.isNotEmpty) {
-                        String currentType = 'login';
-
-                        if (widget.isForgetPassword) {
-                          currentType = 'forget';
-                        } else if (widget.authAction != null) {
-                          currentType = widget.authAction!;
-                        } else {
-                          currentType = 'register';
-                        }
-
                         context.read<RegisterUserCubit>().verifyOtp(
                           email: widget.userEmail,
                           otp: codeToVerify,
-                          type: currentType,
+                          type: _resolveCurrentType(),
                         );
                       }
                     },
@@ -198,18 +270,53 @@ class _OtpCodeViewState extends State<OtpCodeView> {
               ),
 
               Gap(16.h),
-              Row(
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.resendCode,
-                    style: TextStyles.font12GreyW400(context),
-                  ),
-                  const Spacer(),
-                  Text(
-                    AppLocalizations.of(context)!.resendIn,
-                    style: TextStyles.font16PrimaryColorW400,
-                  ),
-                ],
+
+              BlocBuilder<RegisterUserCubit, RegisterUserState>(
+                builder: (context, state) {
+                  final bool canResend = _secondsLeft == 0;
+                  final bool isResending = state is ResendOtpLoading;
+
+                  return Row(
+                    children: [
+                      GestureDetector(
+                        onTap: (canResend && !isResending)
+                            ? () {
+                                context.read<RegisterUserCubit>().resendOtp(
+                                  email: widget.userEmail,
+                                  type: _resolveCurrentType(),
+                                );
+                              }
+                            : null,
+                        child: Text(
+                          AppLocalizations.of(context)!.resendCode,
+                          style: TextStyles.font12GreyW400(context).copyWith(
+                            color: canResend ? null : Colors.grey,
+                            decoration: canResend
+                                ? TextDecoration.underline
+                                : TextDecoration.none,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      if (isResending)
+                        SizedBox(
+                          width: 14.w,
+                          height: 14.w,
+                          child: const CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      else if (canResend)
+                        Text(
+                          AppLocalizations.of(context)!.resendCode,
+                          style: TextStyles.font16PrimaryColorW400,
+                        )
+                      else
+                        Text(
+                          "${AppLocalizations.of(context)!.resendIn} 00:${_secondsLeft.toString().padLeft(2, '0')} s",
+                          style: TextStyles.font16PrimaryColorW400,
+                        ),
+                    ],
+                  );
+                },
               ),
             ],
           ),

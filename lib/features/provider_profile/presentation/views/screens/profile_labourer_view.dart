@@ -24,7 +24,8 @@ import 'package:servi_go_app/features/provider_profile/presentation/views/widget
 import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/my_certificates.dart';
 
 class ProfileLabourerView extends StatefulWidget {
-  const ProfileLabourerView({super.key});
+  final int? providerId;
+  const ProfileLabourerView({super.key, this.providerId});
 
   @override
   State<ProfileLabourerView> createState() => _ProfileLabourerViewState();
@@ -38,7 +39,9 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
   void initState() {
     super.initState();
 
-    context.read<ProviderProfileCubit>().fetchProviderProfile();
+    context.read<ProviderProfileCubit>().fetchProviderProfile(
+      providerId: widget.providerId,
+    );
   }
 
   String getCorrectImageUrl(String? path) {
@@ -148,9 +151,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               final user = profileData?.user;
               final provider = profileData?.provider;
 
-              // ✅ بمجرد توفر main_service_id، نطلب قائمة الـ sub-services
-              // الخاصة بهذه الخدمة الرئيسية (نفس الـ Cubit المستخدم في شاشة
-              // إكمال البروفايل) لنتمكن من ترجمة subServiceId إلى اسم بلغتين.
+            
               final mainServiceId = provider?.mainServiceId;
               if (mainServiceId != null &&
                   mainServiceId != _lastFetchedMainServiceId) {
@@ -173,7 +174,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 return BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, homeState) {
                     String mainServiceText =
-                        provider?.mainServiceName ?? ''; // fallback مؤقت
+                        provider?.mainServiceName ?? ''; 
 
                     if (homeState is HomeSuccess) {
                       final mainServicesList =

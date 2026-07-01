@@ -34,7 +34,7 @@ class AuthRepository {
     }
   }
   
-  // 3️⃣ دالة التحقق من كود الـ OTP وحفظ بيانات المستخدم الجديد في الكاش
+  
   Future<dynamic> verifyOtp({
     required String email, 
     required String otp, 
@@ -47,13 +47,14 @@ class AuthRepository {
         type: type,
       );
       
-      // حفظ التوكن في الكاش إذا رجع بنجاح
+      
       if (rawData != null && rawData['data'] != null && rawData['data']['token'] != null) {
         final String token = rawData['data']['token'].toString();
         await PrefHelper.saveToken(token);
+         await PrefHelper.saveEmail(email);
       }
 
-      // حفظ الاسم في الكاش فوراً إذا كان قادماً مع بيانات الـ OTP
+    
       if (rawData != null && rawData['data'] != null) {
         if (rawData['data']['user'] != null && rawData['data']['user']['name'] != null) {
           await PrefHelper.saveString('user_name', rawData['data']['user']['name'].toString());
@@ -69,16 +70,14 @@ class AuthRepository {
       throw ApiError(message: "unExpected error occured processing data : $e");
     }
   }
-
-  // 4️⃣ 🚀 الدالة المفقودة والسحرية: تسجيل الدخول (login) بحروف صغيرة لتطابق الكيوبيت
-  Future<dynamic> login({
-    required String email, 
-    required String password,
+   Future<dynamic> resendOtp({
+    required String email,
+    required String type,
   }) async {
     try {
-      final rawData = await _authRemoteDataSource.login(
-        email: email, 
-        password: password,
+      final rawData = await _authRemoteDataSource.resendOtp(
+        email: email,
+        type: type,
       );
       return rawData;
     } on ApiError catch (e) {
@@ -87,4 +86,28 @@ class AuthRepository {
       throw ApiError(message: "unExpected error occured processing data : $e");
     }
   }
+
+ Future<dynamic> login({
+  required String email, 
+  required String password,
+}) async {
+  try {
+    final rawData = await _authRemoteDataSource.login(
+      email: email, 
+      password: password,
+    );
+
+    if (rawData != null && rawData['data'] != null && rawData['data']['token'] != null) {
+      final String token = rawData['data']['token'].toString();
+      await PrefHelper.saveToken(token);
+      await PrefHelper.saveEmail(email); 
+    }
+
+    return rawData;
+  } on ApiError catch (e) {
+    throw e;
+  } catch (e) {
+    throw ApiError(message: "unExpected error occured processing data : $e");
+  }
+}
 }

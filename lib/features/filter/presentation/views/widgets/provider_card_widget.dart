@@ -12,6 +12,19 @@ class ProviderCardWidget extends StatelessWidget {
     required this.onTap,
   });
 
+  // ✅ نفس دالة getCorrectImageUrl المستخدمة في profile_labourer_view
+  String _buildImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.contains('localhost')) {
+      return path.replaceAll('localhost', '10.0.2.2');
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    // مسار نسبي من السيرفر → نضيف الـ base URL
+    return 'http://10.0.2.2/servigo/public/$path';
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -41,13 +54,13 @@ class ProviderCardWidget extends StatelessWidget {
 
   // ── Avatar ──
   Widget _buildAvatar() {
+    final imageUrl = _buildImageUrl(provider.photo);
     return CircleAvatar(
       radius: 28.r,
       backgroundColor: const Color(0xFF6C5CE7),
-      backgroundImage: provider.photo != null
-          ? NetworkImage(provider.photo!)
-          : null,
-      child: provider.photo == null
+      // ✅ نستخدم imageUrl المعالج بدل provider.photo مباشرة
+      backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+      child: imageUrl.isEmpty
           ? Text(
               provider.name.isNotEmpty
                   ? provider.name[0].toUpperCase()
@@ -99,13 +112,11 @@ class ProviderCardWidget extends StatelessWidget {
         ),
         const SizedBox(height: 6),
 
-        // التقييم + السعر + الموقع
+        // التقييم + السعر
         Row(
           children: [
-            // التقييم
             _buildRating(),
             const Spacer(),
-            // السعر
             _buildPrice(),
           ],
         ),

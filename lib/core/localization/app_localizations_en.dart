@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resendCode => 'Resend Code?';
 
   @override
-  String get resendIn => 'Resend in 00:12 s';
+  String get resendIn => 'Resend ';
 
   @override
   String get resetPassword => 'Reset password';

@@ -112,7 +112,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get resendCode => 'إعادة إرسال الرمز؟';
 
   @override
-  String get resendIn => 'إعادة إرسال في 00:12 ثانية';
+  String get resendIn => 'إعادة إرسال في';
 
   @override
   String get resetPassword => 'إعادة تعيين كلمة المرور';
