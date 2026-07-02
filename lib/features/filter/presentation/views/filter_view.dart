@@ -173,13 +173,14 @@ class _FilterViewState extends State<FilterView> {
 
                 // ── Results ──
                 return ListView.separated(
-                  shrinkWrap: true,                               // ✅ ضروري
-                  physics: const NeverScrollableScrollPhysics(),  // ✅ ضروري
+                  shrinkWrap: true,                               
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   itemCount: currentProviders.length,
                   separatorBuilder: (context, _) => SizedBox(height: 8.h),
                   itemBuilder: (context, index) {
                     final item = currentProviders[index];
+                   print("photo url: ${item.photo}"); 
 
                     final entity = ProviderEntity(
                       id: item.providerUserId ?? 0,
@@ -197,6 +198,8 @@ class _FilterViewState extends State<FilterView> {
                     return ProviderCardWidget(
                       provider: entity,
                    onTap: () {
+                    print("Pressed");
+  print("Provider ID = ${entity.id}");
                     GoRouter.of(context).push(
                       AppRouter.kProfileLabourer,
                       extra: entity.id,

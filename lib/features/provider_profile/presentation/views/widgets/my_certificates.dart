@@ -34,7 +34,7 @@ class MyCertificates extends StatelessWidget {
                 Icon(Icons.card_membership, size: 20.sp, color: Theme.of(context).primaryColor),
                 Gap(6.w),
                 Text(
-                  "His Certificates",
+                  "My Certificates",
                   style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 ),
               ],

@@ -27,10 +27,13 @@ import 'package:servi_go_app/features/map/presentation/views/screens/map_view.da
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/complete_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/complete_profile_repository.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/completeprofile/complete_profile_cubit.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/move_to_complite.dart';
@@ -283,14 +286,34 @@ abstract class AppRouter {
           );
         },
       ),
-    GoRoute(
+//     GoRoute(
+//   path: AppRouter.kProfileLabourer,
+//   builder: (context, state) {
+  
+// final providerId = (state.extra as int?) ?? 0;
+
+//     return ProfileLabourerView(
+//       providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
+//     );
+//   },
+// ),
+
+GoRoute(
   path: AppRouter.kProfileLabourer,
   builder: (context, state) {
-    // 🚀 استقبال الـ id الذي قمنا بتمريره عبر الـ extra بنجاح
-    final providerId = state.extra as int;
+    final providerId = (state.extra as int?) ?? 0;
 
-    return ProfileLabourerView(
-      providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
+    return BlocProvider(
+      create: (_) => ProviderProfileCubit(
+        ProviderProfileRepository(
+          ProviderProfileRemoteDataSource(
+            ApiService(DioClient()),
+          ),
+        ),
+      ),
+      child: ProfileLabourerView(
+        providerId: providerId,
+      ),
     );
   },
 ),

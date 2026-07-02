@@ -25,7 +25,7 @@ class MyPortfolio extends StatelessWidget {
                 const Icon(Icons.import_contacts, size: 18, color: Colors.blueGrey),
                 Gap(5.w),
                 Text(
-                  "His Portfolio",
+                  "My Portfolio",
                   style: TextStyles.onCard(
                     context,
                     TextStyles.font12PrimaryColorW600,

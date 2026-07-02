@@ -32,8 +32,10 @@ class ProfileLabourerView extends StatefulWidget {
 }
 
 class _ProfileLabourerViewState extends State<ProfileLabourerView> {
-  
+
   int? _lastFetchedMainServiceId;
+
+  bool get isOwner => widget.providerId == null;
 
   @override
   void initState() {
@@ -57,7 +59,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
 
   @override
   Widget build(BuildContext context) {
-    
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<SubServicesCubit>(
@@ -76,14 +78,19 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 ApiService(DioClient()),
               ),
             ),
-          )..fetchHomeData(), 
+          )..fetchHomeData(),
         ),
       ],
       child: Scaffold(
       body: AppBackground(
         withScaffold: false,
         padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 50.h),
-        child: BlocBuilder<ProviderProfileCubit, ProviderProfileState>(
+        child: BlocConsumer<ProviderProfileCubit, ProviderProfileState>(
+          listener: (context, state) {
+            // ✅ ملاحظة: مفيش states جديدة للأخطاء الخاصة بـ favourite/complaint/rate
+            // لأن toggleFavourite بترجع نفسها ProviderProfileSuccess،
+            // والأخطاء بتتصرف عن طريق try/catch مباشرة في الأزرار (تحت).
+          },
           builder: (context, state) {
 
             // ── Loading ──
@@ -151,7 +158,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               final user = profileData?.user;
               final provider = profileData?.provider;
 
-            
+
               final mainServiceId = provider?.mainServiceId;
               if (mainServiceId != null &&
                   mainServiceId != _lastFetchedMainServiceId) {
@@ -165,7 +172,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 });
               }
 
-           
+
               final String languageCode =
                   Localizations.localeOf(context).languageCode;
               final bool isArabic = languageCode == 'ar';
@@ -174,7 +181,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 return BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, homeState) {
                     String mainServiceText =
-                        provider?.mainServiceName ?? ''; 
+                        provider?.mainServiceName ?? '';
 
                     if (homeState is HomeSuccess) {
                       final mainServicesList =
@@ -193,7 +200,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     return BlocBuilder<SubServicesCubit, SubServicesState>(
                       builder: (context, subState) {
                         String subServiceText =
-                            provider?.subServiceName ?? ''; // fallback مؤقت
+                            provider?.subServiceName ?? '';
 
                         if (subState is SubServicesSuccess) {
                           final match = subState.subServices.where(
@@ -259,29 +266,81 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                       })
                   .toList();
 
-           
+
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: [
                     const LangagueThemeWidget(),
-                    Gap(20.h), 
-                  
+                    Gap(20.h),
+
                     CustomContainer(
                       width: 360.w,
-                      height: 350.h,
+                      height: isOwner ? 350.h : 420.h,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 15).r,
                         child: Column(
                           children: [
-                            CircleAvatar(
-                              radius: 30.r,
-                              backgroundColor: Colors.grey[300],
-                              backgroundImage: avatarUrl.isNotEmpty
-                                  ? NetworkImage(avatarUrl)
-                                  : const AssetImage(
-                                          "assets/images/avatar2.jpg")
-                                      as ImageProvider,
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                CircleAvatar(
+                                  radius: 30.r,
+                                  backgroundColor: Colors.grey[300],
+                                  backgroundImage: avatarUrl.isNotEmpty
+                                      ? NetworkImage(avatarUrl)
+                                      : const AssetImage(
+                                              "assets/images/avatar2.jpg")
+                                          as ImageProvider,
+                                ),
+                                if (!isOwner)
+                                  Positioned(
+                                    top: -6,
+                                    right: -6,
+                                    child: GestureDetector(
+                                      // ✅ استدعاء فعلي لتبديل المفضلة مع معالجة الخطأ
+                                      onTap: () async {
+                                        try {
+                                          await context
+                                              .read<ProviderProfileCubit>()
+                                              .toggleFavourite(
+                                                providerId: widget.providerId!,
+                                              );
+                                        } catch (e) {
+                                          if (!context.mounted) return;
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                                  Text("فشل تحديث المفضلة"),
+                                              backgroundColor: Colors.red,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(4.r),
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Icon(
+                                          (profileData?.isFavourite ?? false)
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          size: 16.sp,
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             Gap(10.h),
                             Text(
@@ -295,7 +354,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Gap(5.h),
-                           
+
                             buildServiceLine(),
                             Gap(4.h),
                             Text(
@@ -318,7 +377,6 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             ),
                             Gap(20.h),
 
-                          
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8).r,
                               child: Row(
@@ -341,7 +399,6 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             ),
                             Gap(10.h),
 
-                            // ── Stats Row 2: Available + Overnight ──
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8).r,
                               child: Row(
@@ -365,13 +422,52 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                 ],
                               ),
                             ),
+
+                            if (!isOwner) ...[
+                              Gap(14.h),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8).r,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: CustomButton(
+                                        height: 40.h,
+                                        title: "Contact",
+                                        textstyle: TextStyles.font11WhiteW500,
+                                        onTap: () {
+                                          // ملحوظة: خاص بالشات (button-status + start) هيتضاف لاحقًا
+                                        },
+                                      ),
+                                    ),
+                                    Gap(10.w),
+                                    GestureDetector(
+                                      // ✅ فتح نافذة الشكوى مباشرة
+                                      onTap: () => _showComplaintDialog(context),
+                                      child: Container(
+                                        width: 40.h,
+                                        height: 40.h,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                        child: Icon(
+                                          Icons.flag_outlined,
+                                          color: Colors.redAccent,
+                                          size: 20.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
                     ),
                     Gap(20.h),
 
-                    // ── About Him ──
+                    // ── About Him / About Me ──
                     CustomContainer(
                       width: 353.w,
                       height: 90.h,
@@ -385,7 +481,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                 Image.asset("assets/images/about_him_icon.png"),
                                 Gap(5.w),
                                 Text(
-                                  "About him",
+                                  isOwner ? "About me" : "About him",
                                   style: TextStyles.onCard(
                                     context,
                                     TextStyles.font12PrimaryColorW600,
@@ -399,7 +495,9 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             padding: EdgeInsets.symmetric(horizontal: 10.w),
                             child: Text(
                               provider?.aboutMe ??
-                                  "No info written by provider.",
+                                  (isOwner
+                                      ? "You haven't written a bio yet."
+                                      : "No info written by provider."),
                               style: TextStyle(fontSize: 12.sp),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -491,48 +589,45 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             ),
                           ),
                           Gap(4.h),
-                       Padding(
-  padding: EdgeInsets.symmetric(horizontal: 10.w),
-  child: Builder(
-    builder: (context) {
-    
-      String minStr = provider?.minPrice?.toString().trim() ?? '0';
-      String maxStr = provider?.maxPrice?.toString().trim() ?? '0';
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            child: Builder(
+                              builder: (context) {
+                                String minStr =
+                                    provider?.minPrice?.toString().trim() ?? '0';
+                                String maxStr =
+                                    provider?.maxPrice?.toString().trim() ?? '0';
 
-     
-      if (minStr.contains('.')) {
-        minStr = minStr.split('.').first;
-      }
-      if (maxStr.contains('.')) {
-        maxStr = maxStr.split('.').first;
-      }
+                                if (minStr.contains('.')) {
+                                  minStr = minStr.split('.').first;
+                                }
+                                if (maxStr.contains('.')) {
+                                  maxStr = maxStr.split('.').first;
+                                }
 
-    
-      final int minPrice = int.tryParse(minStr) ?? 0;
-      final int maxPrice = int.tryParse(maxStr) ?? 0;
+                                final int minPrice = int.tryParse(minStr) ?? 0;
+                                final int maxPrice = int.tryParse(maxStr) ?? 0;
 
-      return Text(
-        "$minPrice - $maxPrice ${provider?.currency ?? 'SYP'}",
-        style: TextStyle(
-          fontSize: 13.sp,
-          fontWeight: FontWeight.w500,
-        ),
-      );
-    },
-  ),
-),
+                                return Text(
+                                  "$minPrice - $maxPrice ${provider?.currency ?? 'SYP'}",
+                                  style: TextStyle(
+                                    fontSize: 13.sp,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
                     Gap(20.h),
 
-                  
                     if (portfolioItems.isNotEmpty) ...[
                       MyPortfolio(portfolioList: portfolioItems),
                       Gap(20.h),
                     ],
 
-                    // ── Certificates ──
                     if (certificateItems.isNotEmpty) ...[
                       MyCertificates(certificatesList: certificateItems),
                       Gap(20.h),
@@ -541,7 +636,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     // ── Customer Reviews and Ratings ──
                     CustomContainer(
                       width: 353.w,
-                      height: 134.h,
+                      height: isOwner ? 134.h : 160.h,
                       child: Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 12.w, vertical: 10.h),
@@ -550,13 +645,24 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             Row(
                               children: [
                                 Image.asset("assets/images/reviews_icon.png"),
-                                Text(
-                                  " Customer Reviews and Ratings",
-                                  style: TextStyles.onCard(
-                                    context,
-                                    TextStyles.font12PrimaryColorW600,
+                                Expanded(
+                                  child: Text(
+                                    " Customer Reviews and Ratings",
+                                    style: TextStyles.onCard(
+                                      context,
+                                      TextStyles.font12PrimaryColorW600,
+                                    ),
                                   ),
                                 ),
+                                if (!isOwner)
+                                  CustomButton(
+                                    width: 90.w,
+                                    height: 28.h,
+                                    title: "+ Add Review",
+                                    textstyle: TextStyles.font11WhiteW500,
+                                    
+                                    onTap: () => _showAddReviewDialog(context),
+                                  ),
                               ],
                             ),
                             Gap(8.h),
@@ -630,7 +736,150 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
           },
         ),
       ),
-      ), 
+      ),
     );
   }
-}
+
+  // ✅ نافذة الشكوى — الاستدعاء الفعلي مفعّل
+  void _showComplaintDialog(BuildContext context) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("send complaint    "),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            hintText: "  write the complaint...",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              final message = controller.text.trim();
+              Navigator.pop(dialogContext);
+
+              if (message.isEmpty) return;
+
+              try {
+                await context.read<ProviderProfileCubit>().sendComplaint(
+                      providerId: widget.providerId!,
+                      message: message,
+                    );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(" send complaint successfully" ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Failed to send complaint"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text("Send"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ نافذة إضافة التقييم — الاستدعاء الفعلي مفعّل
+  void _showAddReviewDialog(BuildContext context) {
+  // ✅ نمسك الـ Cubit من الـ context الأصلي (اللي شايف الـ Provider) قبل فتح الـ Dialog
+  final providerProfileCubit = context.read<ProviderProfileCubit>();
+
+  int selectedRating = 5;
+  final reviewController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (dialogContext) => StatefulBuilder(
+      builder: (context, setStateDialog) {
+        return AlertDialog(
+          title: const Text("Add Review"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  final starIndex = index + 1;
+                  return GestureDetector(
+                    onTap: () {
+                      setStateDialog(() => selectedRating = starIndex);
+                    },
+                    child: Icon(
+                      starIndex <= selectedRating
+                          ? Icons.star
+                          : Icons.star_border,
+                      color: Colors.amber,
+                      size: 28,
+                    ),
+                  );
+                }),
+              ),
+              const Gap(12),
+              TextField(
+                controller: reviewController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  hintText: "Write your review...",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final review = reviewController.text.trim();
+                Navigator.pop(dialogContext);
+
+                try {
+               
+                  await providerProfileCubit.rateProvider(
+                    providerId: widget.providerId!,
+                    rating: selectedRating,
+                    review: review,
+                  );
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Review added successfully"),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } catch (e) {
+                  debugPrint("❌ Error submitting review: $e");
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    SnackBar(
+                      content: Text("Failed to submit review: $e"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text("send"),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}}

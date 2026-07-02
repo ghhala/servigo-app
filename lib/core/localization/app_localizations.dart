@@ -305,7 +305,7 @@ abstract class AppLocalizations {
   /// No description provided for @resendIn.
   ///
   /// In en, this message translates to:
-  /// **'Resend '**
+  /// **'Resend in'**
   String get resendIn;
 
   /// No description provided for @resetPassword.
