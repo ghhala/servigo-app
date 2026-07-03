@@ -10,7 +10,6 @@ class AuthRepository {
 
   AuthRepository(this._authRemoteDataSource);
 
-  // 1️⃣ دالة تسجيل مستخدم جديد
   Future<UserSignUpResponseModel> registerUser(RegisterUserRequestBody requestBody) async {
     try {
       final rawData = await _authRemoteDataSource.registerUser(requestBody);
@@ -22,7 +21,7 @@ class AuthRepository {
     }
   }
 
-  // 2️⃣ دالة تسجيل مزود خدمة جديد
+  
   Future<dynamic> registerProvider(RegisterProviderRequestBody requestBody) async {
     try {
       final result = await _authRemoteDataSource.registerProvider(requestBody);
@@ -86,6 +85,37 @@ class AuthRepository {
       throw ApiError(message: "unExpected error occured processing data : $e");
     }
   }
+  Future<dynamic> forgotPassword({required String email}) async {
+  try {
+    final rawData = await _authRemoteDataSource.forgotPassword(
+      email: email,
+    );
+    return rawData;
+  } on ApiError catch (e) {
+    throw e;
+  } catch (e) {
+    throw ApiError(message: "unExpected error occured processing data : $e");
+  }
+}
+
+Future<dynamic> resetPassword({
+  required String email,
+  required String password,
+  required String passwordConfirmation,
+}) async {
+  try {
+    final rawData = await _authRemoteDataSource.resetPassword(
+      email: email,
+      password: password,
+      passwordConfirmation: passwordConfirmation,
+    );
+    return rawData;
+  } on ApiError catch (e) {
+    throw e;
+  } catch (e) {
+    throw ApiError(message: "unExpected error occured processing data : $e");
+  }
+}
 
  Future<dynamic> login({
   required String email, 

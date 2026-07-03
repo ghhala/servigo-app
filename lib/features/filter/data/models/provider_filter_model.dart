@@ -9,6 +9,9 @@ class ProviderFilterModel {
   final String? workType;
   final String? locationName;
   final bool? isAvailable;
+  // ✅ إضافة الموقع الجغرافي للمزود
+  final double? latitude;
+  final double? longitude;
 
   ProviderFilterModel({
     this.providerUserId,
@@ -21,9 +24,10 @@ class ProviderFilterModel {
     this.workType,
     this.locationName,
     this.isAvailable,
+    this.latitude,
+    this.longitude,
   });
 
- 
   factory ProviderFilterModel.fromJson(Map<String, dynamic> json) {
     return ProviderFilterModel(
       providerUserId: json['provider_user_id'] as int?,
@@ -36,6 +40,9 @@ class ProviderFilterModel {
       workType: json['work_type'] as String?,
       locationName: json['location_name'] as String?,
       isAvailable: json['is_available'] as bool?,
+      // ✅ قراءة الموقع من الـ JSON
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 }

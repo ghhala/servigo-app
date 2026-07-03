@@ -70,4 +70,45 @@ Future<void> resendOtp({
       emit(ResendOtpFailure(ApiError(message: "An unexpected error occurred: $e")));
     }
   }
+  Future<void> forgotPassword({
+    required String email,
+  }) async {
+    emit(ForgotPasswordLoading());
+    try {
+      await _authRepository.forgotPassword(email: email);
+      emit(ForgotPasswordSuccess(email));
+    } on ApiError catch (e) {
+      emit(ForgotPasswordFailure(e));
+    } catch (e) {
+      emit(
+        ForgotPasswordFailure(
+          ApiError(message: "An unexpected error occurred: $e"),
+        ),
+      );
+    }
+  }
+
+  Future<void> resetPassword({
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    emit(ResetPasswordLoading());
+    try {
+      await _authRepository.resetPassword(
+        email: email,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+      emit(ResetPasswordSuccess());
+    } on ApiError catch (e) {
+      emit(ResetPasswordFailure(e));
+    } catch (e) {
+      emit(
+        ResetPasswordFailure(
+          ApiError(message: "An unexpected error occurred: $e"),
+        ),
+      );
+    }
+  }
 }

@@ -108,20 +108,20 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           const Divider(height: 1),
 
-          // المحتوى الداخلي للفلترة
+          
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── استماع وقراءة الخدمات الفرعية الحية من الـ State الموحد ──
+           
                   BlocBuilder<FilterCubit, FilterState>(
                     builder: (context, state) {
-                      // قراءة القائمة الفرعية مباشرة من الستيت الموحد الجديد بأمان
+                   
                       List<SubServiceEntity> availableSubServices = widget.subServices ?? state.subServices;
 
-                      // إظهار مؤشر التحميل فقط لو كانت القائمة فارغة والوضع هو loading
+                     
                       if (availableSubServices.isEmpty && state.status == FilterStatus.loading) {
                         return const Center(
                           child: Padding(
@@ -131,7 +131,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         );
                       }
 
-                      // التعامل مع حالة الخطأ في جلب البيانات الفرعية
+                  
                       if (availableSubServices.isEmpty && state.status == FilterStatus.error) {
                         return Center(
                           child: Text(

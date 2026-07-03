@@ -6,20 +6,16 @@ class ProviderProfileCubit extends Cubit<ProviderProfileState> {
   final ProviderProfileRepository _repository;
   ProviderProfileCubit(this._repository) : super(ProviderProfileInitial());
 
-  // 🚀 التعديل هنا: إضافة {int? providerId} كـ المعامل اختياري ومسمى (Named Parameter)
   Future<void> fetchProviderProfile({int? providerId}) async {
     emit(ProviderProfileLoading());
     try {
-      // 🚀 تمرير الـ providerId إلى الـ Repository
       final profileModel = await _repository.getProviderProfile(providerId: providerId);
-
       emit(ProviderProfileSuccess(profileModel));
     } catch (e) {
       emit(ProviderProfileFailure(e.toString()));
     }
   }
 
-  // ✅ تبديل حالة المفضلة (Optimistic Update) بدون إعادة تحميل الصفحة كلها
   Future<void> toggleFavourite({required int providerId}) async {
     final currentState = state;
     if (currentState is! ProviderProfileSuccess) return;
@@ -29,7 +25,6 @@ class ProviderProfileCubit extends Cubit<ProviderProfileState> {
 
     final bool previousValue = currentData.isFavourite ?? false;
 
-    // تحديث فوري في الواجهة قبل رد السيرفر
     emit(ProviderProfileSuccess(
       currentState.profileModel.copyWith(
         data: currentData.copyWith(isFavourite: !previousValue),
@@ -38,14 +33,12 @@ class ProviderProfileCubit extends Cubit<ProviderProfileState> {
 
     try {
       final serverValue = await _repository.toggleFavourite(providerId);
-      // تأكيد القيمة الحقيقية القادمة من السيرفر
       emit(ProviderProfileSuccess(
         currentState.profileModel.copyWith(
           data: currentData.copyWith(isFavourite: serverValue),
         ),
       ));
     } catch (e) {
-      // فشل الطلب → رجّعي القيمة القديمة
       emit(ProviderProfileSuccess(
         currentState.profileModel.copyWith(
           data: currentData.copyWith(isFavourite: previousValue),
@@ -55,7 +48,6 @@ class ProviderProfileCubit extends Cubit<ProviderProfileState> {
     }
   }
 
-  // ✅ إرسال شكوى ضد مقدم الخدمة
   Future<void> sendComplaint({
     required int providerId,
     required String message,
@@ -63,7 +55,6 @@ class ProviderProfileCubit extends Cubit<ProviderProfileState> {
     await _repository.sendComplaint(providerId: providerId, message: message);
   }
 
-  // ✅ إضافة تقييم + تعليق، ثم إعادة تحميل البروفايل لتحديث avg_rating والتعليقات
   Future<void> rateProvider({
     required int providerId,
     required int rating,

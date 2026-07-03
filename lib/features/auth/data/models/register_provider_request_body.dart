@@ -39,7 +39,7 @@ class RegisterProviderRequestBody {
     if (passwordConfirmation != null) map['password_confirmation'] = passwordConfirmation;
     if (locationName != null) map['location_name'] = locationName;
     
-    // ✨ تحويل الإحداثيات لنصوص لضمان قراءتها بشكل صحيح في الـ Form-Data
+   
     if (latitude != null) map['latitude'] = latitude.toString();
     if (longitude != null) map['longitude'] = longitude.toString();
     

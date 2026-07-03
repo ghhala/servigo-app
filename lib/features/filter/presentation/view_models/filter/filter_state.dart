@@ -1,7 +1,7 @@
 import 'package:servi_go_app/features/filter/data/models/provider_filter_model.dart';
 import 'package:servi_go_app/features/filter/domain/entities/sub_service_entity.dart';
 
-// تمثيل حالات التحميل والخطأ والنجاح عبر enum لجعل الملف نظيفاً وموحداً
+
 enum FilterStatus { initial, loading, success, error }
 
 class FilterState {

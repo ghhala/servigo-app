@@ -123,69 +123,98 @@ abstract class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: kforgetPassword,
-        builder: (context, state) => const ForgetPasswordView(),
+     GoRoute(
+  path: kforgetPassword,
+  builder: (context, state) {
+    return BlocProvider(
+      create: (context) => RegisterUserCubit(
+        AuthRepository(
+          AuthRemoteDataSource(
+            ApiService(DioClient()),
+          ),
+        ),
       ),
+      child: const ForgetPasswordView(),
+    );
+  },
+),
 
       GoRoute(
-        path: kotpcode,
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-      
-          final otpView = OtpCodeView(
-            receivedOtp: data['otp']?.toString() ?? '',
-            userEmail: data['email']?.toString() ?? '',
-            userType: data['userType']?.toString() ?? 'user',
-            isForgetPassword: data['isForgetPassword'] as bool? ?? false,
-            authAction: data['authAction']?.toString(), 
-            mainServiceId: data['main_service_id'] != null 
-                ? int.tryParse(data['main_service_id'].toString()) 
-                : null,
-          );
+  path: kotpcode,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>? ?? {};
 
-          if (data.containsKey('registerCubit') &&
-              data['registerCubit'] is RegisterUserCubit) {
-            return BlocProvider.value(
-              value: data['registerCubit'] as RegisterUserCubit,
-              child: otpView,
-            );
-          }
+    final otpView = OtpCodeView(
+      receivedOtp: data['otp']?.toString() ?? '',
+      userEmail: data['email']?.toString() ?? '',
+      userType: data['userType']?.toString() ?? 'user',
+      isForgetPassword: data['isForgetPassword'] as bool? ?? false,
+      authAction: data['authAction']?.toString(),
+      mainServiceId: data['main_service_id'] != null
+          ? int.tryParse(data['main_service_id'].toString())
+          : null,
+    );
 
-          if (data.containsKey('registerProviderCubit') &&
-              data['registerProviderCubit'] is RegisterProviderCubit) {
-            return BlocProvider.value(
-              value: data['registerProviderCubit'] as RegisterProviderCubit,
-              child: otpView,
-            );
-          }
+    if (data['registerCubit'] is RegisterUserCubit) {
+      return BlocProvider.value(
+        value: data['registerCubit'] as RegisterUserCubit,
+        child: otpView,
+      );
+    }
 
-          return BlocProvider(
-            create: (context) => RegisterUserCubit(
-              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
-            ),
-            child: otpView,
-          );
-        },
+    if (data['registerProviderCubit'] is RegisterProviderCubit) {
+      return BlocProvider.value(
+        value: data['registerProviderCubit'] as RegisterProviderCubit,
+        child: otpView,
+      );
+    }
+
+    return BlocProvider(
+      create: (context) => RegisterUserCubit(
+        AuthRepository(
+          AuthRemoteDataSource(
+            ApiService(DioClient()),
+          ),
+        ),
       ),
-      GoRoute(
-        path: kresetpassword,
-        builder: (context, state) {
-          final data = state.extra is Map<String, dynamic>
-              ? state.extra as Map<String, dynamic>
-              : {};
+      child: otpView,
+    );
+  },
+),
+     GoRoute(
+  path: kresetpassword,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>? ?? {};
 
-          final String? otp = data['otp']?.toString();
-          final String? email = data['email']?.toString();
-          final String userType = data['userType']?.toString() ?? 'user';
+    final String? otp = data['otp']?.toString();
+    final String? email = data['email']?.toString();
+    final String userType = data['userType']?.toString() ?? 'user';
 
-          return ResetPasswordView(
-            receivedOtp: otp,
-            userEmail: email,
-            userType: userType,
-          );
-        },
+    final resetView = ResetPasswordView(
+      receivedOtp: otp,
+      userEmail: email,
+      userType: userType,
+    );
+
+    if (data['registerCubit'] is RegisterUserCubit) {
+      return BlocProvider.value(
+        value: data['registerCubit'] as RegisterUserCubit,
+        child: resetView,
+      );
+    }
+
+    return BlocProvider(
+      create: (context) => RegisterUserCubit(
+        AuthRepository(
+          AuthRemoteDataSource(
+            ApiService(DioClient()),
+          ),
+        ),
       ),
+      child: resetView,
+    );
+  },
+),
       GoRoute(
         path: kuserlabourer,
         builder: (context, state) {

@@ -32,7 +32,6 @@ class ProfileLabourerView extends StatefulWidget {
 }
 
 class _ProfileLabourerViewState extends State<ProfileLabourerView> {
-
   int? _lastFetchedMainServiceId;
 
   bool get isOwner => widget.providerId == null;
@@ -57,702 +56,789 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     return "http://10.0.2.2/servigo/public/$path";
   }
 
+ 
+  String _formatDate(String? rawDate) {
+    if (rawDate == null || rawDate.isEmpty) return "";
+    try {
+      final date = DateTime.parse(rawDate);
+      return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    } catch (e) {
+      return rawDate;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<SubServicesCubit>(
           create: (_) => SubServicesCubit(
             SubServicesRepository(
-              SubServicesRemoteDataSource(
-                ApiService(DioClient()),
-              ),
+              SubServicesRemoteDataSource(ApiService(DioClient())),
             ),
           ),
         ),
         BlocProvider<HomeCubit>(
           create: (_) => HomeCubit(
-            HomeRepository(
-              HomeRemoteDataSource(
-                ApiService(DioClient()),
-              ),
-            ),
+            HomeRepository(HomeRemoteDataSource(ApiService(DioClient()))),
           )..fetchHomeData(),
         ),
       ],
       child: Scaffold(
-      body: AppBackground(
-        withScaffold: false,
-        padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 50.h),
-        child: BlocConsumer<ProviderProfileCubit, ProviderProfileState>(
-          listener: (context, state) {
-            // ✅ ملاحظة: مفيش states جديدة للأخطاء الخاصة بـ favourite/complaint/rate
-            // لأن toggleFavourite بترجع نفسها ProviderProfileSuccess،
-            // والأخطاء بتتصرف عن طريق try/catch مباشرة في الأزرار (تحت).
-          },
-          builder: (context, state) {
-
-            // ── Loading ──
-            if (state is ProviderProfileLoading) {
-              return SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-
-            // ── Failure ──
-            if (state is ProviderProfileFailure) {
-              return SizedBox(
-                height: MediaQuery.of(context).size.height,
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.lock_person_outlined,
-                          color: Colors.redAccent,
-                          size: 50,
-                        ),
-                        const Gap(16),
-                        Text(
-                          state.errorMessage.contains("unauthorized")
-                              ? "Session expired. Please log in again."
-                              : state.errorMessage,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const Gap(20),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[200],
-                          ),
-                          onPressed: () {
-                            context
-                                .read<ProviderProfileCubit>()
-                                .fetchProviderProfile();
-                          },
-                          child: const Text(
-                            "Retry",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            // ── Success ──
-            if (state is ProviderProfileSuccess) {
-              final profileData = state.profileModel.data;
-              final user = profileData?.user;
-              final provider = profileData?.provider;
-
-
-              final mainServiceId = provider?.mainServiceId;
-              if (mainServiceId != null &&
-                  mainServiceId != _lastFetchedMainServiceId) {
-                _lastFetchedMainServiceId = mainServiceId;
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  if (mounted) {
-                    context
-                        .read<SubServicesCubit>()
-                        .fetchSubServices(mainServiceId);
-                  }
-                });
-              }
-
-
-              final String languageCode =
-                  Localizations.localeOf(context).languageCode;
-              final bool isArabic = languageCode == 'ar';
-
-                        Widget buildServiceLine() {
-                return BlocBuilder<HomeCubit, HomeState>(
-                  builder: (context, homeState) {
-                    String mainServiceText =
-                        provider?.mainServiceName ?? '';
-
-                    if (homeState is HomeSuccess) {
-                      final mainServicesList =
-                          homeState.homeData.data?.mainServices ?? [];
-                      final mainMatch = mainServicesList.where(
-                        (s) => s.id == provider?.mainServiceId,
-                      );
-                      if (mainMatch.isNotEmpty) {
-                        final service = mainMatch.first;
-                        mainServiceText =
-                            (isArabic ? service.nameAr : service.nameEn) ??
-                                mainServiceText;
-                      }
-                    }
-
-                    return BlocBuilder<SubServicesCubit, SubServicesState>(
-                      builder: (context, subState) {
-                        String subServiceText =
-                            provider?.subServiceName ?? '';
-
-                        if (subState is SubServicesSuccess) {
-                          final match = subState.subServices.where(
-                            (s) => s.id == provider?.subServiceId,
-                          );
-                          if (match.isNotEmpty) {
-                            final service = match.first;
-                            subServiceText =
-                                (isArabic ? service.nameAr : service.nameEn) ??
-                                    '';
-                          }
-                        }
-
-                        return Text(
-                          "$mainServiceText | $subServiceText",
-                          style: TextStyles.onCard(
-                            context,
-                            TextStyles.font12PrimaryColorW600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      },
-                    );
-                  },
+        body: AppBackground(
+          withScaffold: false,
+          padding: EdgeInsets.only(left: 5.w, right: 5.w, top: 50.h),
+          child: BlocConsumer<ProviderProfileCubit, ProviderProfileState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              // ── Loading ──
+              if (state is ProviderProfileLoading) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: const Center(child: CircularProgressIndicator()),
                 );
               }
 
-              // ── أيام العمل ──
-              const allDays = [
-                'sunday', 'monday', 'tuesday',
-                'wednesday', 'thursday', 'friday', 'saturday',
-              ];
-              final offDays = provider?.offDays ?? [];
-              final workingDays = allDays
-                  .where((d) => !offDays.contains(d))
-                  .map((d) => d[0].toUpperCase() + d.substring(1))
-                  .join(', ');
+              // ── Failure ──
+              if (state is ProviderProfileFailure) {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.lock_person_outlined,
+                            color: Colors.redAccent,
+                            size: 50,
+                          ),
+                          const Gap(16),
+                          Text(
+                            state.errorMessage.contains("unauthorized")
+                                ? "Session expired. Please log in again."
+                                : state.errorMessage,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const Gap(20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[200],
+                            ),
+                            onPressed: () {
+                              context
+                                  .read<ProviderProfileCubit>()
+                                  .fetchProviderProfile();
+                            },
+                            child: const Text(
+                              "Retry",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
 
-              // ── الصورة الشخصية ──
-              final avatarUrl = getCorrectImageUrl(user?.photo);
+              // ── Success ──
+              if (state is ProviderProfileSuccess) {
+                final profileData = state.profileModel.data;
+                final user = profileData?.user;
+                final provider = profileData?.provider;
 
-              // ── متوسط التقييم ──
-              final finalRating = double.tryParse(
-                    profileData?.avgRating?.toString() ?? '0',
-                  ) ?? 0.0;
+                final mainServiceId = provider?.mainServiceId;
+                if (mainServiceId != null &&
+                    mainServiceId != _lastFetchedMainServiceId) {
+                  _lastFetchedMainServiceId = mainServiceId;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      context.read<SubServicesCubit>().fetchSubServices(
+                        mainServiceId,
+                      );
+                    }
+                  });
+                }
 
-              // ── Portfolio ──
-              final portfolioItems = (profileData?.portfolio ?? [])
-                  .where((e) => e.filePath != null)
-                  .map((e) => {
+                final String languageCode = Localizations.localeOf(
+                  context,
+                ).languageCode;
+                final bool isArabic = languageCode == 'ar';
+
+                Widget buildServiceLine() {
+                  return BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, homeState) {
+                      String mainServiceText = provider?.mainServiceName ?? '';
+
+                      if (homeState is HomeSuccess) {
+                        final mainServicesList =
+                            homeState.homeData.data?.mainServices ?? [];
+                        final mainMatch = mainServicesList.where(
+                          (s) => s.id == provider?.mainServiceId,
+                        );
+                        if (mainMatch.isNotEmpty) {
+                          final service = mainMatch.first;
+                          mainServiceText =
+                              (isArabic ? service.nameAr : service.nameEn) ??
+                              mainServiceText;
+                        }
+                      }
+
+                      return BlocBuilder<SubServicesCubit, SubServicesState>(
+                        builder: (context, subState) {
+                          String subServiceText =
+                              provider?.subServiceName ?? '';
+
+                          if (subState is SubServicesSuccess) {
+                            final match = subState.subServices.where(
+                              (s) => s.id == provider?.subServiceId,
+                            );
+                            if (match.isNotEmpty) {
+                              final service = match.first;
+                              subServiceText =
+                                  (isArabic
+                                      ? service.nameAr
+                                      : service.nameEn) ??
+                                  '';
+                            }
+                          }
+
+                          return Text(
+                            "$mainServiceText | $subServiceText",
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+
+                const allDays = [
+                  'sunday',
+                  'monday',
+                  'tuesday',
+                  'wednesday',
+                  'thursday',
+                  'friday',
+                  'saturday',
+                ];
+                final offDays = provider?.offDays ?? [];
+                final workingDays = allDays
+                    .where((d) => !offDays.contains(d))
+                    .map((d) => d[0].toUpperCase() + d.substring(1))
+                    .join(', ');
+
+                final avatarUrl = getCorrectImageUrl(user?.photo);
+
+                final finalRating =
+                    double.tryParse(
+                      profileData?.avgRating?.toString() ?? '0',
+                    ) ??
+                    0.0;
+
+                final portfolioItems = (profileData?.portfolio ?? [])
+                    .where((e) => e.filePath != null)
+                    .map(
+                      (e) => {
                         'file_path': getCorrectImageUrl(e.filePath),
                         'file_type': e.fileType ?? 'image',
                         'description': e.description ?? '',
-                      })
-                  .toList();
+                      },
+                    )
+                    .toList();
 
-              // ── Certificates ──
-              final certificateItems = (profileData?.certificates ?? [])
-                  .where((e) => e.filePath != null)
-                  .map((e) => {
-                        'file_path': getCorrectImageUrl(e.filePath),
-                      })
-                  .toList();
+                final certificateItems = (profileData?.certificates ?? [])
+                    .where((e) => e.filePath != null)
+                    .map((e) => {'file_path': getCorrectImageUrl(e.filePath)})
+                    .toList();
 
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      const LangagueThemeWidget(),
+                      Gap(20.h),
 
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const LangagueThemeWidget(),
-                    Gap(20.h),
-
-                    CustomContainer(
-                      width: 360.w,
-                      height: isOwner ? 350.h : 420.h,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15).r,
-                        child: Column(
-                          children: [
-                            Stack(
-                              clipBehavior: Clip.none,
-                              children: [
-                                CircleAvatar(
-                                  radius: 30.r,
-                                  backgroundColor: Colors.grey[300],
-                                  backgroundImage: avatarUrl.isNotEmpty
-                                      ? NetworkImage(avatarUrl)
-                                      : const AssetImage(
-                                              "assets/images/avatar2.jpg")
-                                          as ImageProvider,
-                                ),
-                                if (!isOwner)
-                                  Positioned(
-                                    top: -6,
-                                    right: -6,
-                                    child: GestureDetector(
-                                      // ✅ استدعاء فعلي لتبديل المفضلة مع معالجة الخطأ
-                                      onTap: () async {
-                                        try {
-                                          await context
-                                              .read<ProviderProfileCubit>()
-                                              .toggleFavourite(
-                                                providerId: widget.providerId!,
-                                              );
-                                        } catch (e) {
-                                          if (!context.mounted) return;
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content:
-                                                  Text("فشل تحديث المفضلة"),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(4.r),
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Icon(
-                                          (profileData?.isFavourite ?? false)
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          size: 16.sp,
-                                          color: Colors.redAccent,
+                      CustomContainer(
+                        width: 360.w,
+                        height: isOwner ? 350.h : 420.h,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 15).r,
+                          child: Column(
+                            children: [
+                              Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30.r,
+                                    backgroundColor: Colors.grey[300],
+                                    backgroundImage: avatarUrl.isNotEmpty
+                                        ? NetworkImage(avatarUrl)
+                                        : const AssetImage(
+                                                "assets/images/avatar2.jpg",
+                                              )
+                                              as ImageProvider,
+                                  ),
+                                  if (!isOwner)
+                                    Positioned(
+                                      top: -6,
+                                      right: -6,
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          try {
+                                            await context
+                                                .read<ProviderProfileCubit>()
+                                                .toggleFavourite(
+                                                  providerId:
+                                                      widget.providerId!,
+                                                );
+                                          } catch (e) {
+                                            if (!context.mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  "فشل تحديث المفضلة",
+                                                ),
+                                                backgroundColor: Colors.red,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.r),
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Icon(
+                                            (profileData?.isFavourite ?? false)
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            size: 16.sp,
+                                            color: Colors.redAccent,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                            Gap(10.h),
-                            Text(
-                              user?.name ?? "No Name",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font16PrimaryColorW600
-                                    .copyWith(fontSize: 18.sp),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Gap(5.h),
-
-                            buildServiceLine(),
-                            Gap(4.h),
-                            Text(
-                              user?.phone ?? "No Phone",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font12PrimaryColorW600,
-                              ),
-                            ),
-                            Gap(4.h),
-                            Text(
-                              "${provider?.locationName ?? ''} | ${provider?.locationDescription ?? ''}",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font12PrimaryColorW600
-                                    .copyWith(fontSize: 13.sp),
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Gap(20.h),
-
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8).r,
-                              child: Row(
-                                children: [
-                                  ContainerWidget(
-                                    image: "assets/images/star_icon.png",
-                                    text: "avg rating",
-                                    number: finalRating,
-                                  ),
-                                  Gap(10.w),
-                                  Expanded(
-                                    child: ContainerWidget(
-                                      image: "assets/images/pin.png",
-                                      text: provider?.workType ??
-                                          "Both(Fixed & Mobile)",
-                                    ),
-                                  ),
                                 ],
                               ),
-                            ),
-                            Gap(10.h),
-
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8).r,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: ContainerWidget(
-                                      image: "assets/images/convenience (1).png",
-                                      text: provider?.isAvailable == 1
-                                          ? "Available"
-                                          : "Unavailable",
-                                    ),
+                              Gap(10.h),
+                              Text(
+                                user?.name ?? "No Name",
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font16PrimaryColorW600.copyWith(
+                                    fontSize: 18.sp,
                                   ),
-                                  Gap(10.w),
-                                  Expanded(
-                                    child: ContainerWidget(
-                                      image: "assets/images/moon.png",
-                                      text:
-                                          "Overnight: ${provider?.overnight == true ? 'Yes' : 'No'}",
-                                    ),
-                                  ),
-                                ],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                            ),
+                              Gap(5.h),
 
-                            if (!isOwner) ...[
-                              Gap(14.h),
+                              buildServiceLine(),
+                              Gap(4.h),
+                              Text(
+                                user?.phone ?? "No Phone",
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font12PrimaryColorW600,
+                                ),
+                              ),
+                              Gap(4.h),
+                              Text(
+                                "${provider?.locationName ?? ''} | ${provider?.locationDescription ?? ''}",
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font12PrimaryColorW600.copyWith(
+                                    fontSize: 13.sp,
+                                  ),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Gap(20.h),
+
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8).r,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ).r,
                                 child: Row(
                                   children: [
-                                    Expanded(
-                                      child: CustomButton(
-                                        height: 40.h,
-                                        title: "Contact",
-                                        textstyle: TextStyles.font11WhiteW500,
-                                        onTap: () {
-                                          // ملحوظة: خاص بالشات (button-status + start) هيتضاف لاحقًا
-                                        },
-                                      ),
+                                    ContainerWidget(
+                                      image: "assets/images/star_icon.png",
+                                      text: "avg rating",
+                                      number: finalRating,
                                     ),
                                     Gap(10.w),
-                                    GestureDetector(
-                                      // ✅ فتح نافذة الشكوى مباشرة
-                                      onTap: () => _showComplaintDialog(context),
-                                      child: Container(
-                                        width: 40.h,
-                                        height: 40.h,
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(8.r),
-                                        ),
-                                        child: Icon(
-                                          Icons.flag_outlined,
-                                          color: Colors.redAccent,
-                                          size: 20.sp,
-                                        ),
+                                    Expanded(
+                                      child: ContainerWidget(
+                                        image: "assets/images/pin.png",
+                                        text:
+                                            provider?.workType ??
+                                            "Both(Fixed & Mobile)",
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    Gap(20.h),
+                              Gap(10.h),
 
-                    // ── About Him / About Me ──
-                    CustomContainer(
-                      width: 353.w,
-                      height: 90.h,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Image.asset("assets/images/about_him_icon.png"),
-                                Gap(5.w),
-                                Text(
-                                  isOwner ? "About me" : "About him",
-                                  style: TextStyles.onCard(
-                                    context,
-                                    TextStyles.font12PrimaryColorW600,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ).r,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: ContainerWidget(
+                                        image:
+                                            "assets/images/convenience (1).png",
+                                        text: provider?.isAvailable == 1
+                                            ? "Available"
+                                            : "Unavailable",
+                                      ),
+                                    ),
+                                    Gap(10.w),
+                                    Expanded(
+                                      child: ContainerWidget(
+                                        image: "assets/images/moon.png",
+                                        text:
+                                            "Overnight: ${provider?.overnight == true ? 'Yes' : 'No'}",
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              if (!isOwner) ...[
+                                Gap(14.h),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ).r,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: CustomButton(
+                                          height: 40.h,
+                                          title: "Contact",
+                                          textstyle: TextStyles.font11WhiteW500,
+                                          onTap: () {
+                                            // ملحوظة: خاص بالشات (button-status + start) هيتضاف لاحقًا
+                                          },
+                                        ),
+                                      ),
+                                      Gap(10.w),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            _showComplaintDialog(context),
+                                        child: Container(
+                                          width: 40.h,
+                                          height: 40.h,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(
+                                              8.r,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.flag_outlined,
+                                            color: Colors.redAccent,
+                                            size: 20.sp,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
+                            ],
                           ),
-                          Gap(2.h),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
-                            child: Text(
-                              provider?.aboutMe ??
-                                  (isOwner
-                                      ? "You haven't written a bio yet."
-                                      : "No info written by provider."),
-                              style: TextStyle(fontSize: 12.sp),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    Gap(20.h),
+                      Gap(20.h),
 
-                    // ── Working Hours and Days ──
-                    CustomContainer(
-                      width: 353.w,
-                      height: 106.h,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.w, vertical: 8.h),
+                      // ── About Him / About Me ──
+                      CustomContainer(
+                        width: 353.w,
+                        height: 90.h,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Working Hours and Days",
-                              style: TextStyles.onCard(
-                                context,
-                                TextStyles.font12PrimaryColorW600,
-                              ),
-                            ),
-                            Gap(12.h),
-                            Row(
-                              children: [
-                                Icon(Icons.circle, size: 14.sp),
-                                Gap(5.w),
-                                Expanded(
-                                  child: Text(
-                                    workingDays.isEmpty
-                                        ? "All Days"
-                                        : workingDays,
-                                    style: TextStyles.onCard(
-                                      context,
-                                      TextStyles.font12BlackW400,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/about_him_icon.png",
                                   ),
-                                ),
-                              ],
-                            ),
-                            Gap(7.h),
-                            Row(
-                              children: [
-                                Icon(Icons.circle, size: 14.sp),
-                                Gap(5.w),
-                                Text(
-                                  "${provider?.workStartTime ?? '09:00'} - ${provider?.workEndTime ?? '18:00'}",
-                                  style: TextStyles.onCard(
-                                    context,
-                                    TextStyles.font12BlackW400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Gap(20.h),
-
-                    // ── Price ──
-                    CustomContainer(
-                      width: 353.w,
-                      height: 80.h,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Image.asset("assets/images/about_him_icon.png"),
-                                Gap(5.w),
-                                Text(
-                                  "Price",
-                                  style: TextStyles.onCard(
-                                    context,
-                                    TextStyles.font12PrimaryColorW600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Gap(4.h),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
-                            child: Builder(
-                              builder: (context) {
-                                String minStr =
-                                    provider?.minPrice?.toString().trim() ?? '0';
-                                String maxStr =
-                                    provider?.maxPrice?.toString().trim() ?? '0';
-
-                                if (minStr.contains('.')) {
-                                  minStr = minStr.split('.').first;
-                                }
-                                if (maxStr.contains('.')) {
-                                  maxStr = maxStr.split('.').first;
-                                }
-
-                                final int minPrice = int.tryParse(minStr) ?? 0;
-                                final int maxPrice = int.tryParse(maxStr) ?? 0;
-
-                                return Text(
-                                  "$minPrice - $maxPrice ${provider?.currency ?? 'SYP'}",
-                                  style: TextStyle(
-                                    fontSize: 13.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Gap(20.h),
-
-                    if (portfolioItems.isNotEmpty) ...[
-                      MyPortfolio(portfolioList: portfolioItems),
-                      Gap(20.h),
-                    ],
-
-                    if (certificateItems.isNotEmpty) ...[
-                      MyCertificates(certificatesList: certificateItems),
-                      Gap(20.h),
-                    ],
-
-                    // ── Customer Reviews and Ratings ──
-                    CustomContainer(
-                      width: 353.w,
-                      height: isOwner ? 134.h : 160.h,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 12.w, vertical: 10.h),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Image.asset("assets/images/reviews_icon.png"),
-                                Expanded(
-                                  child: Text(
-                                    " Customer Reviews and Ratings",
+                                  Gap(5.w),
+                                  Text(
+                                    isOwner ? "About me" : "About him",
                                     style: TextStyles.onCard(
                                       context,
                                       TextStyles.font12PrimaryColorW600,
                                     ),
                                   ),
-                                ),
-                                if (!isOwner)
-                                  CustomButton(
-                                    width: 90.w,
-                                    height: 28.h,
-                                    title: "+ Add Review",
-                                    textstyle: TextStyles.font11WhiteW500,
-                                    
-                                    onTap: () => _showAddReviewDialog(context),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
-                            Gap(8.h),
-                            profileData?.ratings == null ||
-                                    profileData!.ratings!.isEmpty
-                                ? Padding(
-                                    padding: EdgeInsets.only(top: 15.h),
-                                    child: Text(
-                                      "No reviews yet",
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                  )
-                                : Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 15.r,
-                                        backgroundImage: const AssetImage(
-                                            "assets/images/user_avatar.jpg"),
-                                      ),
-                                      Gap(8.w),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Jane Smith",
-                                            style: TextStyles.onCard(
-                                              context,
-                                              TextStyles.font12BlackW400
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                            ),
-                                          ),
-                                          Gap(4.h),
-                                          Text(
-                                            "Great service! Highly recommend.",
-                                            style: TextStyles.onCard(
-                                              context,
-                                              TextStyles.font12BlackW400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      CustomButton(
-                                        width: 50.w,
-                                        height: 23.h,
-                                        title: "Report",
-                                        textstyle: TextStyles.font11WhiteW500
-                                            .copyWith(
-                                                fontWeight: FontWeight.w600),
-                                        onTap: () {},
-                                      ),
-                                    ],
-                                  ),
+                            Gap(2.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              child: Text(
+                                provider?.aboutMe ??
+                                    (isOwner
+                                        ? "You haven't written a bio yet."
+                                        : "No info written by provider."),
+                                style: TextStyle(fontSize: 12.sp),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    Gap(20.h),
-                  ],
-                ),
-              );
-            }
+                      Gap(20.h),
 
-            return const SizedBox.shrink();
-          },
+                      // ── Working Hours and Days ──
+                      CustomContainer(
+                        width: 353.w,
+                        height: 106.h,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 8.h,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Working Hours and Days",
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font12PrimaryColorW600,
+                                ),
+                              ),
+                              Gap(12.h),
+                              Row(
+                                children: [
+                                  Icon(Icons.circle, size: 14.sp),
+                                  Gap(5.w),
+                                  Expanded(
+                                    child: Text(
+                                      workingDays.isEmpty
+                                          ? "All Days"
+                                          : workingDays,
+                                      style: TextStyles.onCard(
+                                        context,
+                                        TextStyles.font12BlackW400,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Gap(7.h),
+                              Row(
+                                children: [
+                                  Icon(Icons.circle, size: 14.sp),
+                                  Gap(5.w),
+                                  Text(
+                                    "${provider?.workStartTime ?? '09:00'} - ${provider?.workEndTime ?? '18:00'}",
+                                    style: TextStyles.onCard(
+                                      context,
+                                      TextStyles.font12BlackW400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Gap(20.h),
+
+                      // ── Price ──
+                      CustomContainer(
+                        width: 353.w,
+                        height: 80.h,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    "assets/images/about_him_icon.png",
+                                  ),
+                                  Gap(5.w),
+                                  Text(
+                                    "Price",
+                                    style: TextStyles.onCard(
+                                      context,
+                                      TextStyles.font12PrimaryColorW600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Gap(4.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              child: Builder(
+                                builder: (context) {
+                                  String minStr =
+                                      provider?.minPrice?.toString().trim() ??
+                                      '0';
+                                  String maxStr =
+                                      provider?.maxPrice?.toString().trim() ??
+                                      '0';
+
+                                  if (minStr.contains('.')) {
+                                    minStr = minStr.split('.').first;
+                                  }
+                                  if (maxStr.contains('.')) {
+                                    maxStr = maxStr.split('.').first;
+                                  }
+
+                                  final int minPrice =
+                                      int.tryParse(minStr) ?? 0;
+                                  final int maxPrice =
+                                      int.tryParse(maxStr) ?? 0;
+
+                                  return Text(
+                                    "$minPrice - $maxPrice ${provider?.currency ?? 'SYP'}",
+                                    style: TextStyle(
+                                      fontSize: 13.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Gap(20.h),
+
+                      if (portfolioItems.isNotEmpty) ...[
+                        MyPortfolio(portfolioList: portfolioItems),
+                        Gap(20.h),
+                      ],
+
+                      if (certificateItems.isNotEmpty) ...[
+                        MyCertificates(certificatesList: certificateItems),
+                        Gap(20.h),
+                      ],
+
+                      // ── Customer Reviews and Ratings ──
+                      CustomContainer(
+                        width: 353.w,
+                        height: isOwner
+                            ? 134.h
+                            : (profileData?.ratings == null ||
+                                  profileData!.ratings!.isEmpty)
+                            ? 160.h
+                            : (110.h + (profileData.ratings!.length * 78.h)),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 10.h,
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Image.asset("assets/images/reviews_icon.png"),
+                                  Expanded(
+                                    child: Text(
+                                      " Customer Reviews and Ratings",
+                                      style: TextStyles.onCard(
+                                        context,
+                                        TextStyles.font12PrimaryColorW600,
+                                      ),
+                                    ),
+                                  ),
+                                  if (!isOwner)
+                                    CustomButton(
+                                      width: 90.w,
+                                      height: 28.h,
+                                      title: "+ Add Review",
+                                      textstyle: TextStyles.font11WhiteW500,
+                                      onTap: () =>
+                                          _showAddReviewDialog(context),
+                                    ),
+                                ],
+                              ),
+                              Gap(8.h),
+                              profileData?.ratings == null ||
+                                      profileData!.ratings!.isEmpty
+                                  ? Padding(
+                                      padding: EdgeInsets.only(top: 15.h),
+                                      child: Text(
+                                        "No reviews yet",
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
+                                    )
+                                  : Column(
+                                      children: profileData.ratings!.map((r) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                            bottom: 10.h,
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 15.r,
+                                                backgroundImage:
+                                                    (r.customerPhoto != null &&
+                                                        r
+                                                            .customerPhoto!
+                                                            .isNotEmpty)
+                                                    ? NetworkImage(
+                                                        getCorrectImageUrl(
+                                                          r.customerPhoto,
+                                                        ),
+                                                      )
+                                                    : const AssetImage(
+                                                            "assets/images/user_avatar.jpg",
+                                                          )
+                                                          as ImageProvider,
+                                              ),
+                                              Gap(8.w),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          r.customerName ??
+                                                              "Unknown",
+                                                          style: TextStyles.onCard(
+                                                            context,
+                                                            TextStyles
+                                                                .font12BlackW400
+                                                                .copyWith(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                        Gap(6.w),
+                                                        Row(
+                                                          children: List.generate(5, (
+                                                            i,
+                                                          ) {
+                                                            return Icon(
+                                                              i < (r.rating ?? 0)
+                                                                  ? Icons.star
+                                                                  : Icons.star_border,
+                                                              size: 12.sp,
+                                                              color:
+                                                                  Colors.amber,
+                                                            );
+                                                          }),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Gap(4.h),
+                                                    Text(
+                                                      r.review ?? "",
+                                                      style: TextStyles.onCard(
+                                                        context,
+                                                        TextStyles
+                                                            .font12BlackW400,
+                                                      ),
+                                                    ),
+                                                    Gap(2.h),
+                                                    Text(
+                                                      _formatDate(r.createdAt),
+                                                      style: TextStyle(
+                                                        fontSize: 10.sp,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              CustomButton(
+                                                width: 50.w,
+                                                height: 23.h,
+                                                title: "Report",
+                                                textstyle: TextStyles
+                                                    .font11WhiteW500
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                onTap: () {},
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Gap(20.h),
+                    ],
+                  ),
+                );
+              }
+
+              return const SizedBox.shrink();
+            },
+          ),
         ),
-      ),
       ),
     );
   }
 
-  // ✅ نافذة الشكوى — الاستدعاء الفعلي مفعّل
   void _showComplaintDialog(BuildContext context) {
+    final providerProfileCubit = context.read<ProviderProfileCubit>();
     final controller = TextEditingController();
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text("send complaint    "),
+        title: const Text("send complaint"),
         content: TextField(
           controller: controller,
           maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: "  write the complaint...",
-          ),
+          decoration: const InputDecoration(hintText: "write the complaint..."),
         ),
         actions: [
           TextButton(
@@ -767,20 +853,20 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               if (message.isEmpty) return;
 
               try {
-                await context.read<ProviderProfileCubit>().sendComplaint(
-                      providerId: widget.providerId!,
-                      message: message,
-                    );
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                await providerProfileCubit.sendComplaint(
+                  providerId: widget.providerId!,
+                  message: message,
+                );
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
                   const SnackBar(
-                    content: Text(" send complaint successfully" ),
+                    content: Text("send complaint successfully"),
                     backgroundColor: Colors.green,
                   ),
                 );
               } catch (e) {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
                   const SnackBar(
                     content: Text("Failed to send complaint"),
                     backgroundColor: Colors.red,
@@ -795,91 +881,89 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     );
   }
 
-  // ✅ نافذة إضافة التقييم — الاستدعاء الفعلي مفعّل
   void _showAddReviewDialog(BuildContext context) {
-  // ✅ نمسك الـ Cubit من الـ context الأصلي (اللي شايف الـ Provider) قبل فتح الـ Dialog
-  final providerProfileCubit = context.read<ProviderProfileCubit>();
+    final providerProfileCubit = context.read<ProviderProfileCubit>();
 
-  int selectedRating = 5;
-  final reviewController = TextEditingController();
+    int selectedRating = 5;
+    final reviewController = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (dialogContext) => StatefulBuilder(
-      builder: (context, setStateDialog) {
-        return AlertDialog(
-          title: const Text("Add Review"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  final starIndex = index + 1;
-                  return GestureDetector(
-                    onTap: () {
-                      setStateDialog(() => selectedRating = starIndex);
-                    },
-                    child: Icon(
-                      starIndex <= selectedRating
-                          ? Icons.star
-                          : Icons.star_border,
-                      color: Colors.amber,
-                      size: 28,
-                    ),
-                  );
-                }),
-              ),
-              const Gap(12),
-              TextField(
-                controller: reviewController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  hintText: "Write your review...",
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            title: const Text("Add Review"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    final starIndex = index + 1;
+                    return GestureDetector(
+                      onTap: () {
+                        setStateDialog(() => selectedRating = starIndex);
+                      },
+                      child: Icon(
+                        starIndex <= selectedRating
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                        size: 28,
+                      ),
+                    );
+                  }),
                 ),
+                const Gap(12),
+                TextField(
+                  controller: reviewController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    hintText: "Write your review...",
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final review = reviewController.text.trim();
+                  Navigator.pop(dialogContext);
+
+                  try {
+                    await providerProfileCubit.rateProvider(
+                      providerId: widget.providerId!,
+                      rating: selectedRating,
+                      review: review,
+                    );
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Review added successfully"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } catch (e) {
+                    debugPrint("❌ Error submitting review: $e");
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(
+                        content: Text("Failed to submit review: $e"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: const Text("send"),
               ),
             ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () async {
-                final review = reviewController.text.trim();
-                Navigator.pop(dialogContext);
-
-                try {
-               
-                  await providerProfileCubit.rateProvider(
-                    providerId: widget.providerId!,
-                    rating: selectedRating,
-                    review: review,
-                  );
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(this.context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Review added successfully"),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                } catch (e) {
-                  debugPrint("❌ Error submitting review: $e");
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(this.context).showSnackBar(
-                    SnackBar(
-                      content: Text("Failed to submit review: $e"),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: const Text("send"),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}}
+          );
+        },
+      ),
+    );
+  }
+}

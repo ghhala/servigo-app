@@ -18,8 +18,7 @@ class RegisterProviderCubit extends Cubit<RegisterProviderState> {
     try {
       final result = await _authRepository.registerProvider(requestBody);
       
-      // 🚀 حفظ اسم المستخدم الجديد في الكاش فوراً قبل بث حالة النجاح
-      // (تأكدي من أن المتغير داخل الـ requestBody اسمه name، إذا كان فرست ونيم ولاست نيم يمكنكِ دمجهم)
+    
       await PrefHelper.saveString('user_name', requestBody.name ?? 'User');
 
       emit(RegisterProviderSuccess(result));

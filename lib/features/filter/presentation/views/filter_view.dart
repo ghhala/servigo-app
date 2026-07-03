@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -38,6 +39,11 @@ class _FilterViewState extends State<FilterView> {
   bool? currentAvailability;
   String? currentWorkType;
 
+  // ✅ إضافة متغيرات الموقع
+  double? _userLat;
+  double? _userLng;
+  bool _isLoadingLocation = false;
+
   final List<Map<String, String>> _sortOptions = const [
     {'label': 'price ↑', 'value': 'price'},
     {'label': 'rating ↓', 'value': 'rating'},
@@ -48,6 +54,35 @@ class _FilterViewState extends State<FilterView> {
   void initState() {
     super.initState();
     context.read<FilterCubit>().loadTopProviders(widget.mainServiceId);
+  }
+
+  // ✅ دالة جلب موقع المستخدم
+  Future<bool> _getUserLocation() async {
+    setState(() => _isLoadingLocation = true);
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever) {
+        setState(() => _isLoadingLocation = false);
+        return false;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      setState(() {
+        _userLat = position.latitude;
+        _userLng = position.longitude;
+        _isLoadingLocation = false;
+      });
+      return true;
+    } catch (e) {
+      debugPrint("Location error: $e");
+      setState(() => _isLoadingLocation = false);
+      return false;
+    }
   }
 
   @override
@@ -113,7 +148,7 @@ class _FilterViewState extends State<FilterView> {
               builder: (context, state) {
 
                 // ── Loading ──
-                if (state.status == FilterStatus.loading) {
+                if (state.status == FilterStatus.loading || _isLoadingLocation) {
                   return SizedBox(
                     height: 300.h,
                     child: const Center(
@@ -173,14 +208,13 @@ class _FilterViewState extends State<FilterView> {
 
                 // ── Results ──
                 return ListView.separated(
-                  shrinkWrap: true,                               
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(horizontal: 16.w),
                   itemCount: currentProviders.length,
                   separatorBuilder: (context, _) => SizedBox(height: 8.h),
                   itemBuilder: (context, index) {
                     final item = currentProviders[index];
-                   print("photo url: ${item.photo}"); 
 
                     final entity = ProviderEntity(
                       id: item.providerUserId ?? 0,
@@ -195,19 +229,36 @@ class _FilterViewState extends State<FilterView> {
                       isAvailable: item.isAvailable ?? false,
                     );
 
-                    return ProviderCardWidget(
-                      provider: entity,
-                   onTap: () {
-                    print("Pressed");
-  print("Provider ID = ${entity.id}");
-                    GoRouter.of(context).push(
-                      AppRouter.kProfileLabourer,
-                      extra: entity.id,
-                    );
-  
+                  return ProviderCardWidget(
+  provider: entity,
+  onTap: () async {
    
+    await GoRouter.of(context).push(
+      AppRouter.kProfileLabourer,
+      extra: entity.id,
+    );
+
+  
+    if (context.mounted) {
+      if (isFiltered) {
+        context.read<FilterCubit>().fetchFilteredProviders(
+          FilterRequestModel(
+            mainServiceId: widget.mainServiceId,
+            subServiceId: currentSubServiceId,
+            minPrice: currentMinPrice,
+            maxPrice: currentMaxPrice,
+            rating: currentRating,
+            isAvailableNow: currentAvailability,
+            workType: currentWorkType,
+            sortBy: sortBy,
+          ),
+        );
+      } else {
+        context.read<FilterCubit>().loadTopProviders(widget.mainServiceId);
+      }
+    }
   },
-                    );
+);
                   },
                 );
               },
@@ -235,21 +286,65 @@ class _FilterViewState extends State<FilterView> {
               final value = o['value']!;
               final isSelected = sortBy == value;
               return GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (isSelected) return;
+
+                  // ✅ لو اختار location، نجلب الموقع أولاً
+                  if (value == 'location') {
+                    final gotLocation = await _getUserLocation();
+                    if (!gotLocation || _userLat == null || _userLng == null) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              "Could not get your location. Please enable GPS.",
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    setState(() => sortBy = value);
+                    if (mounted) {
+                      
+                      context
+                          .read<FilterCubit>()
+                          .fetchFilteredProvidersAndSortByLocation(
+                            request: FilterRequestModel(
+                              mainServiceId: widget.mainServiceId,
+                              subServiceId: currentSubServiceId,
+                              minPrice: currentMinPrice,
+                              maxPrice: currentMaxPrice,
+                              rating: currentRating,
+                              isAvailableNow: currentAvailability,
+                              workType: currentWorkType,
+                           
+                            ),
+                            userLat: _userLat!,
+                            userLng: _userLng!,
+                          );
+                    }
+                    return;
+                  }
+
+              
                   setState(() => sortBy = value);
-                  context.read<FilterCubit>().fetchFilteredProviders(
-                    FilterRequestModel(
-                      mainServiceId: widget.mainServiceId,
-                      subServiceId: currentSubServiceId,
-                      minPrice: currentMinPrice,
-                      maxPrice: currentMaxPrice,
-                      rating: currentRating,
-                      isAvailableNow: currentAvailability,
-                      workType: currentWorkType,
-                      sortBy: value,
-                    ),
-                  );
+                  if (mounted) {
+                    context.read<FilterCubit>().fetchFilteredProviders(
+                      FilterRequestModel(
+                        mainServiceId: widget.mainServiceId,
+                        subServiceId: currentSubServiceId,
+                        minPrice: currentMinPrice,
+                        maxPrice: currentMaxPrice,
+                        rating: currentRating,
+                        isAvailableNow: currentAvailability,
+                        workType: currentWorkType,
+                        sortBy: value,
+                      ),
+                    );
+                  }
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 8.w),

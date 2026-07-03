@@ -4,17 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
-import 'package:servi_go_app/core/localization/app_localizations.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
+import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 
 class OtpCodeView extends StatefulWidget {
-  final String receivedOtp;
+  final String? receivedOtp;    
   final String userEmail;
   final String userType;
   final bool isForgetPassword;
@@ -23,7 +23,7 @@ class OtpCodeView extends StatefulWidget {
 
   const OtpCodeView({
     super.key,
-    required this.receivedOtp,
+    this.receivedOtp,
     required this.userEmail,
     required this.userType,
     required this.isForgetPassword,
@@ -38,12 +38,10 @@ class OtpCodeView extends StatefulWidget {
 class _OtpCodeViewState extends State<OtpCodeView> {
   String enteredOtp = "";
 
-  // ⏱️ متغيرات العداد التنازلي
-  static const int _resendDuration = 60; // ثانية
+  static const int _resendDuration = 60;
   int _secondsLeft = _resendDuration;
   Timer? _timer;
 
-  // ✅ يحدد إذا كانت هذه الشاشة تُستخدم لتأكيد حذف الحساب
   bool get isDeleteAccountFlow => widget.authAction == 'delete_account';
 
   @override
@@ -60,8 +58,11 @@ class _OtpCodeViewState extends State<OtpCodeView> {
 
   void _startTimer() {
     _timer?.cancel();
-    setState(() => _secondsLeft = _resendDuration);
+    _secondsLeft = _resendDuration;
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+
       if (_secondsLeft <= 1) {
         timer.cancel();
         setState(() => _secondsLeft = 0);
@@ -69,15 +70,18 @@ class _OtpCodeViewState extends State<OtpCodeView> {
         setState(() => _secondsLeft--);
       }
     });
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
-  // ✅ نفس منطق تحديد نوع العملية، مستخدم في verify و resend معاً
   String _resolveCurrentType() {
     if (isDeleteAccountFlow) {
       return 'delete_account';
     } else if (widget.isForgetPassword) {
-      return 'forget';
-    } else if (widget.authAction != null) {
+      return 'forgot_password';
+    } else if (widget.authAction != null && widget.authAction!.isNotEmpty) {
       return widget.authAction!;
     } else {
       return 'register';
@@ -85,7 +89,6 @@ class _OtpCodeViewState extends State<OtpCodeView> {
   }
 
   void _handleNavigationOnSuccess() {
-    
     if (isDeleteAccountFlow) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -101,15 +104,22 @@ class _OtpCodeViewState extends State<OtpCodeView> {
       context.go(
         AppRouter.kresetpassword,
         extra: {
-          'otp': enteredOtp.isNotEmpty ? enteredOtp : widget.receivedOtp,
+          'otp': enteredOtp,
           'email': widget.userEmail,
           'userType': widget.userType,
         },
       );
-    } else if (widget.userType == 'labourer' ||
-        widget.userType == 'provider') {
+      return;
+    }
+
+    if (widget.userType == 'labourer' || widget.userType == 'provider') {
       if (widget.authAction == 'login') {
-        context.go(AppRouter.kProfileLabourer);
+      context.go(
+        AppRouter.kHome,
+        extra: {
+          'userType': widget.userType, 
+        },
+      );
       } else {
         context.go(
           AppRouter.kmoveToComplite,
@@ -122,9 +132,37 @@ class _OtpCodeViewState extends State<OtpCodeView> {
           },
         );
       }
-    } else {
-      SuccessPopUp.show(context, widget.userType, widget.userEmail);
+      return;
     }
+
+    SuccessPopUp.show(context, widget.userType, widget.userEmail);
+  }
+
+  void _verifyCode() {
+    final codeToVerify = enteredOtp.trim();
+
+    if (codeToVerify.isEmpty || codeToVerify.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('الرجاء إدخال رمز التحقق كاملاً'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    context.read<RegisterUserCubit>().verifyOtp(
+          email: widget.userEmail,
+          otp: codeToVerify,
+          type: _resolveCurrentType(),
+        );
+  }
+
+  void _resendCode() {
+    context.read<RegisterUserCubit>().resendOtp(
+          email: widget.userEmail,
+          type: _resolveCurrentType(),
+        );
   }
 
   @override
@@ -144,7 +182,9 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   ),
                   Text(
                     AppLocalizations.of(context)!.otpCode,
-                    style: TextStyles.font18BlackW500.copyWith(fontSize: 20.sp),
+                    style: TextStyles.font18BlackW500.copyWith(
+                      fontSize: 20.sp,
+                    ),
                   ),
                 ],
               ),
@@ -183,21 +223,20 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                 ),
               ),
               Gap(21.h),
+
               OtpFields(
                 onCompleted: (value) {
-                  setState(() {
-                    enteredOtp = value;
-                  });
+                  enteredOtp = value;
                 },
               ),
+
               Gap(26.h),
 
               BlocConsumer<RegisterUserCubit, RegisterUserState>(
-                listener: (context, state) async {
+                listener: (context, state) {
                   if (state is VerifyOtpSuccess) {
                     if (!context.mounted) return;
 
-                   
                     if (widget.userType == 'user' &&
                         !widget.isForgetPassword &&
                         !isDeleteAccountFlow) {
@@ -206,6 +245,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                       _handleNavigationOnSuccess();
                     }
                   }
+
                   if (state is VerifyOtpFailure) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -215,19 +255,22 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                     );
                   }
 
-               
                   if (state is ResendOtpSuccess) {
                     if (!context.mounted) return;
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text(' otp resend again successfully '),
+                        content: Text('تم إرسال رمز جديد بنجاح'),
                         backgroundColor: Colors.green,
                       ),
                     );
-                    _startTimer(); 
+
+                    _startTimer();
                   }
+
                   if (state is ResendOtpFailure) {
                     if (!context.mounted) return;
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(state.error.message),
@@ -237,34 +280,16 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   }
                 },
                 builder: (context, state) {
-                  if (state is VerifyOtpLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFFB38CF5),
-                        ),
-                      ),
-                    );
-                  }
+                  final bool isVerifying = state is VerifyOtpLoading;
 
                   return CustomButton(
-                    title: AppLocalizations.of(context)!.verifyCode,
+                    title: isVerifying
+                        ? "Verifying..."
+                        : AppLocalizations.of(context)!.verifyCode,
                     textstyle: TextStyles.font20White800,
                     width: MediaQuery.sizeOf(context).width * 0.88,
                     height: 52.h,
-                    onTap: () {
-                      final codeToVerify = enteredOtp.isNotEmpty
-                          ? enteredOtp
-                          : widget.receivedOtp;
-
-                      if (codeToVerify.isNotEmpty) {
-                        context.read<RegisterUserCubit>().verifyOtp(
-                          email: widget.userEmail,
-                          otp: codeToVerify,
-                          type: _resolveCurrentType(),
-                        );
-                      }
-                    },
+                    onTap: isVerifying ? null : _verifyCode,
                   );
                 },
               ),
@@ -279,14 +304,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   return Row(
                     children: [
                       GestureDetector(
-                        onTap: (canResend && !isResending)
-                            ? () {
-                                context.read<RegisterUserCubit>().resendOtp(
-                                  email: widget.userEmail,
-                                  type: _resolveCurrentType(),
-                                );
-                              }
-                            : null,
+                        onTap: (canResend && !isResending) ? _resendCode : null,
                         child: Text(
                           AppLocalizations.of(context)!.resendCode,
                           style: TextStyles.font12GreyW400(context).copyWith(
@@ -302,7 +320,9 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                         SizedBox(
                           width: 14.w,
                           height: 14.w,
-                          child: const CircularProgressIndicator(strokeWidth: 2),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
                         )
                       else if (canResend)
                         Text(
