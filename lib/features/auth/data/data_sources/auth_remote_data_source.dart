@@ -16,7 +16,9 @@ class AuthRemoteDataSource {
     return response;
   }
 
-  Future<dynamic> registerProvider(RegisterProviderRequestBody requestBody) async {
+  Future<dynamic> registerProvider(
+    RegisterProviderRequestBody requestBody,
+  ) async {
     final formData = await requestBody.toFormData();
     final response = await _apiService.postFormData(
       'auth/register/provider',
@@ -25,7 +27,6 @@ class AuthRemoteDataSource {
 
     return response;
   }
-
 
   Future<dynamic> verifyOtp({
     required String email,
@@ -50,25 +51,26 @@ class AuthRemoteDataSource {
     });
     return response;
   }
-  Future<dynamic> forgotPassword({required String email}) async {
-  final response = await _apiService.post('auth/forgot-password', {
-    'email': email,
-  });
-  return response;
-}
 
-Future<dynamic> resetPassword({
-  required String email,
-  required String password,
-  required String passwordConfirmation,
-}) async {
-  final response = await _apiService.post('auth/reset-password', {
-    'email': email,
-    'password': password,
-    'password_confirmation': passwordConfirmation,
-  });
-  return response;
-}
+  Future<dynamic> forgotPassword({required String email}) async {
+    final response = await _apiService.post('auth/forgot-password', {
+      'email': email,
+    });
+    return response;
+  }
+
+  Future<dynamic> resetPassword({
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final response = await _apiService.post('auth/reset-password', {
+      'email': email,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+    return response;
+  }
 
   Future<dynamic> login({
     required String email,

@@ -56,4 +56,10 @@ class PrefHelper {
   static Future<bool> clearEmail() async {
     return await _prefs.remove(_emailKey);
   }
+  static Future<void> clearAllUserData() async {
+    await _prefs.remove(_tokenKey);
+    await _prefs.remove(_emailKey);
+    await _prefs.remove('user_image');
+    await _prefs.remove('user_name');
+  }
 }

@@ -24,6 +24,10 @@ import 'package:servi_go_app/features/home/data/repositories/home_repository.dar
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
+import 'package:servi_go_app/features/messaging/chat_room/presentation/views/chat_view.dart';
+import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
+import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/complete_profile_remote_data_source.dart';
@@ -46,7 +50,6 @@ import 'package:servi_go_app/features/user_profile/data/models/user_profile_mode
 import 'package:servi_go_app/features/user_profile/data/repositories/user_profile_repository.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/views/edit%20_profile_user.dart';
-
 
 import 'package:servi_go_app/features/filter/data/repositories/filter_repository_impl.dart';
 import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_cubit.dart';
@@ -73,7 +76,8 @@ abstract class AppRouter {
   static const kmoveToComplite = '/move_to_complite';
   static const kCompliteProfileProviderView = '/complite_profile_provider';
   static const kfilterButtonSheet = '/filter_bottom_sheet';
-  static const kFilterView = '/filter_view'; 
+  static const kFilterView = '/filter_view';
+  static const kChatRoom = '/chat_room';
 
   static const kOtpVerification = kotpcode;
 
@@ -123,98 +127,86 @@ abstract class AppRouter {
           );
         },
       ),
-     GoRoute(
-  path: kforgetPassword,
-  builder: (context, state) {
-    return BlocProvider(
-      create: (context) => RegisterUserCubit(
-        AuthRepository(
-          AuthRemoteDataSource(
-            ApiService(DioClient()),
-          ),
-        ),
+      GoRoute(
+        path: kforgetPassword,
+        builder: (context, state) {
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
+            ),
+            child: const ForgetPasswordView(),
+          );
+        },
       ),
-      child: const ForgetPasswordView(),
-    );
-  },
-),
 
       GoRoute(
-  path: kotpcode,
-  builder: (context, state) {
-    final data = state.extra as Map<String, dynamic>? ?? {};
+        path: kotpcode,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>? ?? {};
 
-    final otpView = OtpCodeView(
-      receivedOtp: data['otp']?.toString() ?? '',
-      userEmail: data['email']?.toString() ?? '',
-      userType: data['userType']?.toString() ?? 'user',
-      isForgetPassword: data['isForgetPassword'] as bool? ?? false,
-      authAction: data['authAction']?.toString(),
-      mainServiceId: data['main_service_id'] != null
-          ? int.tryParse(data['main_service_id'].toString())
-          : null,
-    );
+          final otpView = OtpCodeView(
+            receivedOtp: data['otp']?.toString() ?? '',
+            userEmail: data['email']?.toString() ?? '',
+            userType: data['userType']?.toString() ?? 'user',
+            isForgetPassword: data['isForgetPassword'] as bool? ?? false,
+            authAction: data['authAction']?.toString(),
+            mainServiceId: data['main_service_id'] != null
+                ? int.tryParse(data['main_service_id'].toString())
+                : null,
+          );
 
-    if (data['registerCubit'] is RegisterUserCubit) {
-      return BlocProvider.value(
-        value: data['registerCubit'] as RegisterUserCubit,
-        child: otpView,
-      );
-    }
+          if (data['registerCubit'] is RegisterUserCubit) {
+            return BlocProvider.value(
+              value: data['registerCubit'] as RegisterUserCubit,
+              child: otpView,
+            );
+          }
 
-    if (data['registerProviderCubit'] is RegisterProviderCubit) {
-      return BlocProvider.value(
-        value: data['registerProviderCubit'] as RegisterProviderCubit,
-        child: otpView,
-      );
-    }
+          if (data['registerProviderCubit'] is RegisterProviderCubit) {
+            return BlocProvider.value(
+              value: data['registerProviderCubit'] as RegisterProviderCubit,
+              child: otpView,
+            );
+          }
 
-    return BlocProvider(
-      create: (context) => RegisterUserCubit(
-        AuthRepository(
-          AuthRemoteDataSource(
-            ApiService(DioClient()),
-          ),
-        ),
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
+            ),
+            child: otpView,
+          );
+        },
       ),
-      child: otpView,
-    );
-  },
-),
-     GoRoute(
-  path: kresetpassword,
-  builder: (context, state) {
-    final data = state.extra as Map<String, dynamic>? ?? {};
+      GoRoute(
+        path: kresetpassword,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>? ?? {};
 
-    final String? otp = data['otp']?.toString();
-    final String? email = data['email']?.toString();
-    final String userType = data['userType']?.toString() ?? 'user';
+          final String? otp = data['otp']?.toString();
+          final String? email = data['email']?.toString();
+          final String userType = data['userType']?.toString() ?? 'user';
 
-    final resetView = ResetPasswordView(
-      receivedOtp: otp,
-      userEmail: email,
-      userType: userType,
-    );
+          final resetView = ResetPasswordView(
+            receivedOtp: otp,
+            userEmail: email,
+            userType: userType,
+          );
 
-    if (data['registerCubit'] is RegisterUserCubit) {
-      return BlocProvider.value(
-        value: data['registerCubit'] as RegisterUserCubit,
-        child: resetView,
-      );
-    }
+          if (data['registerCubit'] is RegisterUserCubit) {
+            return BlocProvider.value(
+              value: data['registerCubit'] as RegisterUserCubit,
+              child: resetView,
+            );
+          }
 
-    return BlocProvider(
-      create: (context) => RegisterUserCubit(
-        AuthRepository(
-          AuthRemoteDataSource(
-            ApiService(DioClient()),
-          ),
-        ),
+          return BlocProvider(
+            create: (context) => RegisterUserCubit(
+              AuthRepository(AuthRemoteDataSource(ApiService(DioClient()))),
+            ),
+            child: resetView,
+          );
+        },
       ),
-      child: resetView,
-    );
-  },
-),
       GoRoute(
         path: kuserlabourer,
         builder: (context, state) {
@@ -262,90 +254,81 @@ abstract class AppRouter {
         path: kkLocation,
         builder: (context, state) => const CustomLocation(),
       ),
-   GoRoute(
-  path: AppRouter.kSettings,
-  builder: (context, state) {
-    final isProvider = state.extra as bool? ?? false;
-    return SettingsView(isProvider: isProvider);
-  },
-),
+      GoRoute(
+        path: AppRouter.kSettings,
+        builder: (context, state) {
+          final isProvider = state.extra as bool? ?? false;
+          return SettingsView(isProvider: isProvider);
+        },
+      ),
 
       GoRoute(
         path: kHome,
         builder: (context, state) {
           String userType = 'user';
-          dynamic userData; 
+          dynamic userData;
 
           if (state.extra is String) {
             userType = state.extra as String;
           } else if (state.extra is Map<String, dynamic>) {
             final data = state.extra as Map<String, dynamic>;
             userType = data['userType'] as String? ?? 'user';
-            userData = data['userData']; 
+            userData = data['userData'];
           }
 
           return BlocProvider(
             create: (context) => HomeCubit(
               HomeRepository(HomeRemoteDataSource(ApiService(DioClient()))),
             )..fetchHomeData(),
-            child: HomeView(
-              userType: userType, 
-              userData: userData, 
-            ),
+            child: HomeView(userType: userType, userData: userData),
           );
         },
       ),
       GoRoute(
         path: AppRouter.kEditeProfile,
         builder: (context, state) {
-          final userModel = state.extra as UserProfileData; 
+          final userModel = state.extra as UserProfileData;
 
           return BlocProvider(
             create: (context) => EditProfileCubit(
               UserProfileRepository(
-                UserProfileRemoteDataSource(
-                  ApiService(DioClient()),
-                ),
+                UserProfileRemoteDataSource(ApiService(DioClient())),
               ),
             ),
             child: EditProfileUser(
-              currentName: userModel.name,   
-              currentPhone: userModel.phone, 
+              currentName: userModel.name,
+              currentPhone: userModel.phone,
             ),
           );
         },
       ),
-//     GoRoute(
-//   path: AppRouter.kProfileLabourer,
-//   builder: (context, state) {
-  
-// final providerId = (state.extra as int?) ?? 0;
 
-//     return ProfileLabourerView(
-//       providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
-//     );
-//   },
-// ),
+      //     GoRoute(
+      //   path: AppRouter.kProfileLabourer,
+      //   builder: (context, state) {
 
-GoRoute(
-  path: AppRouter.kProfileLabourer,
-  builder: (context, state) {
-    final providerId = (state.extra as int?) ?? 0;
+      // final providerId = (state.extra as int?) ?? 0;
 
-    return BlocProvider(
-      create: (_) => ProviderProfileCubit(
-        ProviderProfileRepository(
-          ProviderProfileRemoteDataSource(
-            ApiService(DioClient()),
-          ),
-        ),
+      //     return ProfileLabourerView(
+      //       providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
+      //     );
+      //   },
+      // ),
+      GoRoute(
+        path: AppRouter.kProfileLabourer,
+        builder: (context, state) {
+          final providerId = (state.extra as int?) ?? 0;
+
+          return BlocProvider(
+            create: (_) => ProviderProfileCubit(
+              ProviderProfileRepository(
+                ProviderProfileRemoteDataSource(ApiService(DioClient())),
+              ),
+            ),
+            child: ProfileLabourerView(providerId: providerId),
+          );
+        },
       ),
-      child: ProfileLabourerView(
-        providerId: providerId,
-      ),
-    );
-  },
-),
       GoRoute(
         path: AppRouter.kmoveToComplite,
         builder: (context, state) {
@@ -361,7 +344,7 @@ GoRoute(
           final data = state.extra as Map<String, dynamic>?;
           final userType = data?['userType'] as String? ?? 'labourer';
           final userData = data?['userData'] as Map<String, dynamic>?;
-          
+
           return MultiBlocProvider(
             providers: [
               BlocProvider<SubServicesCubit>(
@@ -379,41 +362,64 @@ GoRoute(
                 ),
               ),
             ],
-            child: CompliteProfileProviderView(userData: userData, userType: userType),
+            child: CompliteProfileProviderView(
+              userData: userData,
+              userType: userType,
+            ),
           );
         },
       ),
 
- 
-GoRoute(
-  path: kFilterView,
-  builder: (context, state) {
-    final data = state.extra as Map<String, dynamic>?;  // ✅ nullable
+      GoRoute(
+        path: kFilterView,
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>?; // ✅ nullable
 
-    if (data == null) {
-      return const Scaffold(
-        body: Center(child: Text('خطأ: لم تصل بيانات الخدمة')),
-      );
-    }
+          if (data == null) {
+            return const Scaffold(
+              body: Center(child: Text('خطأ: لم تصل بيانات الخدمة')),
+            );
+          }
 
-    final mainServiceId = data['mainServiceId'] as int? ?? 0;
-    final mainServiceName = data['mainServiceName'] as String? ?? 'Service';
+          final mainServiceId = data['mainServiceId'] as int? ?? 0;
+          final mainServiceName =
+              data['mainServiceName'] as String? ?? 'Service';
 
-    return BlocProvider(
-      create: (context) => FilterCubit(
-        filterRepository: FilterRepository(
-          remoteDataSource: FilterRemoteDataSourceImpl(
-            apiService: ApiService(DioClient()),
-          ),
-        ),
+          return BlocProvider(
+            create: (context) => FilterCubit(
+              filterRepository: FilterRepository(
+                remoteDataSource: FilterRemoteDataSourceImpl(
+                  apiService: ApiService(DioClient()),
+                ),
+              ),
+            ),
+            child: FilterView(
+              mainServiceId: mainServiceId,
+              mainServiceName: mainServiceName,
+            ),
+          );
+        },
       ),
-      child: FilterView(
-        mainServiceId: mainServiceId,
-        mainServiceName: mainServiceName,
+      GoRoute(
+        path: '/chat_room',
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
+          final chatId = data['chatId'] as int;
+          final otherPartyName = data['otherPartyName'] as String;
+          final otherPartyPhoto = data['otherPartyPhoto'] as String?;
+
+          return BlocProvider(
+            create: (_) => ChatCubit(
+              ChatRepository(ChatRemoteDataSource(ApiService(DioClient()))),
+            )..fetchMessages(chatId),
+            child: ChatView(
+              chatId: chatId,
+              otherPartyName: otherPartyName,
+              otherPartyPhoto: otherPartyPhoto,
+            ),
+          );
+        },
       ),
-    );
-  },
-),
     ],
   );
 }

@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_state.dart';
+import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
+import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_state.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
@@ -444,9 +449,31 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                           height: 40.h,
                                           title: "Contact",
                                           textstyle: TextStyles.font11WhiteW500,
-                                          onTap: () {
-                                            // ملحوظة: خاص بالشات (button-status + start) هيتضاف لاحقًا
-                                          },
+                                         onTap: () async {
+  // نجلب الـ providerId من الـ widget
+  final providerId = widget.providerId;
+  if (providerId == null) return;
+
+  // نبدأ المحادثة مع المزود
+  final chatCubit = ChatCubit(
+    ChatRepository(
+      ChatRemoteDataSource(ApiService(DioClient())),
+    ),
+  );
+
+  final chatId = await chatCubit.startChat(providerId);
+
+  if (chatId != null && context.mounted) {
+    GoRouter.of(context).push(
+      AppRouter.kChatRoom,
+      extra: {
+        'chatId': chatId,
+        'otherPartyName': user?.name ?? 'Provider',
+        'otherPartyPhoto': user?.photo,
+      },
+    );
+  }
+},
                                         ),
                                       ),
                                       Gap(10.w),

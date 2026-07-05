@@ -17,15 +17,21 @@ class LoginCubit extends Cubit<LoginState> {
     emit(LoginLoading());
 
     try {
-      final result = await _authRepository.login(email: email, password: password);
+      final result = await _authRepository.login(
+        email: email,
+        password: password,
+      );
 
-    
-
-      
       if (result != null && result['success'] == true) {
         emit(LoginSuccess(result));
       } else {
-        emit(LoginFailure(ApiError(message: result?['message'] ?? "بيانات تسجيل الدخول غير صحيحة")));
+        emit(
+          LoginFailure(
+            ApiError(
+              message: result?['message'] ?? "بيانات تسجيل الدخول غير صحيحة",
+            ),
+          ),
+        );
       }
     } on ApiError catch (e) {
       emit(LoginFailure(e));

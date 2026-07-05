@@ -1,3 +1,4 @@
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/features/settings/data/data_sources/settings_remote_data_source.dart';
 
 class SettingsRepository {
@@ -10,6 +11,9 @@ class SettingsRepository {
       await remoteDataSource.logout();
     } catch (e) {
       rethrow;
+    } finally {
+      
+      await PrefHelper.clearAllUserData();
     }
   }
 
@@ -20,6 +24,7 @@ class SettingsRepository {
       rethrow;
     }
   }
+
   Future<void> verifyDeleteAccountOtp({
     required String email,
     required String code,
@@ -31,6 +36,9 @@ class SettingsRepository {
       );
     } catch (e) {
       rethrow;
+    } finally {
+      // ✅ حذف الحساب = يجب مسح البيانات المحلية كمان
+      await PrefHelper.clearAllUserData();
     }
   }
 

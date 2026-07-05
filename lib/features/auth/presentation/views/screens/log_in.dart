@@ -67,14 +67,13 @@ class _LogInState extends State<LogIn> {
         } else if (state is LoginSuccess) {
           Navigator.pop(context);
 
-        
           GoRouter.of(context).push(
-            AppRouter.kotpcode, 
+            AppRouter.kotpcode,
             extra: {
               'email': _emailController.text,
               'userType': widget.userType,
-              'isForgetPassword': false, 
-              'authAction': 'login',   
+              'isForgetPassword': false,
+              'authAction': 'login',
             },
           );
         }
