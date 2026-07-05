@@ -4,7 +4,13 @@ import 'package:servi_go_app/core/utils/styles.dart';
 
 class CustomTab extends StatelessWidget {
   final String title;
-  const CustomTab({super.key, required this.title});
+  final bool isSelected;
+
+  const CustomTab({
+    super.key,
+    required this.title,
+    this.isSelected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +18,14 @@ class CustomTab extends StatelessWidget {
       width: 66.w,
       height: 27.h,
       decoration: BoxDecoration(
-        color: Color(0xFF093040),
+        color: isSelected
+            ? const Color(0xFF093040)
+            : const Color(0xFF093040).withOpacity(0.4),
         borderRadius: BorderRadius.all(Radius.circular(8.r)),
       ),
-      child: Center(child: Text(title, style: TextStyles.font11WhiteW500)),
+      child: Center(
+        child: Text(title, style: TextStyles.font11WhiteW500),
+      ),
     );
   }
 }

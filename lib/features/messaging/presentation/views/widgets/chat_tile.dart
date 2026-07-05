@@ -2,71 +2,90 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
+import 'package:servi_go_app/features/messaging/data/models/chat_models.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 
 class ChatTile extends StatelessWidget {
-  const ChatTile({super.key});
+  final ChatListItem chat;
+  final VoidCallback onTap;
+
+  const ChatTile({super.key, required this.chat, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color onSurface = Theme.of(context).colorScheme.onSurface;
-    return Container(
-      width: 353.w,
-      height: 80.h,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 3,
-            blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.all(Radius.circular(10.r)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30.r,
-              backgroundImage: AssetImage('assets/images/user_avatar.jpg'),
+    final imageUrl = ChatCubit.buildImageUrl(chat.otherPartyPhoto);
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 353.w,
+        height: 80.h,
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 3,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
             ),
-            Gap(10),
-            Padding(
-              padding: const EdgeInsets.only(top: 16, bottom: 15),
-              child: Column(
-                children: [
-                  Row(
+          ],
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.all(Radius.circular(10.r)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 30.r,
+                backgroundImage: imageUrl.isNotEmpty
+                    ? NetworkImage(imageUrl)
+                    : const AssetImage('assets/images/user_avatar.jpg')
+                        as ImageProvider,
+              ),
+              Gap(10),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            chat.otherPartyName,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font18BlackW500,
+                            ),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: isDark ? onSurface : Colors.black,
+                            size: 20.r,
+                          ),
+                        ],
+                      ),
+                      Gap(7),
                       Text(
-                        "John ",
+                        chat.lastMessage ?? '',
                         style: TextStyles.onCard(
                           context,
-                          TextStyles.font18BlackW500,
+                          TextStyles.font12BlackW400,
                         ),
-                      ),
-                      Gap(200),
-                      Icon(
-                        Icons.keyboard_arrow_right,
-                        color: isDark ? onSurface : Colors.black,
-                        size: 20.r,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
-                  Gap(7),
-                  Text(
-                    "When are you coming ?",
-                    style: TextStyles.onCard(
-                      context,
-                      TextStyles.font12BlackW400,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+              Gap(8),
+            ],
+          ),
         ),
       ),
     );
