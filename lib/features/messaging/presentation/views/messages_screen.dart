@@ -3,10 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/network/api_service.dart';
+import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
-import 'package:servi_go_app/features/messaging/data/models/chat_models.dart';
+import 'package:servi_go_app/features/messaging/data/data_sources/admin_chat_remote_data_source.dart';
+import 'package:servi_go_app/features/messaging/data/repositories/admin_chat_repository.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/admin_chat/admin_chat_cubit.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/admin_chat/admin_chat_state.dart';
 import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_state.dart';
 import 'package:servi_go_app/features/messaging/presentation/views/widgets/custom_tab.dart';
@@ -24,7 +29,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
-   
+    
     context.read<ChatCubit>().fetchChatList();
   }
 
@@ -60,8 +65,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ],
               ),
               Gap(26.h),
-          
-              _selectedTab == 0 ? _buildCustomerChats() : _buildAdminChats(),
+              _selectedTab == 0
+                  ? _buildCustomerChats()
+                  : _buildAdminChats(),
             ],
           ),
         ),
@@ -69,6 +75,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
+ 
   Widget _buildCustomerChats() {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
@@ -93,7 +100,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   ),
                   Gap(12.h),
                   ElevatedButton(
-                    onPressed: () => context.read<ChatCubit>().fetchChatList(),
+                    onPressed: () =>
+                        context.read<ChatCubit>().fetchChatList(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -109,7 +117,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
           );
         }
 
-       
         return ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -118,7 +125,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
           itemBuilder: (context, index) {
             final chat = state.chatList[index];
             return _ChatTileItem(
-              chat: chat,
+              name: chat.otherPartyName,
+              photo: chat.otherPartyPhoto,
+              lastMessage: chat.lastMessage,
               onTap: () => GoRouter.of(context).push(
                 AppRouter.kChatRoom,
                 extra: {
@@ -134,25 +143,104 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
+ 
   Widget _buildAdminChats() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 40),
-      child: Center(child: Text('Admin chat coming soon')),
+    return BlocProvider(
+      create: (_) => AdminChatCubit(
+        AdminChatRepository(
+          AdminChatRemoteDataSource(ApiService(DioClient())),
+        ),
+      )..fetchAdminList(),
+      child: BlocBuilder<AdminChatCubit, AdminChatState>(
+        builder: (context, state) {
+          if (state.status == AdminChatStatus.loading) {
+            return const Padding(
+              padding: EdgeInsets.only(top: 40),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (state.status == AdminChatStatus.error) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      state.errorMessage ?? 'Error loading admins',
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    Gap(12.h),
+                    ElevatedButton(
+                      onPressed: () =>
+                          context.read<AdminChatCubit>().fetchAdminList(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (state.adminList.isEmpty) {
+            return const Padding(
+              padding: EdgeInsets.only(top: 40),
+              child: Center(child: Text('No admins available')),
+            );
+          }
+
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: state.adminList.length,
+            separatorBuilder: (_, __) => Gap(10.h),
+            itemBuilder: (context, index) {
+              final admin = state.adminList[index];
+              return _ChatTileItem(
+                name: admin.adminName,
+                photo: admin.adminPhoto,
+                lastMessage: admin.adminChatId != null
+                    ? 'Tap to continue conversation'
+                    : 'Tap to start conversation',
+                onTap: () => GoRouter.of(context).push(
+                  AppRouter.kAdminChatRoom,
+                  extra: {
+                    'adminId': admin.adminId,
+                    'adminChatId': admin.adminChatId,
+                    'adminName': admin.adminName,
+                    'adminPhoto': admin.adminPhoto,
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
 
+
 class _ChatTileItem extends StatelessWidget {
-  final ChatListItem chat;
+  final String name;
+  final String? photo;
+  final String? lastMessage;
   final VoidCallback onTap;
 
-  const _ChatTileItem({required this.chat, required this.onTap});
+  const _ChatTileItem({
+    required this.name,
+    this.photo,
+    this.lastMessage,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final Color onSurface = Theme.of(context).colorScheme.onSurface;
-    final imageUrl = ChatCubit.buildImageUrl(chat.otherPartyPhoto);
+    final imageUrl = ChatCubit.buildImageUrl(photo);
 
     return GestureDetector(
       onTap: onTap,
@@ -180,7 +268,7 @@ class _ChatTileItem extends StatelessWidget {
                 backgroundImage: imageUrl.isNotEmpty
                     ? NetworkImage(imageUrl)
                     : const AssetImage('assets/images/user_avatar.jpg')
-                          as ImageProvider,
+                        as ImageProvider,
               ),
               Gap(10),
               Expanded(
@@ -193,7 +281,7 @@ class _ChatTileItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            chat.otherPartyName,
+                            name,
                             style: TextStyles.onCard(
                               context,
                               TextStyles.font18BlackW500,
@@ -208,7 +296,7 @@ class _ChatTileItem extends StatelessWidget {
                       ),
                       Gap(7),
                       Text(
-                        chat.lastMessage ?? '',
+                        lastMessage ?? '',
                         style: TextStyles.onCard(
                           context,
                           TextStyles.font12BlackW400,

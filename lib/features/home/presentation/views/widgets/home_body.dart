@@ -1,4 +1,4 @@
-import 'dart:io'; 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,26 +13,44 @@ import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_state.dart';
-
 import 'package:servi_go_app/features/home/presentation/views/widgets/favorite_provider_card.dart';
 import 'package:servi_go_app/features/home/presentation/views/widgets/service_category_card.dart';
 
 class HomeBody extends StatefulWidget {
   final String userType;
-  final dynamic userData; 
+  final dynamic userData;
 
-  const HomeBody({super.key, required this.userType, this.userData});
+  const HomeBody({
+    super.key,
+    required this.userType,
+    this.userData,
+  });
 
   @override
   State<HomeBody> createState() => _HomeBodyState();
 }
 
 class _HomeBodyState extends State<HomeBody> {
-  
+  static const String _localStorageBase = 'http://10.0.2.2/servigo/public/storage/';
+
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<HomeCubit>(context).fetchHomeData();
+    context.read<HomeCubit>().fetchHomeData();
+  }
+
+  String _getFullImageUrl(String? path) {
+    if (path == null || path.trim().isEmpty) return '';
+    final cleanPath = path.trim();
+
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      if (cleanPath.contains('/storage/')) {
+        final relativePath = cleanPath.split('/storage/').last;
+        return 'http://10.0.2.2/servigo/public/storage/$relativePath';
+      }
+      return cleanPath;
+    }
+    return 'http://10.0.2.2/servigo/public/storage/$cleanPath';
   }
 
   @override
@@ -78,20 +96,17 @@ class _HomeBodyState extends State<HomeBody> {
 
             final String userName = PrefHelper.getString('user_name') ?? 'User';
 
-           
+            // ---------------- USER IMAGE ----------------
             String? finalPhotoPath;
             final String localCachedImage = PrefHelper.getUserImage();
-            
+
             if (localCachedImage.isNotEmpty) {
               finalPhotoPath = localCachedImage;
             }
 
-           
             String? fullUserImageUrl;
-            if (finalPhotoPath != null) {
-              fullUserImageUrl = finalPhotoPath.startsWith('http') || finalPhotoPath.startsWith('/') && !finalPhotoPath.contains('data/')
-                  ? (finalPhotoPath.startsWith('http') ? finalPhotoPath : 'http://10.0.2.2:8000$finalPhotoPath')
-                  : finalPhotoPath; 
+            if (finalPhotoPath != null && finalPhotoPath.isNotEmpty) {
+              fullUserImageUrl = finalPhotoPath;
             }
 
             final String firstLetter = userName.trim().isNotEmpty
@@ -105,51 +120,50 @@ class _HomeBodyState extends State<HomeBody> {
                   const LangagueThemeWidget(),
                   const Gap(16),
                   
-             
+                  // ---------------- USER IMAGE WIDGET ----------------
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(widget.userType == 'labourer' ? 45.r : 35.r),
+                    borderRadius: BorderRadius.circular(
+                      widget.userType == 'labourer' ? 45.r : 35.r,
+                    ),
                     child: Container(
                       width: widget.userType == 'labourer' ? 90.w : 70.w,
                       height: widget.userType == 'labourer' ? 90.h : 70.h,
-                      color: fullUserImageUrl == null ? Colors.deepPurpleAccent : const Color(0xFFF3F2F2),
+                      color: fullUserImageUrl == null
+                          ? Colors.deepPurpleAccent
+                          : const Color(0xFFF3F2F2),
                       child: fullUserImageUrl != null
                           ? (fullUserImageUrl.startsWith('http')
                               ? Image.network(
                                   fullUserImageUrl,
                                   fit: BoxFit.cover,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.deepPurpleAccent),
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        firstLetter,
+                                        style: TextStyle(
+                                          fontSize: 24.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     );
                                   },
-                                  errorBuilder: (context, error, stackTrace) => Center(
-                                    child: Text(
-                                      firstLetter,
-                                      style: TextStyle(
-                                        fontSize: 24.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
                                 )
                               : Image.file(
-                                  File(fullUserImageUrl), 
+                                  File(fullUserImageUrl),
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) => Center(
-                                    child: Text(
-                                      firstLetter,
-                                      style: TextStyle(
-                                        fontSize: 24.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        firstLetter,
+                                        style: TextStyle(
+                                          fontSize: 24.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 ))
                           : Center(
                               child: Text(
@@ -163,7 +177,6 @@ class _HomeBodyState extends State<HomeBody> {
                             ),
                     ),
                   ),
-                  
                   const Gap(16),
                   Text(
                     "Welcome $userName",
@@ -176,6 +189,8 @@ class _HomeBodyState extends State<HomeBody> {
                     ),
                   ),
                   const Gap(40),
+
+                  // ---------------- STATIC BANNER ----------------
                   Container(
                     width: 390.w,
                     height: 115.h,
@@ -194,23 +209,29 @@ class _HomeBodyState extends State<HomeBody> {
                       children: [
                         Image.asset(Assets.onBoardingView2),
                         const Gap(5),
-                        Text(
-                          overflow: TextOverflow.ellipsis,
-                          "High Quality and Competitive\n Prices For Your Home Services \nHigh Quality and Competitive\n Prices For Your Home Services ",
-                          style: TextStyles.onCard(
-                            context,
-                            TextStyles.font12PrimaryColorW600,
+                        Expanded(
+                          child: Text(
+                            "High Quality and Competitive\nPrices For Your Home Services\nHigh Quality and Competitive\nPrices For Your Home Services",
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 4,
+                            style: TextStyles.onCard(
+                              context,
+                              TextStyles.font12PrimaryColorW600,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
+
                   const Gap(20),
                   Text(
                     "Choose the service type to begin \n your search :",
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(12),
+                  
+                  // ---------------- MAIN SERVICES ----------------
                   Container(
                     width: 353.w,
                     height: 150.h,
@@ -232,61 +253,71 @@ class _HomeBodyState extends State<HomeBody> {
                             physics: const ClampingScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: mainServices.length,
-                          itemBuilder: (context, index) {
-  final service = mainServices[index];
-  
- return GestureDetector(
-  onTap: () {
+                            itemBuilder: (context, index) {
+                              final service = mainServices[index];
+                              final serviceImage = _getFullImageUrl(service.photo);
 
-    context.push(
-     AppRouter.kFilterView, 
-      extra: {
-        'mainServiceId': service.id ?? 0,
-        'mainServiceName': service.nameEn ?? 'Service',
-      },
-    );
-  },
-  child: ServiceCategoryCard(
-    name: service.nameEn ?? 'Service',
-    image: service.photo ?? "assets/images/test.png",
-  ),
-);
-},
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push(
+                                    AppRouter.kFilterView,
+                                    extra: {
+                                      'mainServiceId': service.id ?? 0,
+                                      'mainServiceName': service.nameEn ?? 'Service',
+                                    },
+                                  );
+                                },
+                                child: ServiceCategoryCard(
+                                  name: service.nameEn ?? 'Service',
+                                  image: serviceImage,
+                                ),
+                              );
+                            },
                           ),
                   ),
+
                   const Gap(20),
                   Text(
                     "Favorite Providers :",
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(20),
+
+                  // ---------------- FAVORITES ----------------
                   favorites.isEmpty
                       ? const Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Text("No favorite providers yet"),
                         )
                       : Wrap(
-                          spacing: 2.w,
-                          runSpacing: 6.h,
+                          spacing: 8.w,
+                          runSpacing: 8.h,
                           children: List.generate(favorites.length, (index) {
                             final provider = favorites[index];
+                            final providerImage = _getFullImageUrl(provider.photo);
+
                             return SizedBox(
                               width: 120.w,
                               child: FavoriteProviderCard(
-                                providerName: provider.name ?? "Sara Ali",
-                                imageUrl: provider.photo ?? "assets/images/test.png",
-                                mainService: provider.mainService?.nameEn ?? "Cleaning",
-                                subService: provider.subService?.nameEn ?? "House Cleaning",
+                                providerName: provider.name ?? "Unknown",
+                                imageUrl: providerImage,
+                                mainService: provider.mainService?.nameEn ?? "Service",
+                                subService: provider.subService?.nameEn ?? "Service",
                               ),
                             );
                           }),
                         ),
+
                   const Gap(20),
+                  
+                  // ---------------- ADS ----------------
                   ads.isEmpty
                       ? const SizedBox.shrink()
                       : Column(
                           children: List.generate(ads.length, (index) {
                             final ad = ads[index];
+                            final adImage = _getFullImageUrl(ad.adImage);
+
                             return Container(
                               width: 353.w,
                               height: 200.h,
@@ -302,11 +333,10 @@ class _HomeBodyState extends State<HomeBody> {
                                   ),
                                 ],
                               ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    Padding(
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
                                       padding: EdgeInsets.symmetric(
                                         horizontal: 15.w,
                                         vertical: 20.h,
@@ -315,44 +345,73 @@ class _HomeBodyState extends State<HomeBody> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            ad.titleEn ?? "Advertisement",
+                                            ad.providerName ?? "Advertisement",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyles.onCard(
                                               context,
-                                              TextStyles.font25Blackw700.copyWith(
-                                                fontSize: 14.sp,
-                                              ),
+                                              TextStyles.font25Blackw700.copyWith(fontSize: 14.sp),
                                             ),
                                           ),
                                           const Gap(14),
-                                          Text(
-                                            ad.contentEn ?? "Description here...",
-                                            style: TextStyles.onCard(
-                                              context,
-                                              TextStyles.font12PrimaryColorW600,
+                                          Expanded(
+                                            child: Text(
+                                              ad.description ?? "Description here...",
+                                              maxLines: 4,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyles.onCard(
+                                                context,
+                                                TextStyles.font12PrimaryColorW600,
+                                              ),
                                             ),
                                           ),
-                                          const Gap(20),
+                                          const Gap(10),
                                           CustomButton(
-                                            height: 23.h,
-                                            width: 92.w,
-                                            title: "Go To Profile  ",
+                                            height: 30.h,
+                                            width: 110.w,
+                                            title: "Go To Profile",
                                             textstyle: TextStyles.font11WhiteW500,
-                                            onTap: () {},
+                                            onTap: () {
+                                              if (ad.providerUserId != null) {
+                                                context.push(
+                                                  AppRouter.kProfileLabourer,
+                                                  extra: ad.providerUserId,
+                                                );
+                                              }
+                                            },
                                           ),
                                         ],
                                       ),
                                     ),
-                                    ad.photo != null
-                                        ? Image.network(
-                                            ad.photo!,
-                                            width: 120.w,
-                                            fit: BoxFit.contain,
-                                            errorBuilder: (context, error, stackTrace) =>
-                                                Image.asset("assets/images/test2.png"),
-                                          )
-                                        : Image.asset("assets/images/test2.png"),
-                                  ],
-                                ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 10.w),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                      child: adImage.isNotEmpty
+                                          ? Image.network(
+                                              adImage,
+                                              width: 120.w,
+                                              height: 140.h,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Image.asset(
+                                                  "assets/images/test2.png",
+                                                  width: 120.w,
+                                                  height: 140.h,
+                                                  fit: BoxFit.cover,
+                                                );
+                                              },
+                                            )
+                                          : Image.asset(
+                                              "assets/images/test2.png",
+                                              width: 120.w,
+                                              height: 140.h,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           }),

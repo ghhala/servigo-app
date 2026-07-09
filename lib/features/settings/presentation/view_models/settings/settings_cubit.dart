@@ -6,14 +6,22 @@ import 'settings_state.dart';
 class SettingsCubit extends Cubit<SettingsState> {
   final SettingsRepository repository;
 
-  SettingsCubit({required this.repository}) : super(SettingsState());
+ 
+  final void Function(bool value)? onAvailabilityChanged;
+  final void Function(bool value)? onOvernightChanged;
+
+  SettingsCubit({
+    required this.repository,
+    this.onAvailabilityChanged,
+    this.onOvernightChanged,
+  }) : super(SettingsState());
 
   // ── Logout ──
   Future<void> logout() async {
     emit(state.copyWith(status: SettingsStatus.loading));
     try {
       await repository.logout();
-      await PrefHelper.clearToken(); 
+      await PrefHelper.clearToken();
       await PrefHelper.clearEmail();
       emit(state.copyWith(
         status: SettingsStatus.success,
@@ -29,56 +37,57 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   // ── Delete Account ──
   Future<void> deleteAccount() async {
-  emit(state.copyWith(status: SettingsStatus.loading));
-  try {
-    await repository.deleteAccountRequest();
-    emit(state.copyWith(
-      status: SettingsStatus.success,
-      otpSentForDeletion: true, 
-    ));
-  } catch (e) {
-    emit(state.copyWith(
-      status: SettingsStatus.error,
-      errorMessage: e.toString(),
-    ));
+    emit(state.copyWith(status: SettingsStatus.loading));
+    try {
+      await repository.deleteAccountRequest();
+      emit(state.copyWith(
+        status: SettingsStatus.success,
+        otpSentForDeletion: true,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: SettingsStatus.error,
+        errorMessage: e.toString(),
+      ));
+    }
   }
 
-}
-Future<void> confirmDeleteAccount({
-  required String email,
-  required String code,
-}) async {
-  emit(state.copyWith(status: SettingsStatus.loading));
-  try {
-    await repository.verifyDeleteAccountOtp(email: email, code: code);
-    await PrefHelper.clearToken();
-    emit(state.copyWith(
-      status: SettingsStatus.success,
-      isAccountDeleted: true,
-    ));
-  } catch (e) {
-    emit(state.copyWith(
-      status: SettingsStatus.error,
-      errorMessage: e.toString(),
-    ));
+  Future<void> confirmDeleteAccount({
+    required String email,
+    required String code,
+  }) async {
+    emit(state.copyWith(status: SettingsStatus.loading));
+    try {
+      await repository.verifyDeleteAccountOtp(email: email, code: code);
+      await PrefHelper.clearToken();
+      emit(state.copyWith(
+        status: SettingsStatus.success,
+        isAccountDeleted: true,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: SettingsStatus.error,
+        errorMessage: e.toString(),
+      ));
+    }
   }
-}
-
 
   // ── Available Now Toggle ──
   Future<void> toggleAvailability(bool value) async {
     final oldValue = state.isAvailable;
-    // ✅ تحديث متفائل (Optimistic UI) فوراً
+   
     emit(state.copyWith(isAvailable: value));
+    onAvailabilityChanged?.call(value);
     try {
       await repository.updateAvailability(isAvailable: value);
     } catch (e) {
-      // ❌ رجوع للقيمة القديمة لو فشل الطلب
+     
       emit(state.copyWith(
         isAvailable: oldValue,
         status: SettingsStatus.error,
         errorMessage: e.toString(),
       ));
+      onAvailabilityChanged?.call(oldValue);
     }
   }
 
@@ -86,6 +95,7 @@ Future<void> confirmDeleteAccount({
   Future<void> toggleOvernight(bool value) async {
     final oldValue = state.overnight;
     emit(state.copyWith(overnight: value));
+    onOvernightChanged?.call(value);
     try {
       await repository.updateAvailability(overnight: value);
     } catch (e) {
@@ -94,6 +104,7 @@ Future<void> confirmDeleteAccount({
         status: SettingsStatus.error,
         errorMessage: e.toString(),
       ));
+      onOvernightChanged?.call(oldValue);
     }
   }
 }

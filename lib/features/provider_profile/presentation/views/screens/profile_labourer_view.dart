@@ -296,6 +296,25 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                               )
                                               as ImageProvider,
                                   ),
+                                  // ✅ نقطة حالة التوفر — إشارة سريعة بالإضافة للنص أسفل (Available/Unavailable)
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 14.r,
+                                      height: 14.r,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: provider?.isAvailable == 1
+                                            ? Colors.green
+                                            : Colors.grey,
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   if (!isOwner)
                                     Positioned(
                                       top: -6,
@@ -450,11 +469,11 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                           title: "Contact",
                                           textstyle: TextStyles.font11WhiteW500,
                                          onTap: () async {
-  // نجلب الـ providerId من الـ widget
+ 
   final providerId = widget.providerId;
   if (providerId == null) return;
 
-  // نبدأ المحادثة مع المزود
+ 
   final chatCubit = ChatCubit(
     ChatRepository(
       ChatRemoteDataSource(ApiService(DioClient())),
@@ -683,20 +702,18 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                       ],
 
                       // ── Customer Reviews and Ratings ──
+                      // ✅ ما عاد في height مقفول محسوب يدويًا — الكارد هلق ياخد
+                      // ارتفاعه تلقائيًا من طول المحتوى الفعلي (بغض النظر عن عدد
+                      // التقييمات أو طول كل نص مراجعة)، فمافي overflow ممكن يصير مستقبلاً
                       CustomContainer(
                         width: 353.w,
-                        height: isOwner
-                            ? 134.h
-                            : (profileData?.ratings == null ||
-                                  profileData!.ratings!.isEmpty)
-                            ? 160.h
-                            : (110.h + (profileData.ratings!.length * 78.h)),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 12.w,
                             vertical: 10.h,
                           ),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Row(
                                 children: [
@@ -820,18 +837,52 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                   ],
                                                 ),
                                               ),
-                                              CustomButton(
-                                                width: 50.w,
-                                                height: 23.h,
-                                                title: "Report",
-                                                textstyle: TextStyles
-                                                    .font11WhiteW500
-                                                    .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                onTap: () {},
-                                              ),
+                                              // ✅ زر الإبلاغ يظهر فقط لصاحب البروفايل (المزود)
+                                              if (isOwner)
+                                                CustomButton(
+                                                  width: 50.w,
+                                                  height: 23.h,
+                                                  title: "Report",
+                                                  textstyle: TextStyles
+                                                      .font11WhiteW500
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                  onTap: () {
+                                                    if (r.id != null) {
+                                                      _showReportReviewDialog(
+                                                        context,
+                                                        r.id!,
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              // ✅ زر الحذف يظهر فقط لصاحب
+                                              // المراجعة نفسه (الزبون)، بناءً
+                                              // على myRatingIds
+                                              if (!isOwner &&
+                                                  r.id != null &&
+                                                  state.myRatingIds.contains(
+                                                    r.id,
+                                                  ))
+                                                CustomButton(
+                                                  width: 50.w,
+                                                  height: 23.h,
+                                                  title: "Delete",
+                                                  textstyle: TextStyles
+                                                      .font11WhiteW500
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                  onTap: () {
+                                                    _confirmDeleteReview(
+                                                      context,
+                                                      r.id!,
+                                                    );
+                                                  },
+                                                ),
                                             ],
                                           ),
                                         );
@@ -902,6 +953,102 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               }
             },
             child: const Text("Send"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ dialog سبب البلاغ عن مراجعة، يستدعي reportRating بالكيوبت
+  void _showReportReviewDialog(BuildContext context, int ratingId) {
+    final providerProfileCubit = context.read<ProviderProfileCubit>();
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Report review"),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            hintText: "Why are you reporting this review?",
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              final reason = controller.text.trim();
+              Navigator.pop(dialogContext);
+
+              if (reason.isEmpty) return;
+
+              try {
+                await providerProfileCubit.reportRating(
+                  ratingId: ratingId,
+                  reason: reason,
+                );
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Review reported successfully"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Failed to report review"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text("Report", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ تأكيد قبل حذف مراجعة، بيستدعي deleteRating بالكيوبت
+  void _confirmDeleteReview(BuildContext context, int ratingId) {
+    final providerProfileCubit = context.read<ProviderProfileCubit>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete review"),
+        content: const Text(
+          "Are you sure you want to delete your review? This action cannot be undone.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await providerProfileCubit.deleteRating(ratingId);
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(this.context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Failed to delete review"),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text(
+              "Delete",
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),

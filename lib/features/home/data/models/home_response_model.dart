@@ -3,36 +3,53 @@ class HomeResponseModel {
   final String? message;
   final HomeData? data;
 
-  HomeResponseModel({this.success, this.message, this.data});
+  HomeResponseModel({
+    this.success,
+    this.message,
+    this.data,
+  });
 
   factory HomeResponseModel.fromJson(Map<String, dynamic> json) {
     return HomeResponseModel(
-      success: json['success'],
-      message: json['message'],
+      success: json['success'] as bool?,
+      message: json['message'] as String?,
       data: json['data'] != null ? HomeData.fromJson(json['data']) : null,
     );
   }
 }
 
 class HomeData {
-  final List<MainService>? mainServices;
-  final List<FavoriteProvider>? favorites; 
-  final List<HomeAd>? ads;                 
+  final List<MainService> mainServices;
+  final List<FavoriteProvider> favorites;
+  final List<HomeAd> ads;
 
-  HomeData({this.mainServices, this.favorites, this.ads});
+  HomeData({
+    required this.mainServices,
+    required this.favorites,
+    required this.ads,
+  });
 
   factory HomeData.fromJson(Map<String, dynamic> json) {
+    // جلب القوائم كـ List قابلة لـ Null بشكل آمن وتجنب الـ Type Cast Error
+    final mainServicesJson = json['main_services'] as List?;
+    final favoritesJson = json['favorites'] as List?;
+    final adsJson = json['ads'] as List?;
+
     return HomeData(
-      mainServices: json['main_services'] != null
-          ? List<MainService>.from(
-              json['main_services'].map((x) => MainService.fromJson(x)))
+      mainServices: mainServicesJson != null
+          ? mainServicesJson
+              .map((x) => MainService.fromJson(x as Map<String, dynamic>))
+              .toList()
           : [],
-      favorites: json['favorites'] != null
-          ? List<FavoriteProvider>.from(
-              json['favorites'].map((x) => FavoriteProvider.fromJson(x)))
+      favorites: favoritesJson != null
+          ? favoritesJson
+              .map((x) => FavoriteProvider.fromJson(x as Map<String, dynamic>))
+              .toList()
           : [],
-      ads: json['ads'] != null
-          ? List<HomeAd>.from(json['ads'].map((x) => HomeAd.fromJson(x)))
+      ads: adsJson != null
+          ? adsJson
+              .map((x) => HomeAd.fromJson(x as Map<String, dynamic>))
+              .toList()
           : [],
     );
   }
@@ -44,35 +61,19 @@ class MainService {
   final String? nameEn;
   final String? photo;
 
-  MainService({this.id, this.nameAr, this.nameEn, this.photo});
+  MainService({
+    this.id,
+    this.nameAr,
+    this.nameEn,
+    this.photo,
+  });
 
   factory MainService.fromJson(Map<String, dynamic> json) {
     return MainService(
-      id: json['id'],
-      nameAr: json['name_ar'],
-      nameEn: json['name_en'],
-      photo: json['photo'],
-    );
-  }
-}
-
-
-class FavoriteProvider {
-  final int? id;
-  final String? name;
-  final String? photo;
-  final MainService? mainService;
-  final SubService? subService;
-
-  FavoriteProvider({this.id, this.name, this.photo, this.mainService, this.subService});
-
-  factory FavoriteProvider.fromJson(Map<String, dynamic> json) {
-    return FavoriteProvider(
-      id: json['id'],
-      name: json['name'],
-      photo: json['photo'],
-      mainService: json['main_service'] != null ? MainService.fromJson(json['main_service']) : null,
-      subService: json['sub_service'] != null ? SubService.fromJson(json['sub_service']) : null,
+      id: json['id'] as int?,
+      nameAr: json['name_ar'] as String?,
+      nameEn: json['name_en'] as String?,
+      photo: json['photo'] as String?,
     );
   }
 }
@@ -82,36 +83,77 @@ class SubService {
   final String? nameAr;
   final String? nameEn;
 
-  SubService({this.id, this.nameAr, this.nameEn});
+  SubService({
+    this.id,
+    this.nameAr,
+    this.nameEn,
+  });
 
   factory SubService.fromJson(Map<String, dynamic> json) {
     return SubService(
-      id: json['id'],
-      nameAr: json['name_ar'],
-      nameEn: json['name_en'],
+      id: json['id'] as int?,
+      nameAr: json['name_ar'] as String?,
+      nameEn: json['name_en'] as String?,
     );
   }
 }
 
+class FavoriteProvider {
+  final int? providerUserId;
+  final String? name;
+  final String? photo;
+  final MainService? mainService;
+  final SubService? subService;
+
+  FavoriteProvider({
+    this.providerUserId,
+    this.name,
+    this.photo,
+    this.mainService,
+    this.subService,
+  });
+
+  factory FavoriteProvider.fromJson(Map<String, dynamic> json) {
+    return FavoriteProvider(
+      providerUserId: json['provider_user_id'] as int?,
+      name: json['name'] as String?,
+      photo: json['photo'] as String?,
+      // فحص أمان إضافي للكائنات المتداخلة داخل المفضلة
+      mainService: json['main_service'] != null
+          ? MainService.fromJson(json['main_service'] as Map<String, dynamic>)
+          : null,
+      subService: json['sub_service'] != null
+          ? SubService.fromJson(json['sub_service'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+}
 
 class HomeAd {
-  final int? id;
-  final String? titleAr;
-  final String? titleEn;
-  final String? contentAr;
-  final String? contentEn;
-  final String? photo;
+  final int? adId;
+  final int? providerUserId;
+  final String? providerName;
+  final String? providerPhoto;
+  final String? adImage;
+  final String? description;
 
-  HomeAd({this.id, this.titleAr, this.titleEn, this.contentAr, this.contentEn, this.photo});
+  HomeAd({
+    this.adId,
+    this.providerUserId,
+    this.providerName,
+    this.providerPhoto,
+    this.adImage,
+    this.description,
+  });
 
   factory HomeAd.fromJson(Map<String, dynamic> json) {
     return HomeAd(
-      id: json['id'],
-      titleAr: json['title_ar'],
-      titleEn: json['title_en'],
-      contentAr: json['content_ar'],
-      contentEn: json['content_en'],
-      photo: json['photo'],
+      adId: json['ad_id'] as int?,
+      providerUserId: json['provider_user_id'] as int?,
+      providerName: json['provider_name'] as String?,
+      providerPhoto: json['provider_photo'] as String?,
+      adImage: json['ad_image'] as String?,
+      description: json['description'] as String?,
     );
   }
 }

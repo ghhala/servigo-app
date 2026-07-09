@@ -7,16 +7,13 @@ class CustomTextFormFiled extends StatelessWidget {
   const CustomTextFormFiled({
     super.key,
     required this.hintText,
-    
     this.prefixIcon,
     this.textInputType,
     this.validator,
     this.controller,
     this.width,
     this.height,
-    VoidCallback? onTap_,
-
-    /// 🔽 Dropdown props
+    this.onTap_, // ✅ التعديل: أضفنا this. عشان تتخزن فعليًا في الحقل
     this.isDropdown = false,
     this.items,
     this.value,
@@ -42,8 +39,8 @@ class CustomTextFormFiled extends StatelessWidget {
   final Color? fillColor;
   final TextStyle? hintStyle;
   final List<TextInputFormatter>? inputFormatters;
+  final VoidCallback? onTap_; // ✅ التعديل: تعريف الحقل نفسه في الكلاس
 
-  /// 🔽 Dropdown
   final bool isDropdown;
   final List<String>? items;
   final String? value;
@@ -58,26 +55,20 @@ class CustomTextFormFiled extends StatelessWidget {
     return SizedBox(
       width: width ?? MediaQuery.sizeOf(context).width * 0.88,
       height: height ?? 42.h,
-
-      ///Dropdown
       child: isDropdown
           ? DropdownButtonFormField<String>(
               value: value,
               validator: validator,
               isExpanded: true,
-
               items: items?.map((item) {
                 return DropdownMenuItem(value: item, child: Text(item));
               }).toList(),
-
               onChanged: onChanged,
-
               decoration: InputDecoration(
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
                 hintStyle: resolvedHintStyle,
-
                 filled: true,
                 fillColor: Theme.of(context).cardColor,
                 border: buildBorder(context),
@@ -88,10 +79,8 @@ class CustomTextFormFiled extends StatelessWidget {
                   borderSide: const BorderSide(width: 1, color: Colors.red),
                 ),
               ),
-
               icon: const Icon(Icons.keyboard_arrow_down),
             )
-          
           : TextFormField(
               readOnly: readOnly ?? false,
               validator: validator,
@@ -99,13 +88,12 @@ class CustomTextFormFiled extends StatelessWidget {
               keyboardType: textInputType,
               inputFormatters: inputFormatters,
               onChanged: onChanged,
-
+              onTap: onTap_, // ✅ التعديل الأهم: ربط onTap_ فعليًا بالحقل
               decoration: InputDecoration(
                 isDense: true,
                 prefixIcon: prefixIcon,
                 hintText: hintText,
                 hintStyle: resolvedHintStyle,
-
                 filled: true,
                 fillColor: fillColor ?? Theme.of(context).cardColor,
                 border: buildBorder(context),
@@ -113,7 +101,6 @@ class CustomTextFormFiled extends StatelessWidget {
                 focusedBorder: buildBorder(context),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(3),
-
                   borderSide: const BorderSide(width: 1, color: Colors.red),
                 ),
               ),

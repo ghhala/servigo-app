@@ -1,131 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:servi_go_app/core/network/api_service.dart';
-// import 'package:servi_go_app/core/network/dio_client.dart';
-
-// import 'package:servi_go_app/features/home/presentation/views/widgets/custom_bottom_nav_bar.dart';
-// import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
-// import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
-// import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
-// import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
-
-// import 'package:servi_go_app/features/messaging/presentation/views/messages_screen.dart';
-// import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
-// import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
-// import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
-// import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
-// import 'package:servi_go_app/features/settings/data/data_sources/settings_remote_data_source.dart';
-// import 'package:servi_go_app/features/settings/data/repositories/settings_repository.dart';
-// import 'package:servi_go_app/features/settings/presentation/view_models/settings/settings_cubit.dart';
-// import 'package:servi_go_app/features/settings/presentation/views/settings_view.dart';
-// import 'package:servi_go_app/features/user_profile/data/data_sources/user_profile_remote_data_source.dart';
-// import 'package:servi_go_app/features/user_profile/data/repositories/user_profile_repository.dart';
-// import 'package:servi_go_app/features/user_profile/presentation/view_models/user_profile/user_profile_cubit.dart';
-// import 'package:servi_go_app/features/user_profile/presentation/views/user_profile_view.dart';
-
-
-// class HomeView extends StatefulWidget {
-//   final String userType;
-//   final dynamic userData;
-//   const HomeView({super.key, required this.userType, this.userData});
-
-//   @override
-//   State<HomeView> createState() => _HomeViewState();
-// }
-
-// class _HomeViewState extends State<HomeView> {
-//   int _selectedIndex = 0;
-
-//   List<Widget> get _pages {
-//     if (widget.userType == 'labourer') {
-//       return [
-//         HomeBody(userType: "labourer", userData: widget.userData),
-//         BlocProvider(
-//           create: (context) => ProviderProfileCubit(
-//             ProviderProfileRepository(
-//               ProviderProfileRemoteDataSource(
-//                 ApiService(DioClient()),
-//               ),
-//             ),
-//           )..fetchProviderProfile(),
-//           child: const ProfileLabourerView(),
-//         ),
-//         BlocProvider(
-//   create: (_) => ChatCubit(
-//     ChatRepository(
-//       ChatRemoteDataSource(ApiService(DioClient())),
-//     ),
-//   )..fetchChatList(),
-//   child: const MessagesScreen(),
-// ),
-
-       
-//         BlocProvider(
-//           create: (context) => SettingsCubit(
-//             repository: SettingsRepository(
-//               remoteDataSource: SettingsRemoteDataSource(
-//                 apiService: ApiService(DioClient()),
-//               ),
-//             ),
-//           ),
-//           child: const SettingsView(isProvider: true),
-//         ),
-//       ];
-//     } else {
-//       return [
-//         HomeBody(userType: "user"),
-//         BlocProvider(
-//           create: (context) {
-//             final dioClient = DioClient();
-//             final apiService = ApiService(dioClient);
-//             final remoteDataSource = UserProfileRemoteDataSource(apiService);
-//             final repository = UserProfileRepository(remoteDataSource);
-
-//             return UserProfileCubit(repository)..fetchUserProfile();
-//           },
-//           child: const UserProfileView(),
-//         ),
-//         BlocProvider(
-//   create: (_) => ChatCubit(
-//     ChatRepository(
-//       ChatRemoteDataSource(ApiService(DioClient())),
-//     ),
-//   )..fetchChatList(),
-//   child: const MessagesScreen(),
-// ),
-
-      
-//         BlocProvider(
-//           create: (context) => SettingsCubit(
-//             repository: SettingsRepository(
-//               remoteDataSource: SettingsRemoteDataSource(
-//                 apiService: ApiService(DioClient()),
-//               ),
-//             ),
-//           ),
-//           child: const SettingsView(isProvider: false),
-//         ),
-//       ];
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       extendBody: true,
-//       bottomNavigationBar: CustomBottomNavBar(
-//         currentIndex: _selectedIndex,
-//         onTap: (index) {
-//           setState(() {
-//             _selectedIndex = index;
-//           });
-//         },
-//       ),
-//       body: _pages[_selectedIndex],
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
@@ -160,97 +32,101 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   int _selectedIndex = 0;
-  late List<Widget> _pages;
+
+  bool get _isProvider => widget.userType == 'labourer';
+
+  
+  late final SettingsCubit _settingsCubit;
+  late final ChatCubit _chatCubit;
+  ProviderProfileCubit? _providerProfileCubit;
+  UserProfileCubit? _userProfileCubit;
 
   @override
   void initState() {
     super.initState();
-    _pages = _buildPages();
-    // ✅ لا نستدعي fetchChatList هنا — يتم في MessagesScreen.initState
+
+    if (_isProvider) {
+      _providerProfileCubit = ProviderProfileCubit(
+        ProviderProfileRepository(
+          ProviderProfileRemoteDataSource(ApiService(DioClient())),
+        ),
+      )..fetchProviderProfile();
+    } else {
+      _userProfileCubit = UserProfileCubit(
+        UserProfileRepository(
+          UserProfileRemoteDataSource(ApiService(DioClient())),
+        ),
+      )..fetchUserProfile();
+    }
+
+    _settingsCubit = SettingsCubit(
+      repository: SettingsRepository(
+        remoteDataSource: SettingsRemoteDataSource(
+          apiService: ApiService(DioClient()),
+        ),
+      ),
+     
+      onAvailabilityChanged: (value) =>
+          _providerProfileCubit?.updateAvailabilityLocally(value),
+      onOvernightChanged: (value) =>
+          _providerProfileCubit?.updateOvernightLocally(value),
+    );
+
+   
+    _chatCubit = ChatCubit(
+      ChatRepository(
+        ChatRemoteDataSource(ApiService(DioClient())),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _settingsCubit.close();
+    _chatCubit.close();
+    _providerProfileCubit?.close();
+    _userProfileCubit?.close();
+    super.dispose();
   }
 
   List<Widget> _buildPages() {
-    if (widget.userType == 'labourer') {
-      return [
-        HomeBody(userType: "labourer", userData: widget.userData),
-        BlocProvider(
-          create: (context) => ProviderProfileCubit(
-            ProviderProfileRepository(
-              ProviderProfileRemoteDataSource(ApiService(DioClient())),
-            ),
-          )..fetchProviderProfile(),
-          child: const ProfileLabourerView(),
-        ),
-        // ✅ بدون ..fetchChatList() — يُستدعى في MessagesScreen.initState
-        BlocProvider(
-          create: (_) => ChatCubit(
-            ChatRepository(
-              ChatRemoteDataSource(ApiService(DioClient())),
-            ),
-          ),
-          child: const MessagesScreen(),
-        ),
-        BlocProvider(
-          create: (context) => SettingsCubit(
-            repository: SettingsRepository(
-              remoteDataSource: SettingsRemoteDataSource(
-                apiService: ApiService(DioClient()),
-              ),
-            ),
-          ),
-          child: const SettingsView(isProvider: true),
-        ),
-      ];
-    } else {
-      return [
-        HomeBody(userType: "user"),
-        BlocProvider(
-          create: (context) {
-            final apiService = ApiService(DioClient());
-            return UserProfileCubit(
-              UserProfileRepository(
-                UserProfileRemoteDataSource(apiService),
-              ),
-            )..fetchUserProfile();
-          },
-          child: const UserProfileView(),
-        ),
-        // ✅ بدون ..fetchChatList() — يُستدعى في MessagesScreen.initState
-        BlocProvider(
-          create: (_) => ChatCubit(
-            ChatRepository(
-              ChatRemoteDataSource(ApiService(DioClient())),
-            ),
-          ),
-          child: const MessagesScreen(),
-        ),
-        BlocProvider(
-          create: (context) => SettingsCubit(
-            repository: SettingsRepository(
-              remoteDataSource: SettingsRemoteDataSource(
-                apiService: ApiService(DioClient()),
-              ),
-            ),
-          ),
-          child: const SettingsView(isProvider: false),
-        ),
-      ];
-    }
+    return [
+      HomeBody(
+        userType: _isProvider ? "labourer" : "user",
+        userData: _isProvider ? widget.userData : null,
+      ),
+      _isProvider ? const ProfileLabourerView() : const UserProfileView(),
+      const MessagesScreen(),
+      SettingsView(isProvider: _isProvider),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _settingsCubit),
+        BlocProvider.value(value: _chatCubit),
+        if (_providerProfileCubit != null)
+          BlocProvider.value(value: _providerProfileCubit!),
+        if (_userProfileCubit != null)
+          BlocProvider.value(value: _userProfileCubit!),
+      ],
+      child: Scaffold(
+        extendBody: true,
+        bottomNavigationBar: CustomBottomNavBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _buildPages(),
+        ),
       ),
-      body: _pages[_selectedIndex],
     );
   }
 }

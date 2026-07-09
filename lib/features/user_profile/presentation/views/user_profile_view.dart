@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,12 +24,31 @@ class UserProfileView extends StatelessWidget {
     return url;
   }
 
+  // Single soft-blurred gradient blob used for the decorative corners.
+  Widget _blob({required double size, required List<Color> colors}) {
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
         padding: EdgeInsets.only(
-          top: MediaQuery.of(context).size.height * 0.34,
+          top: MediaQuery.of(context).size.height * 0.30,
         ),
         child: BlocBuilder<UserProfileCubit, UserProfileState>(
           builder: (context, state) {
@@ -35,71 +56,126 @@ class UserProfileView extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is UserProfileSuccess) {
               final user = state.userData;
-              
-             
+
               final String imageUrl = _formatImageUrl(user.photo);
 
               return Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Container(
-                      width: 435.w,
-                      height: 250.h,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 50.r,
-                            backgroundColor: imageUrl.isEmpty 
-                                ? Colors.deepPurpleAccent 
-                                : const Color(0xFFF3F2F2),
-                          
-                           
-                            backgroundImage: imageUrl.isNotEmpty
-                                ? NetworkImage('$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}')
-                                : null,
-                            child: imageUrl.isEmpty
-                                ? Text(
-                                    user.name?[0].toUpperCase() ?? "U",
-                                    style: TextStyle(
-                                      fontSize: 28.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          SizedBox(height: 10.h),
-                          Text(
-                            user.name ?? "No Name ",
-                            style: TextStyles.font18BlackW500.copyWith(
-                              fontSize: 18.sp,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12.r),
+                      child: Container(
+                        width: 435.w,
+                        height: 260.h,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Stack(
+                          children: [
+                            // ---- top-left blob ----
+                            Positioned(
+                              top: -50.h,
+                              left: -45.w,
+                              child: _blob(
+                                size: 190.w,
+                                colors: [
+                                  const Color(0xFF6C5CE7),
+                                  Colors.blue.shade300,
+                                ],
+                              ),
                             ),
-                          ),
-                          const Gap(5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.phone, size: 17.sp),
-                              const Gap(5),
-                              Text(user.phone ?? "No Phone Number"),
-                            ],
-                          ),
-                          const Gap(5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.email, size: 17.sp),
-                              const Gap(5),
-                              const Text("user@servigo.com"),
-                            ],
-                          ),
-                        ],
+                            // ---- top-right blob ----
+                            Positioned(
+                              top: -35.h,
+                              right: -55.w,
+                              child: _blob(
+                                size: 170.w,
+                                colors: [
+                                  Colors.blue.shade200,
+                                  const Color(0xFF6C5CE7).withOpacity(0.7),
+                                ],
+                              ),
+                            ),
+                            // ---- bottom-right blob ----
+                            Positioned(
+                              bottom: -55.h,
+                              right: -40.w,
+                              child: _blob(
+                                size: 190.w,
+                                colors: [
+                                  Colors.blue.shade300,
+                                  const Color(0xFF6C5CE7),
+                                ],
+                              ),
+                            ),
+                            // ---- bottom-left blob ----
+                            Positioned(
+                              bottom: -45.h,
+                              left: -50.w,
+                              child: _blob(
+                                size: 160.w,
+                                colors: [
+                                  const Color(0xFF6C5CE7).withOpacity(0.75),
+                                  Colors.blue.shade200,
+                                ],
+                              ),
+                            ),
+                            // ---- actual profile content on top ----
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 48.r,
+                                  backgroundColor: imageUrl.isEmpty
+                                      ? Colors.deepPurpleAccent
+                                      : const Color(0xFFF3F2F2),
+                                  backgroundImage: imageUrl.isNotEmpty
+                                      ? NetworkImage(
+                                          '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}',
+                                        )
+                                      : null,
+                                  child: imageUrl.isEmpty
+                                      ? Text(
+                                          user.name?[0].toUpperCase() ?? "U",
+                                          style: TextStyle(
+                                            fontSize: 28.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                                SizedBox(height: 10.h),
+                                Text(
+                                  user.name ?? "No Name ",
+                                  style: TextStyles.font18BlackW500.copyWith(
+                                    fontSize: 18.sp,
+                                  ),
+                                ),
+                                const Gap(5),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.phone, size: 17.sp),
+                                    const Gap(5),
+                                    Text(user.phone ?? "No Phone Number"),
+                                  ],
+                                ),
+                                const Gap(5),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.email, size: 17.sp),
+                                    const Gap(5),
+                                    const Text("user@servigo.com"),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -109,7 +185,7 @@ class UserProfileView extends StatelessWidget {
                     height: 30.h,
                     title: "edit profile",
                     textstyle: TextStyles.font11WhiteW500.copyWith(
-                      fontSize: 13.sp,
+                      fontSize: 15.sp,
                     ),
                     onTap: () async {
                       final userProfileCubit =
@@ -120,7 +196,6 @@ class UserProfileView extends StatelessWidget {
                         context,
                       ).push(AppRouter.kEditeProfile, extra: user);
 
-                    
                       userProfileCubit.fetchUserProfile();
                       homeCubit.fetchHomeData();
                     },

@@ -24,22 +24,24 @@ import 'package:servi_go_app/features/home/data/repositories/home_repository.dar
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/views/home_view.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
+import 'package:servi_go_app/features/messaging/chat_room/presentation/views/chat_admin_view.dart';
 import 'package:servi_go_app/features/messaging/chat_room/presentation/views/chat_view.dart';
+import 'package:servi_go_app/features/messaging/data/data_sources/admin_chat_remote_data_source.dart';
 import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
+import 'package:servi_go_app/features/messaging/data/repositories/admin_chat_repository.dart';
 import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/admin_chat/admin_chat_cubit.dart';
 import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/complete_profile_remote_data_source.dart';
-import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/complete_profile_repository.dart';
-import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/completeprofile/complete_profile_cubit.dart';
-import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/screens/edite_profile_provider.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/move_to_complite.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/profile_labourer_view.dart';
 
@@ -78,6 +80,8 @@ abstract class AppRouter {
   static const kfilterButtonSheet = '/filter_bottom_sheet';
   static const kFilterView = '/filter_view';
   static const kChatRoom = '/chat_room';
+  static const kAdminChatRoom = '/admin_chat_room';
+  static const kEditProfileProvider = '/edit_profile_provider';
 
   static const kOtpVerification = kotpcode;
 
@@ -287,7 +291,7 @@ abstract class AppRouter {
       GoRoute(
         path: AppRouter.kEditeProfile,
         builder: (context, state) {
-          final userModel = state.extra as UserProfileData;
+          final userModel = state.extra as UserProfileData? ?? UserProfileData();
 
           return BlocProvider(
             create: (context) => EditProfileCubit(
@@ -303,32 +307,15 @@ abstract class AppRouter {
         },
       ),
 
-      //     GoRoute(
-      //   path: AppRouter.kProfileLabourer,
-      //   builder: (context, state) {
-
-      // final providerId = (state.extra as int?) ?? 0;
-
-      //     return ProfileLabourerView(
-      //       providerId: providerId, // 👈 تمرير الـ id مباشرة للشاشة
-      //     );
-      //   },
-      // ),
-      GoRoute(
-        path: AppRouter.kProfileLabourer,
-        builder: (context, state) {
-          final providerId = (state.extra as int?) ?? 0;
-
-          return BlocProvider(
-            create: (_) => ProviderProfileCubit(
-              ProviderProfileRepository(
-                ProviderProfileRemoteDataSource(ApiService(DioClient())),
-              ),
-            ),
-            child: ProfileLabourerView(providerId: providerId),
-          );
-        },
-      ),
+    
+    
+GoRoute(
+  path: AppRouter.kProfileLabourer,
+  builder: (context, state) {
+    final providerId = (state.extra as int?) ?? 0;
+    return ProfileLabourerView(providerId: providerId);
+  },
+),
       GoRoute(
         path: AppRouter.kmoveToComplite,
         builder: (context, state) {
@@ -373,7 +360,7 @@ abstract class AppRouter {
       GoRoute(
         path: kFilterView,
         builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>?; // ✅ nullable
+          final data = state.extra as Map<String, dynamic>?; 
 
           if (data == null) {
             return const Scaffold(
@@ -420,6 +407,46 @@ abstract class AppRouter {
           );
         },
       ),
+      GoRoute(
+  path: AppRouter.kAdminChatRoom,
+  builder: (context, state) {
+    final data = state.extra as Map<String, dynamic>;
+    final adminId = data['adminId'] as int;
+    final adminChatId = data['adminChatId'] as int?;
+    final adminName = data['adminName'] as String;
+    final adminPhoto = data['adminPhoto'] as String?;
+
+    return BlocProvider(
+      create: (_) {
+        final cubit = AdminChatCubit(
+          AdminChatRepository(
+            AdminChatRemoteDataSource(ApiService(DioClient())),
+          ),
+        );
+     
+        if (adminChatId != null) {
+          cubit.fetchMessages(adminChatId);
+        }
+        return cubit;
+      },
+      child: AdminChatView(
+        adminId: adminId,
+        adminChatId: adminChatId,
+        adminName: adminName,
+        adminPhoto: adminPhoto,
+      ),
+    );
+  },
+),
+
+      
+
+GoRoute(
+  path: kEditProfileProvider,
+  builder: (context, state) => const EditProfileProviderView(),
+),
+
+
     ],
   );
 }

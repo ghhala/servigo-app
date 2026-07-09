@@ -10,6 +10,7 @@ class CustomRowWidget extends StatelessWidget {
   final TextStyle? style;
   final void Function()? onTap;
   final Widget? trailing;
+  final bool showDivider;
 
   const CustomRowWidget({
     super.key,
@@ -18,6 +19,7 @@ class CustomRowWidget extends StatelessWidget {
     this.style,
     this.onTap,
     this.trailing,
+    this.showDivider = true,
   });
 
   @override
@@ -27,10 +29,9 @@ class CustomRowWidget extends StatelessWidget {
 
     return Column(
       children: [
-       
         GestureDetector(
-          onTap: trailing == null ? onTap : null, 
-          behavior: HitTestBehavior.opaque,       
+          onTap: trailing == null ? onTap : null,
+          behavior: HitTestBehavior.opaque,
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
@@ -42,13 +43,12 @@ class CustomRowWidget extends StatelessWidget {
                 const Gap(20),
                 Text(text, style: resolvedStyle),
                 const Spacer(),
-                trailing ??
-                    Icon(Icons.arrow_forward_ios, size: 16.sp),
+                trailing ?? Icon(Icons.arrow_forward_ios, size: 16.sp),
               ],
             ),
           ),
         ),
-        const Divider(),
+        if (showDivider) const Divider(height: 25, thickness: 0.9),
       ],
     );
   }

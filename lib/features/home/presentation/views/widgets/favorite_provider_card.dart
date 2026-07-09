@@ -39,19 +39,27 @@ class FavoriteProviderCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              // الصورة من الـ network بدل asset
               ClipRRect(
                 borderRadius: BorderRadius.circular(8.r),
-                child: Image.network(
-                  imageUrl,
-                  width: 50.w,
-                  height: 50.h,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.person,
-                    size: 50.r,
-                  ),
-                ),
+                child: imageUrl.isNotEmpty
+                    ? Image.network(
+                        imageUrl,
+                        width: 50.w,
+                        height: 50.h,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          debugPrint("FAVORITE IMAGE ERROR => $imageUrl");
+                          debugPrint("FAVORITE IMAGE ERROR DETAILS => $error");
+                          return Icon(
+                            Icons.person,
+                            size: 50.r,
+                          );
+                        },
+                      )
+                    : Icon(
+                        Icons.person,
+                        size: 50.r,
+                      ),
               ),
               Gap(6),
               Row(

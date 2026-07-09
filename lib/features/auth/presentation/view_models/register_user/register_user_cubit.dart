@@ -34,16 +34,20 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
   required String email,
   required String otp,
   required String type,
+  String? userType, 
 }) async {
   emit(VerifyOtpLoading());
   try {
-   
-   
     final result = await _authRepository.verifyOtp(
-      email: email, 
-      otp: otp, 
+      email: email,
+      otp: otp,
       type: type,
     );
+
+   
+    if (type == 'login' && userType != null) {
+      await _authRepository.fetchAndSaveProfileAfterLogin(userType: userType);
+    }
 
     emit(VerifyOtpSuccess());
   } on ApiError catch (e) {
@@ -52,7 +56,6 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
     emit(VerifyOtpFailure(ApiError(message: "An unexpected error occurred: $e")));
   }
 }
-
 Future<void> resendOtp({
     required String email,
     required String type,

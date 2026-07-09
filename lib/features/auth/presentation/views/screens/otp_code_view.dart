@@ -139,24 +139,25 @@ class _OtpCodeViewState extends State<OtpCodeView> {
   }
 
   void _verifyCode() {
-    final codeToVerify = enteredOtp.trim();
+  final codeToVerify = enteredOtp.trim();
 
-    if (codeToVerify.isEmpty || codeToVerify.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('الرجاء إدخال رمز التحقق كاملاً'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    context.read<RegisterUserCubit>().verifyOtp(
-          email: widget.userEmail,
-          otp: codeToVerify,
-          type: _resolveCurrentType(),
-        );
+  if (codeToVerify.isEmpty || codeToVerify.length < 6) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('الرجاء إدخال رمز التحقق كاملاً'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
   }
+
+  context.read<RegisterUserCubit>().verifyOtp(
+        email: widget.userEmail,
+        otp: codeToVerify,
+        type: _resolveCurrentType(),
+        userType: widget.userType, 
+      );
+}
 
   void _resendCode() {
     context.read<RegisterUserCubit>().resendOtp(

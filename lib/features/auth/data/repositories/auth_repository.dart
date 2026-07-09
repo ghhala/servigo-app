@@ -127,43 +127,58 @@ class AuthRepository {
   }
 
   Future<dynamic> login({
-  required String email,
-  required String password,
-}) async {
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final rawData = await _authRemoteDataSource.login(
+        email: email,
+        password: password,
+      );
+      return rawData;
+    } on ApiError catch (e) {
+      throw e;
+    } catch (e) {
+      throw ApiError(message: "unExpected error occured processing data : $e");
+    }
+  }
+
+ 
+  Future<void> fetchAndSaveProfileAfterLogin({required String userType}) async {
   try {
-    final rawData = await _authRemoteDataSource.login(
-      email: email,
-      password: password,
-    );
+    final bool isProvider =
+        userType == 'labourer' || userType == 'provider';
 
-    if (rawData != null && rawData['data'] != null) {
-      final data = rawData['data'];
+    final dynamic rawData = isProvider
+        ? await _authRemoteDataSource.getProviderProfile()
+        : await _authRemoteDataSource.getCustomerProfile();
 
-      // ✅ نصفّر بيانات الحساب السابق أولاً قبل حفظ بيانات الحساب الجديد
-      await PrefHelper.clearAllUserData();
+    if (rawData == null || rawData['data'] == null) return;
 
-      if (data['token'] != null) {
-        final String token = data['token'].toString();
-        await PrefHelper.saveToken(token);
-        await PrefHelper.saveEmail(email);
-      }
+    final rootData = rawData['data'];
 
-      final userData = data['user'] ?? data;
+   
+    final Map<String, dynamic> data =
+        (rootData['user'] != null && rootData['user'] is Map)
+            ? Map<String, dynamic>.from(rootData['user'])
+            : Map<String, dynamic>.from(rootData);
 
-      if (userData['name'] != null) {
-        await PrefHelper.saveString('user_name', userData['name'].toString());
-      }
-
-      if (userData['photo'] != null && userData['photo'].toString().isNotEmpty) {
-        await PrefHelper.saveUserImage(userData['photo'].toString());
-      }
+    if (data['name'] != null && data['name'].toString().trim().isNotEmpty) {
+      await PrefHelper.saveString('user_name', data['name'].toString());
     }
 
-    return rawData;
-  } on ApiError catch (e) {
-    throw e;
+    if (data['phone'] != null && data['phone'].toString().trim().isNotEmpty) {
+      await PrefHelper.saveString('user_phone', data['phone'].toString());
+    }
+
+    final String? photo = data['photo']?.toString();
+    if (photo != null && photo.isNotEmpty && photo != 'null') {
+      await PrefHelper.saveUserImage(photo);
+    } else {
+      await PrefHelper.clearUserImage();
+    }
   } catch (e) {
-    throw ApiError(message: "unExpected error occured processing data : $e");
+   
   }
 }
 }

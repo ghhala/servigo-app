@@ -82,4 +82,16 @@ class AuthRemoteDataSource {
     });
     return response;
   }
+
+  // ---------------- NEW: fetch profile after login ----------------
+
+  Future<dynamic> getCustomerProfile() async {
+    final response = await _apiService.get('customer/profile');
+    return response;
+  }
+
+  Future<dynamic> getProviderProfile() async {
+    final response = await _apiService.get('provider/myprofile');
+    return response;
+  }
 }

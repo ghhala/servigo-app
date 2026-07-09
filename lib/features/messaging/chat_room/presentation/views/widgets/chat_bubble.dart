@@ -16,8 +16,20 @@ class ChatBubble extends StatelessWidget {
     this.time,
   }) : super(key: key);
 
+ 
+  String _buildImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.contains('localhost')) {
+      return path.replaceAll('localhost', '10.0.2.2');
+    }
+    return 'http://10.0.2.2/servigo/public$path';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final fullImageUrl = _buildImageUrl(imageUrl);
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -45,16 +57,27 @@ class ChatBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // ✅ صورة لو وجدت
-            if (imageUrl != null && imageUrl!.isNotEmpty)
+            // ✅ صورة مع URL كامل
+            if (fullImageUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  imageUrl!,
+                  fullImageUrl,
                   width: 200,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.broken_image, color: Colors.white),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      width: 200,
+                      height: 150,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.broken_image,
+                    color: Colors.white,
+                    size: 40,
+                  ),
                 ),
               ),
 

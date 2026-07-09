@@ -80,12 +80,18 @@ class ProfileData {
     );
   }
 
-  ProfileData copyWith({bool? isFavourite}) {
+  
+ 
+  ProfileData copyWith({
+    bool? isFavourite, 
+    ProviderInfo? provider,
+    List<RatingModel>? ratings, 
+  }) {
     return ProfileData(
       user: user,
-      provider: provider,
+      provider: provider ?? this.provider,
       avgRating: avgRating,
-      ratings: ratings,
+      ratings: ratings ?? this.ratings, 
       certificates: certificates,
       portfolio: portfolio,
       isFavourite: isFavourite ?? this.isFavourite,
@@ -212,6 +218,37 @@ class ProviderInfo {
       profileCompleted: json['profile_completed'],
     );
   }
+
+  // ✅ جديد: لازم عشان نقدر نحدّث overnight/isAvailable محليًا من SettingsCubit
+  // بدون ما نحتاج نعمل fetch جديد من السيرفر
+  ProviderInfo copyWith({
+    bool? overnight,
+    int? isAvailable,
+  }) {
+    return ProviderInfo(
+      id: id,
+      locationName: locationName,
+      latitude: latitude,
+      longitude: longitude,
+      locationDescription: locationDescription,
+      workType: workType,
+      mainServiceId: mainServiceId,
+      mainServiceName: mainServiceName,
+      subServiceId: subServiceId,
+      subServiceName: subServiceName,
+      currency: currency,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      workStartTime: workStartTime,
+      workEndTime: workEndTime,
+      overnight: overnight ?? this.overnight,
+      aboutMe: aboutMe,
+      offDays: offDays,
+      isAvailable: isAvailable ?? this.isAvailable,
+      status: status,
+      profileCompleted: profileCompleted,
+    );
+  }
 }
 
 class CertificateModel {
@@ -246,7 +283,7 @@ class PortfolioModel {
   }
 }
 
-// ✅ محدَّث ليطابق الـ JSON الفعلي: customer_name / customer_photo بدل user_name
+
 class RatingModel {
   final int? id;
   final String? customerName;

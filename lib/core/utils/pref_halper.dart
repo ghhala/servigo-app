@@ -61,5 +61,6 @@ class PrefHelper {
     await _prefs.remove(_emailKey);
     await _prefs.remove('user_image');
     await _prefs.remove('user_name');
+    await _prefs.remove('user_phone');
   }
 }

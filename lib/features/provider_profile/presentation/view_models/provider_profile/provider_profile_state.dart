@@ -8,7 +8,11 @@ class ProviderProfileLoading extends ProviderProfileState {}
 
 class ProviderProfileSuccess extends ProviderProfileState {
   final ProviderProfileModel profileModel;
-  ProviderProfileSuccess(this.profileModel);
+
+ 
+  final Set<int> myRatingIds;
+
+  ProviderProfileSuccess(this.profileModel, {this.myRatingIds = const {}});
 }
 
 class ProviderProfileFailure extends ProviderProfileState {
