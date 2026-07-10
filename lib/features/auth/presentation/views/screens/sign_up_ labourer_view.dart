@@ -10,8 +10,6 @@ import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 import 'package:servi_go_app/features/map/presentation/views/screens/map_view.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
@@ -85,44 +83,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ],
                   ),
                 ),
-                Gap(11.h),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: AppLocalizations.of(context)!.welcome,
-                            style: TextStyles.font24PrimaryColorW800,
-                          ),
-                          TextSpan(
-                            text: AppLocalizations.of(context)!.welcomeCreateAccount,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Gap(16.h),
-                SocialAuthButton(
-                  title: AppLocalizations.of(context)!.continueWithGoogle,
-                  image: Assets.googleIcon,
-                  onPressed: () {},
-                ),
+
                 Gap(20.h),
-                SocialAuthButton(
-                  title: AppLocalizations.of(context)!.continueWithApple,
-                  image: Assets.appleIcon,
-                  onPressed: () {},
-                ),
-                Gap(20.h),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: OrDivider(),
-                ),
-                Gap(20.h),
+
                 Column(
                   children: [
                     CustomTextFormFiled(
@@ -159,46 +122,49 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ),
                     Gap(20.h),
                     GestureDetector(
-  onTap: () async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const CustomLocation(), // ← لا تغيير هنا
-      ),
-    );
+                      onTap: () async {
+                        final result = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const CustomLocation(), // ← لا تغيير هنا
+                          ),
+                        );
 
-    debugPrint("Result received from map: $result");
+                        debugPrint("Result received from map: $result");
 
-    if (result != null && result is Map) {
-      if (mounted) {
-        setState(() {
-          selectedLatitude = result['lat'];
-          selectedLongitude = result['lng'];
-          locationController.text = result['name'] ?? '';
-        });
-      }
-    }
-  },
-  child: AbsorbPointer(
-    child: CustomTextFormFiled(
-      controller: locationController,
-      hintText: AppLocalizations.of(context)!.location,
-      readOnly: true,
-      prefixIcon: Padding(
-        padding: EdgeInsets.all(11.w),
-        child: SvgPicture.asset(
-          "assets/images/location_icon.svg",
-        ),
-      ),
-      textInputType: TextInputType.text,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return AppLocalizations.of(context)!.pleaseSelectLocationFromMap;
-        }
-        return null;
-      },
-    ),
-  ),
-),
+                        if (result != null && result is Map) {
+                          if (mounted) {
+                            setState(() {
+                              selectedLatitude = result['lat'];
+                              selectedLongitude = result['lng'];
+                              locationController.text = result['name'] ?? '';
+                            });
+                          }
+                        }
+                      },
+                      child: AbsorbPointer(
+                        child: CustomTextFormFiled(
+                          controller: locationController,
+                          hintText: AppLocalizations.of(context)!.location,
+                          readOnly: true,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.all(11.w),
+                            child: SvgPicture.asset(
+                              "assets/images/location_icon.svg",
+                            ),
+                          ),
+                          textInputType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return AppLocalizations.of(
+                                context,
+                              )!.pleaseSelectLocationFromMap;
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ),
                     Gap(20.h),
                     CustomTextFormFiled(
                       controller: serviceController,
@@ -214,7 +180,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       items: const ['Cleaning', 'Plumbing', 'Electrical'],
                       validator: (value) {
                         if (value == null) {
-                          return AppLocalizations.of(context)!.pleaseSelectService;
+                          return AppLocalizations.of(
+                            context,
+                          )!.pleaseSelectService;
                         }
                         return null;
                       },
@@ -239,7 +207,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       items: const ['Fixed', 'Mobile', 'Both'],
                       validator: (value) {
                         if (value == null) {
-                          return AppLocalizations.of(context)!.pleaseSelectRegion;
+                          return AppLocalizations.of(
+                            context,
+                          )!.pleaseSelectRegion;
                         }
                         return null;
                       },
@@ -283,17 +253,21 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       height: 52.h,
                       onTap: () {
                         if (formKey.currentState!.validate()) {
-                          if (selectedLatitude == null || selectedLongitude == null) {
+                          if (selectedLatitude == null ||
+                              selectedLongitude == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text("الرجاء فتح الخريطة وتأكيد موقعك أولاً"),
+                                content: Text(
+                                  "الرجاء فتح الخريطة وتأكيد موقعك أولاً",
+                                ),
                                 backgroundColor: Colors.orange,
                               ),
                             );
                             return;
                           }
 
-                          String formattedWorkType = selectedRegion!.toLowerCase();
+                          String formattedWorkType = selectedRegion!
+                              .toLowerCase();
 
                           String serviceId = "1";
                           if (selectedService == 'Cleaning') serviceId = "1";
@@ -305,7 +279,8 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             email: emailController.text.trim(),
                             phone: phoneController.text.trim(),
                             password: passwordController.text.trim(),
-                            passwordConfirmation: passwordController.text.trim(),
+                            passwordConfirmation: passwordController.text
+                                .trim(),
                             locationName: locationController.text.trim(),
                             mainServiceId: serviceId,
                             workType: formattedWorkType,
@@ -313,13 +288,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                             longitude: selectedLongitude,
                           );
 
-                        
-                        
-
-                          GoRouter.of(context).push(
-                            AppRouter.kVerviciton,
-                            extra: requestBody,
-                          );
+                          GoRouter.of(
+                            context,
+                          ).push(AppRouter.kVerviciton, extra: requestBody);
                         }
                       },
                     ),

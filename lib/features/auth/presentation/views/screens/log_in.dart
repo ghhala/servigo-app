@@ -5,15 +5,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
-import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/login/login_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class LogIn extends StatefulWidget {
@@ -45,7 +42,6 @@ class _LogInState extends State<LogIn> {
 
   @override
   Widget build(BuildContext context) {
-    print("The userType inside LogIn Screen is: ${widget.userType}");
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginLoading) {
@@ -118,28 +114,20 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
                     ),
-                    Gap(21.h),
-                    SocialAuthButton(
-                      image: Assets.googleIcon,
-                      title: AppLocalizations.of(context)!.continueWithGoogle,
-                      onPressed: () {},
+                    Image.asset(
+                      "assets/images/login1.png",
+                      width: 230.w,
+                      height: 190.h,
                     ),
-                    Gap(21.h),
-                    SocialAuthButton(
-                      image: Assets.appleIcon,
-                      title: AppLocalizations.of(context)!.continueWithApple,
-                      onPressed: () {},
-                    ),
-                    Gap(8.h),
-                    OrDivider(),
-                    Gap(16.h),
+                    Gap(10.h),
+
                     CustomTextFormFiled(
                       hintText: "email",
                       controller: _emailController,
                       validator: Validators.email,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(10.w),
-                        child: SvgPicture.asset("assets/images/phone_icon.svg"),
+                        child: SvgPicture.asset("assets/images/iconEmail.svg"),
                       ),
                       textInputType: TextInputType.emailAddress,
                     ),
@@ -169,7 +157,7 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
                     ),
-                    Gap(46.h),
+                    Gap(25.h),
                     CustomButton(
                       title: AppLocalizations.of(context)!.logIn,
                       textstyle: TextStyles.font20White800,

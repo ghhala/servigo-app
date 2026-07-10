@@ -1,4 +1,3 @@
-
 import 'package:servi_go_app/features/home/data/models/home_response_model.dart';
 
 class SubServicesResponse {
@@ -14,7 +13,9 @@ class SubServicesResponse {
 
   factory SubServicesResponse.fromJson(Map<String, dynamic> json) {
     var list = json['data']['sub_services'] as List;
-    List<SubService> subServicesList = list.map((i) => SubService.fromJson(i)).toList();
+    List<SubService> subServicesList = list
+        .map((i) => SubService.fromJson(i))
+        .toList();
 
     return SubServicesResponse(
       success: json['success'] ?? false,

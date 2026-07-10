@@ -14,8 +14,6 @@ import 'package:servi_go_app/features/auth/data/models/register_user_request_bod
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart'; // الـ Cubit الجديد
 import 'package:servi_go_app/features/auth/presentation/views/widgets/Validators_widget.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_text_form_filed.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/or_divider%20.dart';
-import 'package:servi_go_app/features/auth/presentation/views/widgets/social_auth_button.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/terms_and_conditions_widget%20.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
 
@@ -57,7 +55,7 @@ class _SignUpUserState extends State<SignUpUser> {
                   child: Row(
                     children: [
                       GestureDetector(
-                        onTap: () => context.pop(), 
+                        onTap: () => context.pop(),
                         child: Icon(Icons.arrow_back_ios),
                       ),
                       Text(
@@ -69,49 +67,8 @@ class _SignUpUserState extends State<SignUpUser> {
                     ],
                   ),
                 ),
-                Gap(11.h),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.welcomeCreateAccount,
-                            style: TextStyles.font24PrimaryColorW800,
-                          ),
-                          TextSpan(
-                            text: AppLocalizations.of(
-                              context,
-                            )!.welcomeCreateAccount,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Gap(16.h),
-                SocialAuthButton(
-                  title: AppLocalizations.of(context)!.continueWithGoogle,
-                  image: Assets.googleIcon,
-                  onPressed: () {},
-                ),
-                Gap(20.h),
-                SocialAuthButton(
-                  title: AppLocalizations.of(context)!.continueWithApple,
-                  image: Assets.appleIcon,
-                  onPressed: () {},
-                ),
-                Gap(20.h),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: OrDivider(),
-                ),
-                Gap(20.h),
+                Gap(25.h),
                 Column(
                   children: [
                     CustomTextFormFiled(
@@ -180,7 +137,10 @@ class _SignUpUserState extends State<SignUpUser> {
                       listener: (context, state) async {
                         if (state is RegisterUserSuccess) {
                           await PrefHelper.clearUserImage();
-                          await PrefHelper.saveString('user_name', nameController.text.trim());
+                          await PrefHelper.saveString(
+                            'user_name',
+                            nameController.text.trim(),
+                          );
                           if (!context.mounted) return;
 
                           context.push(

@@ -296,7 +296,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                               )
                                               as ImageProvider,
                                   ),
-                                  // ✅ نقطة حالة التوفر — إشارة سريعة بالإضافة للنص أسفل (Available/Unavailable)
+                                
                                   Positioned(
                                     bottom: 0,
                                     right: 0,

@@ -41,17 +41,10 @@ class FilterRemoteDataSourceImpl implements FilterRemoteDataSource {
 
   @override
   Future<List<ProviderFilterModel>> getFilteredProviders(FilterRequestModel request) async {
-    // 1. تحويل النموذج إلى Map
     final Map<String, dynamic> params = request.toJson();
-    
-    // 2. تنظيف الـ Map من أي قيم تساوي null تماماً قبل تحويلها إلى نصوص
     params.removeWhere((key, value) => value == null);
-
-    
     final cleanParams = params.map((key, value) => MapEntry(key, value.toString()));
     final queryString = Uri(queryParameters: cleanParams).query;
-    
-    
     final response = await apiService.get('search/providers?$queryString'); 
     
     if (response['success'] == true) {
@@ -63,23 +56,22 @@ class FilterRemoteDataSourceImpl implements FilterRemoteDataSource {
   }
 
   @override
-Future<List<SubServiceEntity>> getSubServices(int mainServiceId) async {
-  final response = await apiService.get('search/sub-services/$mainServiceId');
+  Future<List<SubServiceEntity>> getSubServices(int mainServiceId) async {
+    final response = await apiService.get('search/sub-services/$mainServiceId');
 
-  if (response['success'] == true) {
-    // ✅ الـ data هو Map يحتوي على sub_services
-    final Map<String, dynamic> data = response['data'];
-    final List<dynamic> subServices = data['sub_services'] ?? [];
+    if (response['success'] == true) {
+      final Map<String, dynamic> data = response['data'];
+      final List<dynamic> subServices = data['sub_services'] ?? [];
 
-    return subServices.map((json) {
-      final String name = (json['name_ar'] ?? json['name'] ?? '') as String;
-      return SubServiceEntity(
-        id: (json['id'] ?? 0) as int,
-        name: name,
-      );
-    }).toList();
-  } else {
-    throw Exception(response['message'] ?? 'فشل في جلب الخدمات الفرعية');
+      return subServices.map((json) {
+        return SubServiceEntity(
+          id: (json['id'] ?? 0) as int,
+          nameAr: (json['name_ar'] ?? '') as String,
+          nameEn: (json['name_en'] ?? json['name_ar'] ?? '') as String,
+        );
+      }).toList();
+    } else {
+      throw Exception(response['message'] ?? 'فشل في جلب الخدمات الفرعية');
+    }
   }
-}
 }

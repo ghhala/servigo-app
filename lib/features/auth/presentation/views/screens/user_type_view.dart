@@ -28,7 +28,7 @@ class UserTypeView extends StatelessWidget {
 
             Positioned(
               top: 0,
-              left: 10.w,
+              left: 20.w,
               child: Image.asset('assets/images/Vector(2).png'),
             ),
             Positioned(

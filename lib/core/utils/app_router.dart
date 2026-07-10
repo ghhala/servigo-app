@@ -35,10 +35,13 @@ import 'package:servi_go_app/features/messaging/presentation/view_models/chat/ch
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_1.dart';
 import 'package:servi_go_app/features/on_boarding/presentation/views/widgets/on_boarding_view_2.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/complete_profile_remote_data_source.dart';
+import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/sub_services_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/complete_profile_repository.dart';
+import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/sub_services_repository.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/completeprofile/complete_profile_cubit.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/complite_profile_provider_view.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/screens/edite_profile_provider.dart';
@@ -313,7 +316,14 @@ GoRoute(
   path: AppRouter.kProfileLabourer,
   builder: (context, state) {
     final providerId = (state.extra as int?) ?? 0;
-    return ProfileLabourerView(providerId: providerId);
+    return BlocProvider<ProviderProfileCubit>(
+      create: (context) => ProviderProfileCubit(
+        ProviderProfileRepository(
+          ProviderProfileRemoteDataSource(ApiService(DioClient())),
+        ),
+      ),
+      child: ProfileLabourerView(providerId: providerId),
+    );
   },
 ),
       GoRoute(

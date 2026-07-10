@@ -47,7 +47,9 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
           if (state is ForgotPasswordSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text("successfully sent verification code to your email"),
+                content: Text(
+                  "successfully sent verification code to your email",
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -96,7 +98,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                         ),
                       ],
                     ),
-                    Gap(54.h),
+                    Gap(35.h),
                     Text(
                       AppLocalizations.of(context)!.itsHappened,
                       style: TextStyles.font22PrimaryColorW700,
@@ -108,7 +110,13 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                         fontSize: 13.sp,
                       ),
                     ),
-                    Gap(50.h),
+
+                    Image.asset(
+                      "assets/images/login.png",
+                      width: 300,
+                      height: 250,
+                    ),
+                    Gap(8.h),
                     CustomTextFormFiled(
                       validator: Validators.email,
                       controller: emailController,
@@ -119,7 +127,7 @@ class _ForgetPasswordViewState extends State<ForgetPasswordView> {
                       ),
                       textInputType: TextInputType.emailAddress,
                     ),
-                    Gap(43.h),
+                    Gap(38.h),
                     CustomButton(
                       title: isLoading
                           ? "Sending..."

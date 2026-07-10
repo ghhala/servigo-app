@@ -37,7 +37,7 @@ class FilterCubit extends Cubit<FilterState> {
     }
   }
 
-  // ✅ الدالة الجديدة: جلب النتائج ثم ترتيبها محلياً حسب أقرب موقع للمستخدم
+  
   Future<void> fetchFilteredProvidersAndSortByLocation({
     required FilterRequestModel request,
     required double userLat,
@@ -88,8 +88,7 @@ class FilterCubit extends Cubit<FilterState> {
 
   int get mainServiceId => _mainServiceId ?? 0;
 
-  // ✅ حساب المسافة بين نقطتين بالكيلومتر (Haversine formula)
-  // تعمل بالكامل في Dart بدون أي استدعاء للباك إند
+ 
   double _calculateDistance(
       double lat1, double lng1, double lat2, double lng2) {
     const R = 6371.0; // نصف قطر الأرض بالكيلومتر

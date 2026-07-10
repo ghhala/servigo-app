@@ -12,7 +12,7 @@ import '../../domain/entities/sub_service_entity.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final List<SubServiceEntity>? subServices;
-  
+
   final int? initialSubServiceId;
   final double? initialMinPrice;
   final double? initialMaxPrice;
@@ -21,13 +21,14 @@ class FilterBottomSheet extends StatefulWidget {
   final String? initialWorkType;
 
   final Function({
-    int? subServiceId, 
+    int? subServiceId,
     double? minPrice,
     double? maxPrice,
-    int? rating, 
+    int? rating,
     String? availability,
     String? workType,
-  }) onApply;
+  })
+  onApply;
 
   const FilterBottomSheet({
     super.key,
@@ -96,7 +97,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               children: [
                 const Text(
                   'Filter',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 TextButton(
                   onPressed: _resetAll,
@@ -108,21 +109,19 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
 
           const Divider(height: 1),
 
-          
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-           
                   BlocBuilder<FilterCubit, FilterState>(
                     builder: (context, state) {
-                   
-                      List<SubServiceEntity> availableSubServices = widget.subServices ?? state.subServices;
+                      List<SubServiceEntity> availableSubServices =
+                          widget.subServices ?? state.subServices;
 
-                     
-                      if (availableSubServices.isEmpty && state.status == FilterStatus.loading) {
+                      if (availableSubServices.isEmpty &&
+                          state.status == FilterStatus.loading) {
                         return const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 20),
@@ -131,8 +130,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         );
                       }
 
-                  
-                      if (availableSubServices.isEmpty && state.status == FilterStatus.error) {
+                      if (availableSubServices.isEmpty &&
+                          state.status == FilterStatus.error) {
                         return Center(
                           child: Text(
                             state.errorMessage ?? 'Failed to load sub-services',
@@ -145,7 +144,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       return SubServiceSelector(
                         subServices: availableSubServices,
                         selectedId: selectedSubServiceId,
-                        onSelect: (id) => setState(() => selectedSubServiceId = id),
+                        onSelect: (id) =>
+                            setState(() => selectedSubServiceId = id),
                       );
                     },
                   ),
@@ -241,24 +241,24 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     });
   }
 
- void _applyFilter() {
-  if (selectedSubServiceId == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('يرجى اختيار نوع الخدمة الفرعية أولاً'),
-        backgroundColor: Colors.red,
-      ),
+  void _applyFilter() {
+    if (selectedSubServiceId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('يرجى اختيار نوع الخدمة الفرعية أولاً'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    widget.onApply(
+      subServiceId: selectedSubServiceId,
+      minPrice: priceRange.start,
+      maxPrice: priceRange.end,
+      rating: selectedRating,
+      availability: selectedAvailability,
+      workType: selectedWorkType,
     );
-    return;
+    Navigator.pop(context);
   }
-  widget.onApply(
-    subServiceId: selectedSubServiceId,
-    minPrice: priceRange.start,
-    maxPrice: priceRange.end,
-    rating: selectedRating,
-    availability: selectedAvailability,
-    workType: selectedWorkType,
-  );
-  Navigator.pop(context);
-}
 }

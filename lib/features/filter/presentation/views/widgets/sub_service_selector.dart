@@ -17,10 +17,12 @@ class SubServiceSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String languageCode = Localizations.localeOf(context).languageCode;
+    final bool isArabic = languageCode == 'ar';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        
         Row(
           children: [
             const Text(
@@ -42,9 +44,9 @@ class SubServiceSelector extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        // Options
         ...subServices.map((sub) {
           final isSelected = selectedId == sub.id;
+          final label = isArabic ? sub.nameAr : sub.nameEn;
           return GestureDetector(
             onTap: () => onSelect(sub.id),
             child: Container(
@@ -69,7 +71,7 @@ class SubServiceSelector extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    sub.name,
+                    label,
                     style: TextStyle(
                       fontSize: 13,
                       color: isSelected ? primary : Colors.black87,
