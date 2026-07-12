@@ -1,4 +1,4 @@
-// domain/entities/provider_entity.dart
+
 class ProviderEntity {
   final int id;
   final String name;

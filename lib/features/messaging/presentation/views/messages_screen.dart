@@ -29,7 +29,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     context.read<ChatCubit>().fetchChatList();
   }
 
@@ -65,9 +65,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ],
               ),
               Gap(26.h),
-              _selectedTab == 0
-                  ? _buildCustomerChats()
-                  : _buildAdminChats(),
+              _selectedTab == 0 ? _buildCustomerChats() : _buildAdminChats(),
             ],
           ),
         ),
@@ -75,7 +73,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
- 
   Widget _buildCustomerChats() {
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
@@ -100,8 +97,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   ),
                   Gap(12.h),
                   ElevatedButton(
-                    onPressed: () =>
-                        context.read<ChatCubit>().fetchChatList(),
+                    onPressed: () => context.read<ChatCubit>().fetchChatList(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -143,13 +139,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
- 
   Widget _buildAdminChats() {
     return BlocProvider(
       create: (_) => AdminChatCubit(
-        AdminChatRepository(
-          AdminChatRemoteDataSource(ApiService(DioClient())),
-        ),
+        AdminChatRepository(AdminChatRemoteDataSource(ApiService(DioClient()))),
       )..fetchAdminList(),
       child: BlocBuilder<AdminChatCubit, AdminChatState>(
         builder: (context, state) {
@@ -222,7 +215,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 }
 
-
 class _ChatTileItem extends StatelessWidget {
   final String name;
   final String? photo;
@@ -246,7 +238,7 @@ class _ChatTileItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 353.w,
-        height: 80.h,
+        height: 70.h,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
@@ -267,8 +259,10 @@ class _ChatTileItem extends StatelessWidget {
                 radius: 30.r,
                 backgroundImage: imageUrl.isNotEmpty
                     ? NetworkImage(imageUrl)
-                    : const AssetImage('assets/images/user_avatar.jpg')
-                        as ImageProvider,
+                    : const AssetImage(
+                            'assets/images/6a51a1cc96f5c_1000192545.jpg',
+                          )
+                          as ImageProvider,
               ),
               Gap(10),
               Expanded(

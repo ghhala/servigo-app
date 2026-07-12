@@ -14,7 +14,7 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.
 import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
 
 class OtpCodeView extends StatefulWidget {
-  final String? receivedOtp;    
+  final String? receivedOtp;
   final String userEmail;
   final String userType;
   final bool isForgetPassword;
@@ -92,7 +92,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
     if (isDeleteAccountFlow) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('تم حذف الحساب نهائياً'),
+          content: Text('Account delete susseccfily '),
           backgroundColor: Colors.green,
         ),
       );
@@ -114,12 +114,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
 
     if (widget.userType == 'labourer' || widget.userType == 'provider') {
       if (widget.authAction == 'login') {
-      context.go(
-        AppRouter.kHome,
-        extra: {
-          'userType': widget.userType, 
-        },
-      );
+        context.go(AppRouter.kHome, extra: {'userType': widget.userType});
       } else {
         context.go(
           AppRouter.kmoveToComplite,
@@ -139,31 +134,31 @@ class _OtpCodeViewState extends State<OtpCodeView> {
   }
 
   void _verifyCode() {
-  final codeToVerify = enteredOtp.trim();
+    final codeToVerify = enteredOtp.trim();
 
-  if (codeToVerify.isEmpty || codeToVerify.length < 6) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('الرجاء إدخال رمز التحقق كاملاً'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
-
-  context.read<RegisterUserCubit>().verifyOtp(
-        email: widget.userEmail,
-        otp: codeToVerify,
-        type: _resolveCurrentType(),
-        userType: widget.userType, 
+    if (codeToVerify.isEmpty || codeToVerify.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('الرجاء إدخال رمز التحقق كاملاً'),
+          backgroundColor: Colors.red,
+        ),
       );
-}
+      return;
+    }
+
+    context.read<RegisterUserCubit>().verifyOtp(
+      email: widget.userEmail,
+      otp: codeToVerify,
+      type: _resolveCurrentType(),
+      userType: widget.userType,
+    );
+  }
 
   void _resendCode() {
     context.read<RegisterUserCubit>().resendOtp(
-          email: widget.userEmail,
-          type: _resolveCurrentType(),
-        );
+      email: widget.userEmail,
+      type: _resolveCurrentType(),
+    );
   }
 
   @override
@@ -183,20 +178,11 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   ),
                   Text(
                     AppLocalizations.of(context)!.otpCode,
-                    style: TextStyles.font18BlackW500.copyWith(
-                      fontSize: 20.sp,
-                    ),
+                    style: TextStyles.font18BlackW500.copyWith(fontSize: 20.sp),
                   ),
                 ],
               ),
-              Gap(41.h),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  AppLocalizations.of(context)!.otpCode,
-                  style: TextStyles.font22PrimaryColorW700,
-                ),
-              ),
+
               Gap(12.h),
               Text.rich(
                 TextSpan(
@@ -223,7 +209,11 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   ],
                 ),
               ),
-              Gap(21.h),
+              Image.asset(
+                "assets/images/otp_view_photo.png",
+                width: 300,
+                height: 250,
+              ),
 
               OtpFields(
                 onCompleted: (value) {

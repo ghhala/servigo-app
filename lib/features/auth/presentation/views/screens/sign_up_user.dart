@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // مكتبة الـ Bloc للتحكم بالحالة
+import 'package:flutter_bloc/flutter_bloc.dart'; 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart'; // 👈 استيراد مكتبة الـ GoRouter للانتقال للشاشات
+import 'package:go_router/go_router.dart'; 
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/pref_halper.dart';
@@ -33,6 +33,73 @@ class _SignUpUserState extends State<SignUpUser> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   final formKey = GlobalKey<FormState>();
+
+ 
+  bool isTermsAccepted = false;
+
+ 
+  void _showTermsRequiredDialog() {
+    const Color warningColor = Color(0xFFFFA726); 
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: warningColor,
+                size: 70,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Notice',
+                style: TextStyle(
+                  color: warningColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'You must agree to the Terms and Conditions to create your account.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: Colors.black87),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: warningColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,7 +197,20 @@ class _SignUpUserState extends State<SignUpUser> {
                       textInputType: TextInputType.text,
                     ),
                     Gap(25.h),
-                    TermsAndConditionsWidget(onChanged: (bool value) {}),
+
+                   
+                    TermsAndConditionsWidget(
+                      onChanged: (value) {
+                        setState(() {
+                          isTermsAccepted = value;
+                        });
+                      },
+                      onTermsTap: () {
+                        GoRouter.of(
+                          context,
+                        ).push(AppRouter.kTermsAndConditionsScreen);
+                      },
+                    ),
                     Gap(56.h),
 
                     BlocConsumer<RegisterUserCubit, RegisterUserState>(
@@ -179,20 +259,29 @@ class _SignUpUserState extends State<SignUpUser> {
                           width: MediaQuery.sizeOf(context).width * 0.88,
                           height: 52.h,
                           onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              final signUpData = RegisterUserRequestBody(
-                                name: nameController.text.trim(),
-                                email: emailController.text.trim(),
-                                phone: phoneController.text.trim(),
-                                password: passwordController.text,
-                                passwordConfirmation:
-                                    confirmPasswordController.text,
-                              );
-
-                              context.read<RegisterUserCubit>().registerUser(
-                                signUpData,
-                              );
+                          
+                            if (!formKey.currentState!.validate()) {
+                              return;
                             }
+
+                          
+                            if (!isTermsAccepted) {
+                              _showTermsRequiredDialog();
+                              return;
+                            }
+
+                            final signUpData = RegisterUserRequestBody(
+                              name: nameController.text.trim(),
+                              email: emailController.text.trim(),
+                              phone: phoneController.text.trim(),
+                              password: passwordController.text,
+                              passwordConfirmation:
+                                  confirmPasswordController.text,
+                            );
+
+                            context.read<RegisterUserCubit>().registerUser(
+                              signUpData,
+                            );
                           },
                         );
                       },

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
+import 'package:servi_go_app/core/widgets/terms_and_conditions.dart';
 import 'package:servi_go_app/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
@@ -85,7 +86,7 @@ abstract class AppRouter {
   static const kChatRoom = '/chat_room';
   static const kAdminChatRoom = '/admin_chat_room';
   static const kEditProfileProvider = '/edit_profile_provider';
-
+  static const kTermsAndConditionsScreen='/terms_and_conditions_screen';
   static const kOtpVerification = kotpcode;
 
   static final router = GoRouter(
@@ -455,6 +456,8 @@ GoRoute(
   path: kEditProfileProvider,
   builder: (context, state) => const EditProfileProviderView(),
 ),
+
+GoRoute(path: kTermsAndConditionsScreen, builder: (context, state) => const TermsAndConditionsScreen())
 
 
     ],

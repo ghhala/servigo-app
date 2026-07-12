@@ -61,7 +61,6 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     return "http://10.0.2.2/servigo/public/$path";
   }
 
- 
   String _formatDate(String? rawDate) {
     if (rawDate == null || rawDate.isEmpty) return "";
     try {
@@ -292,11 +291,11 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                     backgroundImage: avatarUrl.isNotEmpty
                                         ? NetworkImage(avatarUrl)
                                         : const AssetImage(
-                                                "assets/images/avatar2.jpg",
+                                                "assets/images/6a51a1cc96f5c_1000192545.jpg",
                                               )
                                               as ImageProvider,
                                   ),
-                                
+
                                   Positioned(
                                     bottom: 0,
                                     right: 0,
@@ -468,31 +467,36 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                           height: 40.h,
                                           title: "Contact",
                                           textstyle: TextStyles.font11WhiteW500,
-                                         onTap: () async {
- 
-  final providerId = widget.providerId;
-  if (providerId == null) return;
+                                          onTap: () async {
+                                            final providerId =
+                                                widget.providerId;
+                                            if (providerId == null) return;
 
- 
-  final chatCubit = ChatCubit(
-    ChatRepository(
-      ChatRemoteDataSource(ApiService(DioClient())),
-    ),
-  );
+                                            final chatCubit = ChatCubit(
+                                              ChatRepository(
+                                                ChatRemoteDataSource(
+                                                  ApiService(DioClient()),
+                                                ),
+                                              ),
+                                            );
 
-  final chatId = await chatCubit.startChat(providerId);
+                                            final chatId = await chatCubit
+                                                .startChat(providerId);
 
-  if (chatId != null && context.mounted) {
-    GoRouter.of(context).push(
-      AppRouter.kChatRoom,
-      extra: {
-        'chatId': chatId,
-        'otherPartyName': user?.name ?? 'Provider',
-        'otherPartyPhoto': user?.photo,
-      },
-    );
-  }
-},
+                                            if (chatId != null &&
+                                                context.mounted) {
+                                              GoRouter.of(context).push(
+                                                AppRouter.kChatRoom,
+                                                extra: {
+                                                  'chatId': chatId,
+                                                  'otherPartyName':
+                                                      user?.name ?? 'Provider',
+                                                  'otherPartyPhoto':
+                                                      user?.photo,
+                                                },
+                                              );
+                                            }
+                                          },
                                         ),
                                       ),
                                       Gap(10.w),
@@ -1045,10 +1049,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 );
               }
             },
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

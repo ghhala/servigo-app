@@ -40,6 +40,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   double? selectedLatitude;
   double? selectedLongitude;
 
+  
+  bool isTermsAccepted = false;
+
   @override
   void dispose() {
     locationController.dispose();
@@ -51,6 +54,70 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
     phoneController.dispose();
     locationDetailsController.dispose();
     super.dispose();
+  }
+
+ 
+  void _showTermsRequiredDialog() {
+    const Color warningColor = Color(0xFFFFA726);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: warningColor,
+                size: 70,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Notice',
+                style: TextStyle(
+                  color: warningColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'You must agree to the Terms and Conditions to create your account.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: Colors.black87),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: warningColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -126,7 +193,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         final result = await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) =>
-                                const CustomLocation(), // ← لا تغيير هنا
+                                const CustomLocation(),
                           ),
                         );
 
@@ -244,7 +311,20 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       textInputType: TextInputType.text,
                     ),
                     Gap(25.h),
-                    TermsAndConditionsWidget(onChanged: (bool value) {}),
+
+                   
+                    TermsAndConditionsWidget(
+                      onChanged: (value) {
+                        setState(() {
+                          isTermsAccepted = value;
+                        });
+                      },
+                      onTermsTap: () {
+                        GoRouter.of(
+                          context,
+                        ).push(AppRouter.kTermsAndConditionsScreen);
+                      },
+                    ),
                     Gap(56.h),
                     CustomButton(
                       title: AppLocalizations.of(context)!.next,
@@ -253,6 +333,12 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       height: 52.h,
                       onTap: () {
                         if (formKey.currentState!.validate()) {
+                       
+                          if (!isTermsAccepted) {
+                            _showTermsRequiredDialog();
+                            return;
+                          }
+
                           if (selectedLatitude == null ||
                               selectedLongitude == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
