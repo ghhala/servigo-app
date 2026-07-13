@@ -106,7 +106,7 @@ class ProviderProfileRemoteDataSource {
     return response;
   }
 
-  // ✅ الإبلاغ عن مراجعة — POST api/ratings/{rating_id}/report
+ 
   Future<dynamic> reportRating({
     required int ratingId,
     required String reason,
@@ -127,6 +127,17 @@ class ProviderProfileRemoteDataSource {
  
   Future<dynamic> getMyRatings() async {
     final response = await _apiService.get('ratings/user/my_ratings');
+    return response;
+  }
+  Future<dynamic> updateRating({
+    required int ratingId,
+    required int rating,
+    required String review,
+  }) async {
+    final response = await _apiService.put(
+      'ratings/$ratingId',
+      {'rating': rating, 'review': review},
+    );
     return response;
   }
 }

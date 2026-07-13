@@ -19,8 +19,9 @@ class UserProfileData {
   final String? name;
   final String? phone;
   final String? photo;
+  final String? email;
 
-  UserProfileData({this.id, this.name, this.phone, this.photo});
+  UserProfileData({this.id, this.name, this.phone, this.photo, this.email});
 
   factory UserProfileData.fromJson(Map<String, dynamic> json) {
     return UserProfileData(
@@ -28,6 +29,22 @@ class UserProfileData {
       name: json['name'],
       phone: json['phone'],
       photo: json['photo'],
+    );
+  }
+
+  UserProfileData copyWith({
+    int? id,
+    String? name,
+    String? phone,
+    String? photo,
+    String? email,
+  }) {
+    return UserProfileData(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      photo: photo ?? this.photo,
+      email: email ?? this.email,
     );
   }
 }

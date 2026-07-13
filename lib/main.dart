@@ -4,13 +4,35 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/localization/locale_cubit.dart';
+import 'package:servi_go_app/core/network/api_service.dart';
+import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/core/theme/app_theme.dart';
 import 'package:servi_go_app/core/theme/theme_bloc.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/pref_halper.dart';
 
 import 'package:servi_go_app/features/auth/presentation/view_models/auth_view_model.dart';
+import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
+import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
+import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+
+//   await PrefHelper.init();
+//   runApp(
+//     MultiProvider(
+//       providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
+//       child: MultiBlocProvider(
+//         providers: [
+//           BlocProvider(create: (_) => ThemeBloc()),
+//           BlocProvider(create: (_) => LocaleCubit()..loadLocale()),
+//         ],
+//         child: const MyApp(),
+//       ),
+//     ),
+//   );
+// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -22,6 +44,12 @@ void main() async {
         providers: [
           BlocProvider(create: (_) => ThemeBloc()),
           BlocProvider(create: (_) => LocaleCubit()..loadLocale()),
+          // ✅ ChatCubit بقى Global، متاح من أي route في التطبيق
+          BlocProvider(
+            create: (_) => ChatCubit(
+              ChatRepository(ChatRemoteDataSource(ApiService(DioClient()))),
+            ),
+          ),
         ],
         child: const MyApp(),
       ),

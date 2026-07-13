@@ -169,7 +169,7 @@ class UserProfileView extends StatelessWidget {
                                   children: [
                                     Icon(Icons.email, size: 17.sp),
                                     const Gap(5),
-                                    const Text("user@servigo.com"),
+                                     Text(user.email ??   "No Email"),
                                   ],
                                 ),
                               ],

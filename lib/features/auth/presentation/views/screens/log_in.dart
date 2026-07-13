@@ -114,8 +114,10 @@ class _LogInState extends State<LogIn> {
                         ),
                       ),
                     ),
-                    Image.asset(
-                      "assets/images/login1.png",
+
+                   
+                    SvgPicture.asset(
+                      "assets/images/loginImage.svg",
                       width: 230.w,
                       height: 190.h,
                     ),

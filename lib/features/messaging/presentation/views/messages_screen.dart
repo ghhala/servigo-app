@@ -238,7 +238,7 @@ class _ChatTileItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 353.w,
-        height: 70.h,
+        height: 80.h,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(

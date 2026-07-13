@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:servi_go_app/core/network/api_error.dart';
+import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/features/auth/data/repositories/auth_repository.dart';
 
 part 'login_state.dart';
@@ -23,6 +24,7 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       if (result != null && result['success'] == true) {
+         await PrefHelper.saveEmail(email);
         emit(LoginSuccess(result));
       } else {
         emit(

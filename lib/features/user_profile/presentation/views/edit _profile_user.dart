@@ -15,11 +15,13 @@ import 'package:servi_go_app/features/auth/presentation/views/widgets/custom_tex
 class EditProfileUser extends StatefulWidget {
   final String? currentName;
   final String? currentPhone;
+  final String? currentEmail;
 
   const EditProfileUser({
-    super.key, 
-    this.currentName, 
+    super.key,
+    this.currentName,
     this.currentPhone,
+    this.currentEmail,
   });
 
   @override
@@ -29,10 +31,10 @@ class EditProfileUser extends StatefulWidget {
 class _EditProfileUserState extends State<EditProfileUser> {
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
-  final TextEditingController _emailController = TextEditingController();
+  late TextEditingController _emailController;
 
-  File? _pickedImage; 
-  bool _isImageLoading = false; 
+  File? _pickedImage;
+  bool _isImageLoading = false;
 
   late EditProfileCubit _editProfileCubit;
 
@@ -41,13 +43,16 @@ class _EditProfileUserState extends State<EditProfileUser> {
     super.initState();
     _nameController = TextEditingController(text: widget.currentName);
     _phoneController = TextEditingController(text: widget.currentPhone);
+    _emailController = TextEditingController(
+      text: widget.currentEmail ?? PrefHelper.getEmail() ?? '',
+    );
     _editProfileCubit = BlocProvider.of<EditProfileCubit>(context);
   }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (image != null) {
       setState(() {
         _pickedImage = File(image.path);
@@ -74,11 +79,11 @@ class _EditProfileUserState extends State<EditProfileUser> {
 
   @override
   Widget build(BuildContext context) {
-   
-    String cachedImageUrl = PrefHelper.getUserImage(); 
+    String cachedImageUrl = PrefHelper.getUserImage();
     String formattedUrl = _formatImageUrl(cachedImageUrl);
 
-    String firstLetter = (widget.currentName != null && widget.currentName!.isNotEmpty)
+    String firstLetter =
+        (widget.currentName != null && widget.currentName!.isNotEmpty)
         ? widget.currentName![0].toUpperCase()
         : "U";
 
@@ -92,7 +97,10 @@ class _EditProfileUserState extends State<EditProfileUser> {
               if (state is EditProfileSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(state.responseModel.message ?? " data updated successfully"),
+                    content: Text(
+                      state.responseModel.message ??
+                          " data updated successfully",
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -105,10 +113,10 @@ class _EditProfileUserState extends State<EditProfileUser> {
                   ),
                 );
               }
-              
+
               if (state is UploadAvatarLoading) {
                 setState(() {
-                  _isImageLoading = true; 
+                  _isImageLoading = true;
                 });
               } else if (state is UploadAvatarSuccess) {
                 setState(() {
@@ -126,7 +134,9 @@ class _EditProfileUserState extends State<EditProfileUser> {
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("Failed to upload photo: ${state.errorMessage}"),
+                    content: Text(
+                      "Failed to upload photo: ${state.errorMessage}",
+                    ),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -139,22 +149,24 @@ class _EditProfileUserState extends State<EditProfileUser> {
                     children: [
                       CircleAvatar(
                         radius: 60.r,
-                        backgroundColor: (_pickedImage == null && formattedUrl.isEmpty) 
-                            ? Colors.deepPurpleAccent 
+                        backgroundColor:
+                            (_pickedImage == null && formattedUrl.isEmpty)
+                            ? Colors.deepPurpleAccent
                             : const Color(0xFFF3F2F2),
-                        
-                      
-                        backgroundImage: _pickedImage != null 
-                            ? FileImage(_pickedImage!) 
-                            : (formattedUrl.isNotEmpty 
-                                ? NetworkImage('$formattedUrl?v=${DateTime.now().millisecondsSinceEpoch}') 
-                                : null),
+
+                        backgroundImage: _pickedImage != null
+                            ? FileImage(_pickedImage!)
+                            : (formattedUrl.isNotEmpty
+                                  ? NetworkImage(
+                                      '$formattedUrl?v=${DateTime.now().millisecondsSinceEpoch}',
+                                    )
+                                  : null),
                         child: (_pickedImage == null && formattedUrl.isEmpty)
                             ? Text(
-                                firstLetter, 
+                                firstLetter,
                                 style: TextStyle(
-                                  fontSize: 36.sp, 
-                                  fontWeight: FontWeight.bold, 
+                                  fontSize: 36.sp,
+                                  fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
                               )
@@ -164,7 +176,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                         bottom: 0,
                         right: 4.w,
                         child: GestureDetector(
-                          onTap: _isImageLoading ? null : _pickImage, 
+                          onTap: _isImageLoading ? null : _pickImage,
                           child: CircleAvatar(
                             radius: 18.r,
                             backgroundColor: Theme.of(context).primaryColor,
@@ -192,14 +204,21 @@ class _EditProfileUserState extends State<EditProfileUser> {
                     width: 353.w,
                     height: 380.h,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFF3F2F2),
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(19)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                          blurRadius: 4,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(top: 16, left: 20),
                           child: Text(
                             "Account Info",
                             style: TextStyles.font16BlackW700,
@@ -220,7 +239,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                                 hintText: "Full Name",
                                 controller: _nameController,
                               ),
-                              const Gap(15),
+                              const Gap(23),
                               Text(
                                 "Email",
                                 style: TextStyles.font16PrimaryColorW600,
@@ -228,8 +247,9 @@ class _EditProfileUserState extends State<EditProfileUser> {
                               CustomTextFormFiled(
                                 hintText: "user@servigo.com",
                                 controller: _emailController,
+                                readOnly: true,
                               ),
-                              const Gap(15),
+                              const Gap(23),
                               Text(
                                 "Phone Number",
                                 style: TextStyles.font16PrimaryColorW600,
@@ -250,23 +270,28 @@ class _EditProfileUserState extends State<EditProfileUser> {
                       if (state is EditProfileLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      
+
                       return CustomButton(
-                        width: 140.w,
-                        height: 30.h,
-                        textstyle: TextStyles.font11WhiteW500.copyWith(fontSize: 15.sp),
+                        width: 143.w,
+                        height: 33.h,
+                        textstyle: TextStyles.font11WhiteW500.copyWith(
+                          fontSize: 16.sp,
+                        ),
                         title: "Update Info",
                         onTap: () {
                           if (_nameController.text.trim().isNotEmpty &&
                               _phoneController.text.trim().isNotEmpty) {
-                            
                             _editProfileCubit.updateProfile(
                               name: _nameController.text.trim(),
                               phone: _phoneController.text.trim(),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("please fill in all required fields")),
+                              const SnackBar(
+                                content: Text(
+                                  "please fill in all required fields",
+                                ),
+                              ),
                             );
                           }
                         },

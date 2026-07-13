@@ -65,10 +65,10 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     }
 
     context.read<RegisterUserCubit>().resetPassword(
-          email: email,
-          password: passwordController.text.trim(),
-          passwordConfirmation: confirmPasswordController.text.trim(),
-        );
+      email: email,
+      password: passwordController.text.trim(),
+      passwordConfirmation: confirmPasswordController.text.trim(),
+    );
   }
 
   @override
@@ -119,15 +119,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                         ),
                       ],
                     ),
-                    Gap(41.h),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        AppLocalizations.of(context)!.resetPassword,
-                        style: TextStyles.font22PrimaryColorW700,
+                    Gap(5.h),
+                    Center(
+                      child: Image.asset(
+                        "assets/images/login1.png",
+                        width: 230.w,
+                        height: 210.h,
                       ),
                     ),
-                    Gap(12.h),
+
                     Text(
                       AppLocalizations.of(context)!.pleaseEnterNewPassword,
                       style: TextStyles.font16PrimaryColorW400.copyWith(

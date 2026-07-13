@@ -154,7 +154,7 @@ Future<void> updateGallery({
     await _repository.reportRating(ratingId: ratingId, reason: reason);
   }
 
-  // ✅ حذف مراجعة — تحديث متفائل (إزالة فورية) مع رجوع تلقائي لو فشل الطلب
+ 
   Future<void> deleteRating(int ratingId) async {
     final currentState = state;
     if (currentState is! ProviderProfileSuccess) return;
@@ -180,6 +180,53 @@ Future<void> updateGallery({
 
     try {
       await _repository.deleteRating(ratingId);
+    } catch (e) {
+      emit(
+        ProviderProfileSuccess(
+          currentState.profileModel.copyWith(
+            data: currentData.copyWith(ratings: currentRatings),
+          ),
+          myRatingIds: currentState.myRatingIds,
+        ),
+      );
+      rethrow;
+    }
+  }
+ 
+  Future<void> updateRating({
+    required int ratingId,
+    required int rating,
+    required String review,
+  }) async {
+    final currentState = state;
+    if (currentState is! ProviderProfileSuccess) return;
+
+    final currentData = currentState.profileModel.data;
+    final currentRatings = currentData?.ratings;
+    if (currentData == null || currentRatings == null) return;
+
+    final updatedRatings = currentRatings.map((r) {
+      if (r.id == ratingId) {
+        return r.copyWith(rating: rating, review: review);
+      }
+      return r;
+    }).toList();
+
+    emit(
+      ProviderProfileSuccess(
+        currentState.profileModel.copyWith(
+          data: currentData.copyWith(ratings: updatedRatings),
+        ),
+        myRatingIds: currentState.myRatingIds,
+      ),
+    );
+
+    try {
+      await _repository.updateRating(
+        ratingId: ratingId,
+        rating: rating,
+        review: review,
+      );
     } catch (e) {
       emit(
         ProviderProfileSuccess(

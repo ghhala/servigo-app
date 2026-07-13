@@ -219,8 +219,7 @@ class ProviderInfo {
     );
   }
 
-  // ✅ جديد: لازم عشان نقدر نحدّث overnight/isAvailable محليًا من SettingsCubit
-  // بدون ما نحتاج نعمل fetch جديد من السيرفر
+ 
   ProviderInfo copyWith({
     bool? overnight,
     int? isAvailable,
@@ -309,6 +308,19 @@ class RatingModel {
       rating: json['rating'],
       review: json['review'],
       createdAt: json['created_at'],
+    );
+  }
+  RatingModel copyWith({
+    int? rating,
+    String? review,
+  }) {
+    return RatingModel(
+      id: id,
+      customerName: customerName,
+      customerPhoto: customerPhoto,
+      rating: rating ?? this.rating,
+      review: review ?? this.review,
+      createdAt: createdAt,
     );
   }
 }

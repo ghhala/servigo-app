@@ -4,9 +4,6 @@ import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/features/home/presentation/views/widgets/custom_bottom_nav_bar.dart';
 import 'package:servi_go_app/features/home/presentation/views/widgets/home_body.dart';
-import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
-import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
-import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 import 'package:servi_go_app/features/messaging/presentation/views/messages_screen.dart';
 import 'package:servi_go_app/features/provider_profile/data/data_sources/provider_profile_remote_data_source.dart';
 import 'package:servi_go_app/features/provider_profile/data/repositories/provider_profile_repository.dart';
@@ -37,7 +34,6 @@ class _HomeViewState extends State<HomeView> {
 
   
   late final SettingsCubit _settingsCubit;
-  late final ChatCubit _chatCubit;
   ProviderProfileCubit? _providerProfileCubit;
   UserProfileCubit? _userProfileCubit;
 
@@ -73,17 +69,13 @@ class _HomeViewState extends State<HomeView> {
     );
 
    
-    _chatCubit = ChatCubit(
-      ChatRepository(
-        ChatRemoteDataSource(ApiService(DioClient())),
-      ),
-    );
+   
   }
 
   @override
   void dispose() {
     _settingsCubit.close();
-    _chatCubit.close();
+   
     _providerProfileCubit?.close();
     _userProfileCubit?.close();
     super.dispose();
@@ -106,7 +98,7 @@ class _HomeViewState extends State<HomeView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _settingsCubit),
-        BlocProvider.value(value: _chatCubit),
+       
         if (_providerProfileCubit != null)
           BlocProvider.value(value: _providerProfileCubit!),
         if (_userProfileCubit != null)

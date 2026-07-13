@@ -10,9 +10,8 @@ import 'package:servi_go_app/core/widgets/custom_button.dart';
 import 'package:servi_go_app/core/widgets/langague_theme_widget.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_cubit.dart';
 import 'package:servi_go_app/features/home/presentation/view_models/home/cubit/home_state.dart';
-import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_data_source.dart';
-import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
 import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
+import 'package:servi_go_app/features/provider_profile/data/models/provider_profile_model.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_cubit.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/provider_profile/provider_profile_state.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/view_models/sub_services/sub_services_cubit.dart';
@@ -467,36 +466,29 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                           height: 40.h,
                                           title: "Contact",
                                           textstyle: TextStyles.font11WhiteW500,
-                                          onTap: () async {
-                                            final providerId =
-                                                widget.providerId;
-                                            if (providerId == null) return;
+                                        onTap: () async {
+  final providerId = widget.providerId;
+  if (providerId == null) return;
 
-                                            final chatCubit = ChatCubit(
-                                              ChatRepository(
-                                                ChatRemoteDataSource(
-                                                  ApiService(DioClient()),
-                                                ),
-                                              ),
-                                            );
+ 
+  final chatCubit = context.read<ChatCubit>();
 
-                                            final chatId = await chatCubit
-                                                .startChat(providerId);
+  final chatId = await chatCubit.startChat(providerId);
 
-                                            if (chatId != null &&
-                                                context.mounted) {
-                                              GoRouter.of(context).push(
-                                                AppRouter.kChatRoom,
-                                                extra: {
-                                                  'chatId': chatId,
-                                                  'otherPartyName':
-                                                      user?.name ?? 'Provider',
-                                                  'otherPartyPhoto':
-                                                      user?.photo,
-                                                },
-                                              );
-                                            }
-                                          },
+
+  await chatCubit.fetchChatList();
+
+  if (chatId != null && context.mounted) {
+    GoRouter.of(context).push(
+      AppRouter.kChatRoom,
+      extra: {
+        'chatId': chatId,
+        'otherPartyName': user?.name ?? 'Provider',
+        'otherPartyPhoto': user?.photo,
+      },
+    );
+  }
+},
                                         ),
                                       ),
                                       Gap(10.w),
@@ -705,10 +697,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                         Gap(20.h),
                       ],
 
-                      // ── Customer Reviews and Ratings ──
-                      // ✅ ما عاد في height مقفول محسوب يدويًا — الكارد هلق ياخد
-                      // ارتفاعه تلقائيًا من طول المحتوى الفعلي (بغض النظر عن عدد
-                      // التقييمات أو طول كل نص مراجعة)، فمافي overflow ممكن يصير مستقبلاً
+                   
                       CustomContainer(
                         width: 353.w,
                         child: Padding(
@@ -841,7 +830,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                   ],
                                                 ),
                                               ),
-                                              // ✅ زر الإبلاغ يظهر فقط لصاحب البروفايل (المزود)
+                                           
                                               if (isOwner)
                                                 CustomButton(
                                                   width: 50.w,
@@ -862,30 +851,53 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                     }
                                                   },
                                                 ),
-                                              // ✅ زر الحذف يظهر فقط لصاحب
-                                              // المراجعة نفسه (الزبون)، بناءً
-                                              // على myRatingIds
+
+                                           
                                               if (!isOwner &&
                                                   r.id != null &&
                                                   state.myRatingIds.contains(
                                                     r.id,
                                                   ))
-                                                CustomButton(
-                                                  width: 50.w,
-                                                  height: 23.h,
-                                                  title: "Delete",
-                                                  textstyle: TextStyles
-                                                      .font11WhiteW500
-                                                      .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                  onTap: () {
-                                                    _confirmDeleteReview(
-                                                      context,
-                                                      r.id!,
-                                                    );
-                                                  },
+                                                Row(
+                                                  children: [
+                                                    CustomButton(
+                                                      width: 50.w,
+                                                      height: 23.h,
+                                                      title: "Edit",
+                                                      textstyle: TextStyles
+                                                          .font11WhiteW500
+                                                          .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                          ),
+                                                      onTap: () {
+                                                        _showEditReviewDialog(
+                                                          context,
+                                                          r,
+                                                        );
+                                                      },
+                                                    ),
+                                                    Gap(6.w),
+                                                    CustomButton(
+                                                      width: 50.w,
+                                                      height: 23.h,
+                                                      title: "Delete",
+                                                      textstyle: TextStyles
+                                                          .font11WhiteW500
+                                                          .copyWith(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                          ),
+                                                      onTap: () {
+                                                        _confirmDeleteReview(
+                                                          context,
+                                                          r.id!,
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
                                                 ),
                                             ],
                                           ),
@@ -963,7 +975,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     );
   }
 
-  // ✅ dialog سبب البلاغ عن مراجعة، يستدعي reportRating بالكيوبت
+
   void _showReportReviewDialog(BuildContext context, int ratingId) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
     final controller = TextEditingController();
@@ -1019,7 +1031,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     );
   }
 
-  // ✅ تأكيد قبل حذف مراجعة، بيستدعي deleteRating بالكيوبت
+
   void _confirmDeleteReview(BuildContext context, int ratingId) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
     showDialog(
@@ -1134,6 +1146,95 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                   }
                 },
                 child: const Text("send"),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+ 
+  void _showEditReviewDialog(BuildContext context, RatingModel currentRating) {
+    final providerProfileCubit = context.read<ProviderProfileCubit>();
+
+    int selectedRating = currentRating.rating ?? 5;
+    final reviewController =
+        TextEditingController(text: currentRating.review ?? '');
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return AlertDialog(
+            title: const Text("Edit Review"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    final starIndex = index + 1;
+                    return GestureDetector(
+                      onTap: () {
+                        setStateDialog(() => selectedRating = starIndex);
+                      },
+                      child: Icon(
+                        starIndex <= selectedRating
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                        size: 28,
+                      ),
+                    );
+                  }),
+                ),
+                const Gap(12),
+                TextField(
+                  controller: reviewController,
+                  maxLines: 3,
+                  decoration: const InputDecoration(
+                    hintText: "Write your review...",
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final review = reviewController.text.trim();
+                  Navigator.pop(dialogContext);
+
+                  if (currentRating.id == null) return;
+
+                  try {
+                    await providerProfileCubit.updateRating(
+                      ratingId: currentRating.id!,
+                      rating: selectedRating,
+                      review: review,
+                    );
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Review updated successfully"),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } catch (e) {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(
+                        content: Text("Failed to update review: $e"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                child: const Text("Save"),
               ),
             ],
           );

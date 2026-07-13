@@ -306,6 +306,7 @@ abstract class AppRouter {
             child: EditProfileUser(
               currentName: userModel.name,
               currentPhone: userModel.phone,
+              currentEmail: userModel.email,
             ),
           );
         },

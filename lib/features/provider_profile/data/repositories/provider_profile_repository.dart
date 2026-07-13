@@ -92,7 +92,7 @@ Future<void> updateGallery({
   }
 }
 
-  // ✅ الإبلاغ عن مراجعة
+ 
   Future<void> reportRating({
     required int ratingId,
     required String reason,
@@ -104,10 +104,25 @@ Future<void> updateGallery({
     }
   }
 
-  // ✅ حذف مراجعة
+  
   Future<void> deleteRating(int ratingId) async {
     try {
       await _remoteDataSource.deleteRating(ratingId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+  Future<void> updateRating({
+    required int ratingId,
+    required int rating,
+    required String review,
+  }) async {
+    try {
+      await _remoteDataSource.updateRating(
+        ratingId: ratingId,
+        rating: rating,
+        review: review,
+      );
     } catch (e) {
       rethrow;
     }
