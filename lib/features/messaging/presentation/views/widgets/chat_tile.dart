@@ -39,11 +39,11 @@ class ChatTile extends StatelessWidget {
           child: Row(
             children: [
               CircleAvatar(
-                radius: 30.r,
+                radius: 33.r,
                 backgroundImage: imageUrl.isNotEmpty
                     ? NetworkImage(imageUrl)
                     : const AssetImage('assets/images/user_avatar.jpg')
-                        as ImageProvider,
+                          as ImageProvider,
               ),
               Gap(10),
               Expanded(

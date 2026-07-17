@@ -204,7 +204,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                     width: 353.w,
                     height: 380.h,
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.white54,
                       borderRadius: BorderRadius.all(Radius.circular(19)),
                       boxShadow: [
                         BoxShadow(
@@ -219,9 +219,15 @@ class _EditProfileUserState extends State<EditProfileUser> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 16, left: 20),
-                          child: Text(
-                            "Account Info",
-                            style: TextStyles.font16BlackW700,
+                          child: Row(
+                            children: [
+                              Text(
+                                "Account Info",
+                                style: TextStyles.font16BlackW700,
+                              ),
+                              Gap(12.w),
+                              Icon(Icons.edit, size: 19.sp, color: Colors.blue),
+                            ],
                           ),
                         ),
                         const Divider(color: Colors.black, thickness: 0.8),
@@ -239,7 +245,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                                 hintText: "Full Name",
                                 controller: _nameController,
                               ),
-                              const Gap(23),
+                              const Gap(30),
                               Text(
                                 "Email",
                                 style: TextStyles.font16PrimaryColorW600,
@@ -249,7 +255,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                                 controller: _emailController,
                                 readOnly: true,
                               ),
-                              const Gap(23),
+                              const Gap(30),
                               Text(
                                 "Phone Number",
                                 style: TextStyles.font16PrimaryColorW600,

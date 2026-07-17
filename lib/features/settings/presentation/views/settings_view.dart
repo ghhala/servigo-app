@@ -192,7 +192,7 @@ class _SettingsViewState extends State<SettingsView> {
                                   ),
                                   CustomRowWidget(
                                     text: 'Overnight Service',
-                                    iconPath: 'assets/images/setting_icon.svg',
+                                    iconPath: 'assets/images/night-mode.png',
                                     style: TextStyles.font16PrimaryColorW600,
                                     showDivider: false,
                                     trailing: CupertinoSwitch(

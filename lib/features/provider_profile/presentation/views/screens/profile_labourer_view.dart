@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -49,16 +50,16 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
     );
   }
 
-  String getCorrectImageUrl(String? path) {
-    if (path == null || path.isEmpty) return "";
-    if (path.contains('localhost')) {
-      return path.replaceAll('localhost', '10.0.2.2');
-    }
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path;
-    }
-    return "http://10.0.2.2/servigo/public/$path";
+ String getCorrectImageUrl(String? path) {
+  if (path == null || path.isEmpty) return "";
+  if (path.contains('localhost')) {
+    return path.replaceAll('localhost', ApiConstants.baseHost);
   }
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  return "${ApiConstants.storageBaseUrl}$path"; 
+}
 
   String _formatDate(String? rawDate) {
     if (rawDate == null || rawDate.isEmpty) return "";

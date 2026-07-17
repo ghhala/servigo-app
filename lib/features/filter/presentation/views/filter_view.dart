@@ -120,9 +120,7 @@ class _FilterViewState extends State<FilterView> {
               ),
             ),
 
-            Gap(12.h),
-
-            // ── Sort By (يظهر فقط بعد الفلترة) ──
+            //Gap(5.h),
             if (isFiltered)
               Builder(builder: (context) => _buildSortBy(context)),
 
@@ -266,9 +264,9 @@ class _FilterViewState extends State<FilterView> {
         children: [
           Text(
             'Sort By:',
-            style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+            style: TextStyle(fontSize: 15.sp, color: Colors.black),
           ),
-          SizedBox(height: 6.h),
+          SizedBox(height: 10.h),
           Row(
             children: _sortOptions.map((o) {
               final value = o['value']!;

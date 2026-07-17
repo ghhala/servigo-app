@@ -37,13 +37,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBackground(
-        padding: EdgeInsets.only(top: 70.h),
+        padding: EdgeInsets.only(top: 110.h),
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Messages", style: TextStyles.font16BlackW700),
+              Text(
+                "Messages",
+                style: TextStyles.font16BlackW700.copyWith(fontSize: 18.sp),
+              ),
               Gap(16.h),
               Row(
                 children: [

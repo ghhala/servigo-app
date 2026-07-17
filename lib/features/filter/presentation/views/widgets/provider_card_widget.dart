@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/features/filter/domain/entities/provider_entity.dart';
 
 class ProviderCardWidget extends StatelessWidget {
@@ -12,19 +13,17 @@ class ProviderCardWidget extends StatelessWidget {
     required this.onTap,
   });
 
-  // ✅ نفس دالة getCorrectImageUrl المستخدمة في profile_labourer_view
-  String _buildImageUrl(String? path) {
-    if (path == null || path.isEmpty) return '';
-    if (path.contains('localhost')) {
-      return path.replaceAll('localhost', '10.0.2.2');
-    }
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path;
-    }
-    // مسار نسبي من السيرفر → نضيف الـ base URL
-    return 'http://10.0.2.2/servigo/public/$path';
+ 
+ String getCorrectImageUrl(String? path) {
+  if (path == null || path.isEmpty) return "";
+  if (path.contains('localhost')) {
+    return path.replaceAll('localhost', ApiConstants.baseHost);
   }
-
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  return "${ApiConstants.storageBaseUrl}$path"; 
+}
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -47,10 +46,10 @@ class ProviderCardWidget extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // ── صورة صاحب المهنة ──
+         
             _buildAvatar(),
             const SizedBox(width: 12),
-            // ── معلومات صاحب المهنة ──
+          
             Expanded(child: _buildInfo()),
           ],
         ),
@@ -58,13 +57,13 @@ class ProviderCardWidget extends StatelessWidget {
     );
   }
 
-  // ── Avatar ──
+  
   Widget _buildAvatar() {
-    final imageUrl = _buildImageUrl(provider.photo);
+    final imageUrl = getCorrectImageUrl(provider.photo);
     return CircleAvatar(
       radius: 28.r,
       backgroundColor: const Color(0xFF6C5CE7),
-      // ✅ نستخدم imageUrl المعالج بدل provider.photo مباشرة
+     
       backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
       child: imageUrl.isEmpty
           ? Text(

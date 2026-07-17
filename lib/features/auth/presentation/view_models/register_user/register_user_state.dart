@@ -25,7 +25,12 @@ final class RegisterUserFailure extends RegisterUserState {
 /// =======================
 final class VerifyOtpLoading extends RegisterUserState {}
 
-final class VerifyOtpSuccess extends RegisterUserState {}
+final class VerifyOtpSuccess extends RegisterUserState {
+  // 👇 جديد: بيحمل الـ response بالكامل (فيه data.status و data.profile_completed
+  // و data.is_banned...إلخ) عشان otp_code_view تقدر تقرر التوجيه الصح
+  final dynamic result;
+  VerifyOtpSuccess([this.result]);
+}
 
 final class VerifyOtpFailure extends RegisterUserState {
   final ApiError error;

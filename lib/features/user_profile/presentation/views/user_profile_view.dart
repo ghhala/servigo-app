@@ -24,7 +24,6 @@ class UserProfileView extends StatelessWidget {
     return url;
   }
 
-  // Single soft-blurred gradient blob used for the decorative corners.
   Widget _blob({required double size, required List<Color> colors}) {
     return ImageFiltered(
       imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
@@ -74,7 +73,6 @@ class UserProfileView extends StatelessWidget {
                         ),
                         child: Stack(
                           children: [
-                            // ---- top-left blob ----
                             Positioned(
                               top: -50.h,
                               left: -45.w,
@@ -86,7 +84,7 @@ class UserProfileView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // ---- top-right blob ----
+
                             Positioned(
                               top: -35.h,
                               right: -55.w,
@@ -98,7 +96,7 @@ class UserProfileView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // ---- bottom-right blob ----
+
                             Positioned(
                               bottom: -55.h,
                               right: -40.w,
@@ -110,7 +108,7 @@ class UserProfileView extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // ---- bottom-left blob ----
+
                             Positioned(
                               bottom: -45.h,
                               left: -50.w,
@@ -154,22 +152,30 @@ class UserProfileView extends StatelessWidget {
                                     fontSize: 18.sp,
                                   ),
                                 ),
-                                const Gap(5),
+                                const Gap(8),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.phone, size: 17.sp),
+                                    Icon(Icons.phone, size: 19.sp),
                                     const Gap(5),
-                                    Text(user.phone ?? "No Phone Number"),
+                                    Text(
+                                      user.phone ?? "No Phone Number",
+                                      style: TextStyles.font18BlackW500
+                                          .copyWith(fontSize: 15.sp),
+                                    ),
                                   ],
                                 ),
-                                const Gap(5),
+                                const Gap(8),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.email, size: 17.sp),
+                                    Icon(Icons.email, size: 19.sp),
                                     const Gap(5),
-                                     Text(user.email ??   "No Email"),
+                                    Text(
+                                      user.email ?? "No Email",
+                                      style: TextStyles.font18BlackW500
+                                          .copyWith(fontSize: 15.sp),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -181,11 +187,11 @@ class UserProfileView extends StatelessWidget {
                   ),
                   const Gap(50),
                   CustomButton(
-                    width: 140.w,
-                    height: 30.h,
+                    width: 150.w,
+                    height: 40.h,
                     title: "edit profile",
                     textstyle: TextStyles.font11WhiteW500.copyWith(
-                      fontSize: 15.sp,
+                      fontSize: 16.sp,
                     ),
                     onTap: () async {
                       final userProfileCubit =

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
 import 'package:servi_go_app/core/utils/pref_halper.dart';
@@ -31,7 +32,7 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
-  static const String _localStorageBase = 'http://10.0.2.2/servigo/public/storage/';
+ 
 
   @override
   void initState() {
@@ -40,19 +41,18 @@ class _HomeBodyState extends State<HomeBody> {
   }
 
   String _getFullImageUrl(String? path) {
-    if (path == null || path.trim().isEmpty) return '';
-    final cleanPath = path.trim();
+  if (path == null || path.trim().isEmpty) return '';
+  final cleanPath = path.trim();
 
-    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-      if (cleanPath.contains('/storage/')) {
-        final relativePath = cleanPath.split('/storage/').last;
-        return 'http://10.0.2.2/servigo/public/storage/$relativePath';
-      }
-      return cleanPath;
+  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+    if (cleanPath.contains('/storage/')) {
+      final relativePath = cleanPath.split('/storage/').last;
+      return '${ApiConstants.storageBaseUrl}$relativePath'; 
     }
-    return 'http://10.0.2.2/servigo/public/storage/$cleanPath';
+    return cleanPath;
   }
-
+  return '${ApiConstants.storageBaseUrl}$cleanPath'; 
+}
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -284,29 +284,39 @@ class _HomeBodyState extends State<HomeBody> {
                   const Gap(20),
 
                   // ---------------- FAVORITES ----------------
-                  favorites.isEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("No favorite providers yet"),
-                        )
-                      : Wrap(
-                          spacing: 8.w,
-                          runSpacing: 8.h,
-                          children: List.generate(favorites.length, (index) {
-                            final provider = favorites[index];
-                            final providerImage = _getFullImageUrl(provider.photo);
+                 favorites.isEmpty
+    ? const Padding(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Text("No favorite providers yet"),
+      )
+    : Wrap(
+        spacing: 8.w,
+        runSpacing: 8.h,
+        children: List.generate(favorites.length, (index) {
+          final provider = favorites[index];
+          final providerImage = _getFullImageUrl(provider.photo);
 
-                            return SizedBox(
-                              width: 120.w,
-                              child: FavoriteProviderCard(
-                                providerName: provider.name ?? "Unknown",
-                                imageUrl: providerImage,
-                                mainService: provider.mainService?.nameEn ?? "Service",
-                                subService: provider.subService?.nameEn ?? "Service",
-                              ),
-                            );
-                          }),
-                        ),
+          return SizedBox(
+            width: 150.w,
+            child: GestureDetector(
+              onTap: () {
+                if (provider.providerUserId != null) {
+                  context.push(
+                    AppRouter.kProfileLabourer,
+                    extra: provider.providerUserId,
+                  );
+                }
+              },
+              child: FavoriteProviderCard(
+                providerName: provider.name ?? "Unknown",
+                imageUrl: providerImage,
+                mainService: provider.mainService?.nameEn ?? "Service",
+                subService: provider.subService?.nameEn ?? "Service",
+              ),
+            ),
+          );
+        }),
+      ),
 
                   const Gap(20),
                   

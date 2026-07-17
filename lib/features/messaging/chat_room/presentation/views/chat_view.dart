@@ -29,32 +29,47 @@ class ChatView extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       body: AppBackground(
         withScaffold: false,
-        padding: EdgeInsets.only(top: 100.h),
+        padding: EdgeInsets.only(top: 106.h),
         child: SizedBox(
           height: MediaQuery.sizeOf(context).height - 100.h,
           child: Column(
             children: [
-              // ── Header ──
               Container(
                 width: double.infinity,
-                height: 80.h,
+                height: 70.h,
                 decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 135, 93, 143),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color.fromARGB(255, 127, 78, 213),
+                      Color(0xFF06B6D4),
+                    ],
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius: 25.r,
+                      radius: 30.r,
                       backgroundImage: imageUrl.isNotEmpty
                           ? NetworkImage(imageUrl)
                           : const AssetImage('assets/images/user_avatar.jpg')
-                              as ImageProvider,
+                                as ImageProvider,
                     ),
-                    Gap(10.w),
+                    Gap(12.w),
                     Text(
                       otherPartyName,
-                      style: TextStyles.font11WhiteW500,
+                      style: TextStyles.font11WhiteW500.copyWith(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13.sp,
+                      ),
                     ),
                   ],
                 ),
@@ -67,8 +82,7 @@ class ChatView extends StatelessWidget {
                   builder: (context, state) {
                     if (state.status == ChatStatus.loading &&
                         state.messages.isEmpty) {
-                      return const Center(
-                          child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     if (state.status == ChatStatus.error) {
@@ -119,10 +133,10 @@ class ChatView extends StatelessWidget {
           },
           onSendImage: (imageFile) {
             context.read<ChatCubit>().sendMessage(
-                  chatId,
-                  null,
-                  image: imageFile,
-                );
+              chatId,
+              null,
+              image: imageFile,
+            );
           },
         ),
       ),
