@@ -16,23 +16,7 @@ import 'package:servi_go_app/features/messaging/data/data_sources/chat_remote_da
 import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
 import 'package:servi_go_app/features/messaging/presentation/view_models/chat/chat_cubit.dart';
 
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
 
-//   await PrefHelper.init();
-//   runApp(
-//     MultiProvider(
-//       providers: [ChangeNotifierProvider(create: (_) => AuthViewModel())],
-//       child: MultiBlocProvider(
-//         providers: [
-//           BlocProvider(create: (_) => ThemeBloc()),
-//           BlocProvider(create: (_) => LocaleCubit()..loadLocale()),
-//         ],
-//         child: const MyApp(),
-//       ),
-//     ),
-//   );
-// }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -44,7 +28,7 @@ void main() async {
         providers: [
           BlocProvider(create: (_) => ThemeBloc()),
           BlocProvider(create: (_) => LocaleCubit()..loadLocale()),
-          // ✅ ChatCubit بقى Global، متاح من أي route في التطبيق
+         
           BlocProvider(
             create: (_) => ChatCubit(
               ChatRepository(ChatRemoteDataSource(ApiService(DioClient()))),

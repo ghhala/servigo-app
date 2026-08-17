@@ -27,11 +27,13 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   Future<void> _initPlayer() async {
     try {
+      print("🎥 Video URL: ${widget.videoUrl}");
       _videoController = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoUrl),
       );
 
       await _videoController.initialize();
+      print("✅ Video initialized successfully");  
 
       _chewieController = ChewieController(
         videoPlayerController: _videoController,
@@ -52,6 +54,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         setState(() => _isInitialized = true);
       }
     } catch (e) {
+      print("❌ Video init error: $e"); 
       if (mounted) {
         setState(() => _error = e.toString());
       }
