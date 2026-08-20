@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:servi_go_app/core/utils/api_constants.dart';
+import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/video_player_widget.dart';
 class ChatBubble extends StatelessWidget {
   final String message;
   final bool isMe;
@@ -16,19 +17,23 @@ class ChatBubble extends StatelessWidget {
     this.time,
   }) : super(key: key);
 
- 
-  String _buildImageUrl(String? path) {
+  String _buildMediaUrl(String? path) {
     if (path == null || path.isEmpty) return '';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    if (path.contains('localhost')) {
-      return path.replaceAll('localhost', '10.0.2.2');
+
+    String storageBase = ApiConstants.baseUrl.replaceAll('/api/', '/');
+    if (storageBase.endsWith('/')) {
+      storageBase = storageBase.substring(0, storageBase.length - 1);
     }
-    return 'http://10.0.2.2/servigo/public$path';
+    final cleanPath = path.startsWith('/') ? path : '/$path';
+
+    return '$storageBase$cleanPath';
   }
 
   @override
   Widget build(BuildContext context) {
-    final fullImageUrl = _buildImageUrl(imageUrl);
+    final fullImageUrl = _buildMediaUrl(imageUrl);
+    final fullVideoUrl = _buildMediaUrl(videoUrl);
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -57,7 +62,7 @@ class ChatBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            // ✅ صورة مع URL كامل
+            // ✅ صورة
             if (fullImageUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -73,11 +78,21 @@ class ChatBubble extends StatelessWidget {
                       child: Center(child: CircularProgressIndicator()),
                     );
                   },
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.broken_image,
-                    color: Colors.white,
-                    size: 40,
-                  ),
+                  errorBuilder: (context, error, stackTrace) {
+                    debugPrint('❌ فشل تحميل الصورة: $error');
+                    return const Icon(Icons.broken_image, color: Colors.white, size: 40);
+                  },
+                ),
+              ),
+
+            // ✅ فيديو - نلف بـ SizedBox عشان نعطيه حجم ثابت
+            if (fullVideoUrl.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: SizedBox(
+                  width: 200,
+                  height: 200 * 9 / 16, // نسبة عرض/ارتفاع تقريبية (16:9)
+                  child: VideoPlayerWidget(videoUrl: fullVideoUrl),
                 ),
               ),
 
@@ -85,11 +100,7 @@ class ChatBubble extends StatelessWidget {
             if (message.isNotEmpty)
               Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.5,
-                  height: 1.3,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 14.5, height: 1.3),
               ),
 
             // ✅ وقت الرسالة
@@ -97,10 +108,7 @@ class ChatBubble extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 time!,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 10,
-                ),
+                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 10),
               ),
             ],
           ],

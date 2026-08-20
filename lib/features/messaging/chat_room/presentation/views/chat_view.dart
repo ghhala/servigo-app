@@ -122,24 +122,31 @@ class ChatView extends StatelessWidget {
         ),
       ),
 
-      // ── Input Area ──
+     
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: MessageInputArea(
-          onSendMessage: (content) {
-            context.read<ChatCubit>().sendMessage(chatId, content);
-          },
-          onSendImage: (imageFile) {
-            context.read<ChatCubit>().sendMessage(
-              chatId,
-              null,
-              image: imageFile,
-            );
-          },
-        ),
-      ),
+  padding: EdgeInsets.only(
+    bottom: MediaQuery.of(context).viewInsets.bottom,
+  ),
+  child: MessageInputArea(
+    onSendMessage: (content) {
+      context.read<ChatCubit>().sendMessage(chatId, content);
+    },
+    onSendImage: (imageFile) {
+      context.read<ChatCubit>().sendMessage(
+        chatId,
+        null,
+        image: imageFile,
+      );
+    },
+    onSendVideo: (videoFile) {                  
+      context.read<ChatCubit>().sendMessage(
+        chatId,
+        null,
+        video: videoFile,
+      );
+    },
+  ),
+),
     );
   }
 }

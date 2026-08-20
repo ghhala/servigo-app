@@ -5,7 +5,7 @@ import 'package:servi_go_app/core/utils/api_constants.dart'; // NEW
 class DioClient {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: ApiConstants.baseUrl, // NEW
+      baseUrl: ApiConstants.baseUrl, 
       headers: {
         "Content-type": "application/json",
         "Accept": "application/json",

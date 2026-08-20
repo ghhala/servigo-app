@@ -19,7 +19,9 @@ class ServiceCategoryCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 12.h),
       padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 6.w),
       decoration: BoxDecoration(
-        color: const Color(0xFFF6F3FE),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFF2A2735)
+            : const Color(0xFFF6F3FE),
         borderRadius: BorderRadius.circular(16.r),
       ),
       child: Column(
@@ -74,7 +76,11 @@ class ServiceCategoryCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: TextStyles.font12PrimaryColorW600,
+            style: Theme.of(context).brightness == Brightness.dark
+                ? TextStyles.font12PrimaryColorW600.copyWith(
+                    color: Colors.white,
+                  )
+                : TextStyles.font12PrimaryColorW600,
           ),
         ],
       ),

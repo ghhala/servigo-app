@@ -30,9 +30,9 @@ class AdminChatView extends StatelessWidget {
     if (path == null || path.isEmpty) return '';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
     if (path.contains('localhost')) {
-      return path.replaceAll('localhost', '10.0.2.2');
+      return path.replaceAll('localhost', '192.168.1.13');
     }
-    return 'http://10.0.2.2/servigo/public/$path';
+    return 'http://192.168.1.13/servigo/public/$path';
   }
 
   @override

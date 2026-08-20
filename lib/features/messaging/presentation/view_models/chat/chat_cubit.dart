@@ -1,6 +1,7 @@
 
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/features/messaging/data/repositories/chat_repository.dart';
 import 'chat_state.dart';
 
@@ -74,12 +75,16 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
  
-  static String buildImageUrl(String? path) {
+ static String buildImageUrl(String? path) {
   if (path == null || path.isEmpty) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
-  if (path.contains('localhost')) {
-    return path.replaceAll('localhost', '10.0.2.2');
+
+  String storageBase = ApiConstants.baseUrl.replaceAll('/api/', '/');
+  if (storageBase.endsWith('/')) {
+    storageBase = storageBase.substring(0, storageBase.length - 1);
   }
-  return 'http://10.0.2.2/servigo/public/storage/$path';
+  final cleanPath = path.startsWith('/') ? path : '/$path';
+
+  return '$storageBase/storage$cleanPath';
 }
 }

@@ -164,8 +164,7 @@ class RegisterUserCubit extends Cubit<RegisterUserState> {
         await _authRepository.fetchAndSaveProfileAfterLogin(userType: userType);
       }
 
-      // 👇 جديد: بنبعت الـ result (اللي فيه status/profile_completed/is_banned)
-      // مع الـ state عشان الشاشة تقدر تقرر التوجيه الصح
+      
       emit(VerifyOtpSuccess(result));
     } on ApiError catch (e) {
       emit(VerifyOtpFailure(e));

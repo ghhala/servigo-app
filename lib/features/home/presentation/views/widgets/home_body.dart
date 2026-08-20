@@ -96,7 +96,7 @@ class _HomeBodyState extends State<HomeBody> {
 
             final String userName = PrefHelper.getString('user_name') ?? 'User';
 
-            // ---------------- USER IMAGE ----------------
+           
             String? finalPhotoPath;
             final String localCachedImage = PrefHelper.getUserImage();
 
@@ -120,7 +120,7 @@ class _HomeBodyState extends State<HomeBody> {
                   const LangagueThemeWidget(),
                   const Gap(16),
                   
-                  // ---------------- USER IMAGE WIDGET ----------------
+                 
                   ClipRRect(
                     borderRadius: BorderRadius.circular(
                       widget.userType == 'labourer' ? 45.r : 35.r,
@@ -231,7 +231,7 @@ class _HomeBodyState extends State<HomeBody> {
                   ),
                   const Gap(12),
                   
-                  // ---------------- MAIN SERVICES ----------------
+                 
                   Container(
                     width: 353.w,
                     height: 150.h,

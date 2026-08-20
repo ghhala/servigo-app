@@ -45,7 +45,7 @@ class FilterCubit extends Cubit<FilterState> {
   }) async {
     emit(state.copyWith(status: FilterStatus.loading));
     try {
-      // نجلب بدون sort_by لتجنب خطأ acos في SQLite
+     
       final results = await filterRepository.getFilteredProviders(request);
 
       // ✅ نرتب محلياً: الأقرب أولاً

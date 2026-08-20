@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,8 +10,9 @@ import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/core/widgets/custom_button.dart';
-import 'package:servi_go_app/core/widgets/waiting_approval_dialog.dart'; // 👈 جديد
-import 'package:servi_go_app/core/widgets/account_rejected_dialog.dart'; // 👈 جديد
+import 'package:servi_go_app/core/widgets/open_admin_chat.dart';
+import 'package:servi_go_app/core/widgets/waiting_approval_dialog.dart';
+import 'package:servi_go_app/core/widgets/account_rejected_dialog.dart';
 import 'package:servi_go_app/features/auth/presentation/view_models/register_user/register_user_cubit.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/otp_files.dart';
 import 'package:servi_go_app/features/auth/presentation/views/widgets/success_pop_up.dart';
@@ -44,17 +46,26 @@ class _OtpCodeViewState extends State<OtpCodeView> {
   int _secondsLeft = _resendDuration;
   Timer? _timer;
 
+  late final TapGestureRecognizer _changeEmailRecognizer;
+
   bool get isDeleteAccountFlow => widget.authAction == 'delete_account';
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+    _changeEmailRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        if (context.canPop()) {
+          context.pop();
+        }
+      };
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _changeEmailRecognizer.dispose();
     super.dispose();
   }
 
@@ -90,7 +101,6 @@ class _OtpCodeViewState extends State<OtpCodeView> {
     }
   }
 
-  // 👇 جديد: بياخد بيانات الـ verify-otp response (data) عشان يقرر التوجيه الصح
   void _handleNavigationOnSuccess(Map<String, dynamic> data) {
     if (isDeleteAccountFlow) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -120,21 +130,23 @@ class _OtpCodeViewState extends State<OtpCodeView> {
         final String status = (data['status'] ?? '').toString().toLowerCase();
         final bool profileCompleted = data['profile_completed'] == true;
 
-        // شبكة أمان: لو لأي سبب الحساب لسه pending أو rejected لحظة التحقق
         if (status == 'pending') {
           WaitingApprovalDialog.show(context);
           return;
         }
-        if (status == 'rejected') {
-          AccountRejectedDialog.show(context);
-          return;
-        }
+      if (status == 'rejected') {
+  AccountRejectedDialog.show(
+    context,
+    rejectionReason: (data['rejection_reason'] as String?) ??
+        'The request has been rejected by the administration',
+    onContactAdmin: () => openAdminChat(context),
+  );
+  return;
+}
 
         if (profileCompleted) {
-          // مش أول دخول → يروح على طول للـ Home
           context.go(AppRouter.kHome, extra: {'userType': widget.userType});
         } else {
-          // أول دخول بعد الموافقة → يكمل بيانات حسابه الأول
           context.go(
             AppRouter.kmoveToComplite,
             extra: {
@@ -147,7 +159,6 @@ class _OtpCodeViewState extends State<OtpCodeView> {
           );
         }
       } else {
-        // تسجيل حساب جديد: يشوف بوب أب الانتظار وبعدين يروح لصفحة تسجيل الدخول
         WaitingApprovalDialog.show(
           context,
           onOk: () {
@@ -232,7 +243,9 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                       text: AppLocalizations.of(context)!.changeIt,
                       style: TextStyles.font16PrimaryColorW400.copyWith(
                         fontSize: 14.sp,
+                        decoration: TextDecoration.underline,
                       ),
+                      recognizer: _changeEmailRecognizer,
                     ),
                   ],
                 ),
@@ -256,7 +269,6 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   if (state is VerifyOtpSuccess) {
                     if (!context.mounted) return;
 
-                    // 👇 جديد: استخراج بيانات الـ response
                     final response = state.result as Map<String, dynamic>?;
                     final data =
                         (response?['data'] as Map<String, dynamic>?) ?? {};

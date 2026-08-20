@@ -67,7 +67,8 @@ class _CustomLocationState extends State<CustomLocation>
     }
   }
 
-  // ← التعديل الوحيد المهم: الدالة الآن تستقبل كود اللغة الحالي للتطبيق
+  // ← التعديل هون: بنبني الاسم من الشارع + الحي + المدينة/المحافظة
+  // بدل ما ناخد بس حقل المدينة
   Future<void> _getPlaceName(LatLng location, String languageCode) async {
     try {
       if (mounted) {
@@ -83,7 +84,9 @@ class _CustomLocationState extends State<CustomLocation>
         "?lat=${location.latitude}"
         "&lon=${location.longitude}"
         "&format=json"
-        "&accept-language=$languageCode", // ← هنا بدل "ar" الثابتة
+        "&addressdetails=1" // ← عشان نضمن رجوع تفاصيل العنوان كاملة
+        "&zoom=18" // ← عشان نضمن مستوى تفصيل الشارع (مو بس المحافظة)
+        "&accept-language=$languageCode",
       );
 
       final response = await http
@@ -95,10 +98,35 @@ class _CustomLocationState extends State<CustomLocation>
 
         debugPrint("Nominatim response: $data");
 
-        final address = data['address'];
-        final name = [
-          address['city'] ?? address['town'] ?? address['village'],
-        ].where((e) => e != null && (e as String).isNotEmpty).join(', ');
+        final address = data['address'] as Map<String, dynamic>? ?? {};
+
+        // ← عنصر واحد بس للمحافظة/المدينة (نتفادى تكرار "Homs, Homs Governorate")
+        final area = address['city'] ??
+            address['town'] ??
+            address['village'] ??
+            address['state'];
+
+        // ← أدق مستوى متوفر: شارع، وإلا حي
+        String? street = address['road'] ??
+            address['neighbourhood'] ??
+            address['suburb'];
+
+        // ← إزالة بادئة نوع العنصر يلي أحياناً بتكون جزء من اسم الـ OSM
+        // نفسه بمناطق سوريا (متل "Neighborhood Wadi Aldahab" بدل "Wadi Aldahab")
+        if (street != null) {
+          street = street.replaceFirst(
+            RegExp(
+              r'^(neighbou?rhood|quarter|district)\s+',
+              caseSensitive: false,
+            ),
+            '',
+          );
+        }
+
+        final name = [area, street]
+            .where((e) => e != null && (e as String).isNotEmpty)
+            .join(', ');
+
         if (mounted) {
           setState(() {
             placeName = name.isNotEmpty ? name : data['display_name'];

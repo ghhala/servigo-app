@@ -8,7 +8,7 @@ class FilterRepository {
 
   FilterRepository({required this.remoteDataSource});
 
-  // 1️⃣ جلب أعلى 5 مزودين
+  
   Future<List<ProviderFilterModel>> getTopFiveProviders(int mainServiceId) async {
     try {
       return await remoteDataSource.getTopFiveProviders(mainServiceId);
@@ -17,7 +17,7 @@ class FilterRepository {
     }
   }
 
-  // 2️⃣ جلب المزودين المفلترين والمرتبين
+ 
   Future<List<ProviderFilterModel>> getFilteredProviders(FilterRequestModel request) async {
     try {
       return await remoteDataSource.getFilteredProviders(request);
@@ -26,7 +26,7 @@ class FilterRepository {
     }
   }
 
-  // 3️⃣ جلب الخدمات الفرعية لتعبئة الـ Dropdown 
+  
   Future<List<SubServiceEntity>> getSubServices(int mainServiceId) async {
     try {
       return await remoteDataSource.getSubServices(mainServiceId);

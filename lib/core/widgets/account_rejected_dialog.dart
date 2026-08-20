@@ -3,19 +3,30 @@ import 'package:flutter/material.dart';
 /// بوب أب يظهر لصاحب المهنة لو الأدمن رفض حسابه، بنفس ستايل تصميم
 /// "Un acceptable" الموجود في الفيجما (أيقونة حظر حمراء + زر تواصل مع الإدارة).
 class AccountRejectedDialog extends StatelessWidget {
-  const AccountRejectedDialog({super.key, this.onContactAdmin});
+  const AccountRejectedDialog({
+    super.key,
+    required this.rejectionReason,
+    this.onContactAdmin,
+  });
 
+  final String rejectionReason;
   final VoidCallback? onContactAdmin;
 
   static const Color _color = Color(0xFFE53935);
 
-  /// استدعيها لو حالة الحساب rejected، مثال:
-  /// AccountRejectedDialog.show(context, onContactAdmin: () { ... });
-  static Future<void> show(BuildContext context, {VoidCallback? onContactAdmin}) {
+
+  static Future<void> show(
+    BuildContext context, {
+    required String rejectionReason,
+    VoidCallback? onContactAdmin,
+  }) {
     return showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AccountRejectedDialog(onContactAdmin: onContactAdmin),
+      builder: (_) => AccountRejectedDialog(
+        rejectionReason: rejectionReason,
+        onContactAdmin: onContactAdmin,
+      ),
     );
   }
 
@@ -40,11 +51,10 @@ class AccountRejectedDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
-              'The login request was rejected by the administration for '
-              'violating the terms and conditions.',
+            Text(
+              rejectionReason,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
                 height: 1.4,

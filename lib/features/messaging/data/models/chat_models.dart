@@ -1,6 +1,6 @@
-// lib/features/messaging/data/models/chat_models.dart
 
-// ── 1. عنصر في قائمة المحادثات ──
+
+
 class ChatListItem {
   final int id;
   final String type;
@@ -37,7 +37,7 @@ class ChatListItem {
   }
 }
 
-// ── 2. رسالة واحدة ──
+
 class ChatMessage {
   final int id;
   final int senderId;
@@ -79,7 +79,7 @@ class ChatMessage {
   }
 }
 
-// ── 3. استجابة بدء المحادثة ──
+
 class StartChatResponse {
   final int chatId;
   final bool isExisting;
@@ -95,7 +95,7 @@ class StartChatResponse {
   }
 }
 
-// ── 4. بيانات الطرف الآخر في المحادثة ──
+
 class ChatOtherParty {
   final int id;
   final String name;

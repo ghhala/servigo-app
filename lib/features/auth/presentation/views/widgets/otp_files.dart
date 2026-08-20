@@ -33,14 +33,14 @@ class _OtpFieldsState extends State<OtpFields> {
   }
 
   void updateOtpValue() {
-    // هذه الدالة تجمع الأرقام الستة بدقة وتمررها فوراً وبشكل مستمر للشاشة الأساسية
+  
     String currentOtp = controllers.map((e) => e.text.trim()).join();
     widget.onCompleted(currentOtp);
   }
 
   void onChanged(String value, int index) {
     if (value.isNotEmpty) {
-      // إذا كُتب أكثر من حرف (بسبب التعديل الجديد)، نأخذ الحرف الأخير فقط
+    
       if (value.length > 1) {
         controllers[index].text = value.substring(value.length - 1);
         controllers[index].selection = TextSelection.fromPosition(
@@ -48,18 +48,18 @@ class _OtpFieldsState extends State<OtpFields> {
         );
       }
 
-      // الانتقال للمربع التالي تلقائياً
+     
       if (index < length - 1) {
         FocusScope.of(context).requestFocus(focusNodes[index + 1]);
       }
     } else {
-      // الرجوع للمربع السابق عند الحذف
+     
       if (index > 0) {
         FocusScope.of(context).requestFocus(focusNodes[index - 1]);
       }
     }
 
-    // تحديث القيمة فوراً
+   
     updateOtpValue();
   }
 
@@ -76,15 +76,19 @@ class _OtpFieldsState extends State<OtpFields> {
             focusNode: focusNodes[index],
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
-            // التعديل الذكي: أزلنا maxLength الصارم لمنع تعليق لوحة المفاتيح والـ Emulator
-            style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold),
+           
+            style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold,color: Theme.of(context).textTheme.bodyLarge?.color,),
             decoration: InputDecoration(
               counterText: "",
               filled: true,
-              fillColor: Colors.grey.shade300,
+             fillColor: Theme.of(context).cardColor,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade400),
+               borderSide: BorderSide(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey.shade700
+          : Colors.grey.shade400,
+    ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),

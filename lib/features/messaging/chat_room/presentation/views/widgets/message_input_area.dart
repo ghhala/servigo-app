@@ -5,11 +5,13 @@ import 'package:image_picker/image_picker.dart';
 class MessageInputArea extends StatefulWidget {
   final Function(String content) onSendMessage;
   final Function(File image)? onSendImage;
+  final Function(File video)? onSendVideo; 
 
   const MessageInputArea({
     Key? key,
     required this.onSendMessage,
     this.onSendImage,
+    this.onSendVideo,
   }) : super(key: key);
 
   @override
@@ -20,12 +22,57 @@ class _MessageInputAreaState extends State<MessageInputArea> {
   final TextEditingController _controller = TextEditingController();
   final ImagePicker _picker = ImagePicker();
 
+ 
   Future<void> _pickImage() async {
     final XFile? picked =
         await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null && widget.onSendImage != null) {
       widget.onSendImage!(File(picked.path));
     }
+  }
+
+  // ✅ اختيار فيديو
+  Future<void> _pickVideo() async {
+    final XFile? picked =
+        await _picker.pickVideo(source: ImageSource.gallery);
+    if (picked != null && widget.onSendVideo != null) {
+      widget.onSendVideo!(File(picked.path));
+    }
+  }
+
+  // ✅ قائمة اختيار: صورة أو فيديو
+  void _showAttachmentOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.image, color: Color(0xFF4FC3F7)),
+                title: const Text('photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam, color: Color(0xFF7E57C2)),
+                title: const Text('video'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickVideo();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -41,10 +88,10 @@ class _MessageInputAreaState extends State<MessageInputArea> {
       color: Colors.transparent,
       child: Row(
         children: [
-          // ✅ زر إرفاق صورة
+          // ✅ زر إرفاق (صورة/فيديو)
           IconButton(
             icon: const Icon(Icons.attach_file, color: Colors.grey, size: 28),
-            onPressed: _pickImage,
+            onPressed: _showAttachmentOptions, // ✅ عدّل هنا
           ),
 
           // حقل الإدخال
