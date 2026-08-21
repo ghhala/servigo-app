@@ -134,15 +134,16 @@ class _OtpCodeViewState extends State<OtpCodeView> {
           WaitingApprovalDialog.show(context);
           return;
         }
-      if (status == 'rejected') {
-  AccountRejectedDialog.show(
-    context,
-    rejectionReason: (data['rejection_reason'] as String?) ??
-        'The request has been rejected by the administration',
-    onContactAdmin: () => openAdminChat(context),
-  );
-  return;
-}
+        if (status == 'rejected') {
+          AccountRejectedDialog.show(
+            context,
+            rejectionReason:
+                (data['rejection_reason'] as String?) ??
+                'The request has been rejected by the administration',
+            onContactAdmin: () => openAdminChat(context),
+          );
+          return;
+        }
 
         if (profileCompleted) {
           context.go(AppRouter.kHome, extra: {'userType': widget.userType});
@@ -296,7 +297,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('تم إرسال رمز جديد بنجاح'),
+                        content: Text('New OTP code has been sent successfully'),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -360,12 +361,7 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                             strokeWidth: 2,
                           ),
                         )
-                      else if (canResend)
-                        Text(
-                          AppLocalizations.of(context)!.resendCode,
-                          style: TextStyles.font16PrimaryColorW400,
-                        )
-                      else
+                      else if (!canResend)
                         Text(
                           "${AppLocalizations.of(context)!.resendIn} 00:${_secondsLeft.toString().padLeft(2, '0')} s",
                           style: TextStyles.font16PrimaryColorW400,
@@ -374,6 +370,53 @@ class _OtpCodeViewState extends State<OtpCodeView> {
                   );
                 },
               ),
+
+              Gap(10.h),
+
+              Center(
+                child: InkWell(
+                  onTap: () => openAdminChat(context),
+                  borderRadius: BorderRadius.circular(30.r),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(30.r),
+                      border: Border.all(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.support_agent_rounded,
+                          size: 20.r,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        Gap(8.w),
+                        Text(
+                          "Need help? Contact Support",
+                          style: TextStyles.font12GreyW400(context).copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              Gap(16.h),
             ],
           ),
         ),
