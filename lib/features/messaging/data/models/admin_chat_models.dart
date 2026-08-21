@@ -1,9 +1,8 @@
-
 class AdminItem {
   final int adminId;
   final String adminName;
   final String? adminPhoto;
-  final int? adminChatId; 
+  final int? adminChatId;
 
   AdminItem({
     required this.adminId,
@@ -15,13 +14,12 @@ class AdminItem {
   factory AdminItem.fromJson(Map<String, dynamic> json) {
     return AdminItem(
       adminId: json['admin_id'] as int? ?? 0,
-      adminName: json['admin_name'] as String? ?? '',
-      adminPhoto: json['admin_photo'] as String?,
-      adminChatId: json['admin_chat_id'] as int?,
+      adminName: json['name'] as String? ?? '',
+      adminPhoto: json['photo'] as String?,
+      adminChatId: json['chat_id'] as int?,
     );
   }
 }
-
 
 class AdminChatMessage {
   final int id;

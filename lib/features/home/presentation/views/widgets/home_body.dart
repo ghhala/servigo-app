@@ -32,7 +32,6 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
- 
 
   @override
   void initState() {
@@ -41,18 +40,19 @@ class _HomeBodyState extends State<HomeBody> {
   }
 
   String _getFullImageUrl(String? path) {
-  if (path == null || path.trim().isEmpty) return '';
-  final cleanPath = path.trim();
+    if (path == null || path.trim().isEmpty) return '';
+    final cleanPath = path.trim();
 
-  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-    if (cleanPath.contains('/storage/')) {
-      final relativePath = cleanPath.split('/storage/').last;
-      return '${ApiConstants.storageBaseUrl}$relativePath'; 
+    if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+      if (cleanPath.contains('/storage/')) {
+        final relativePath = cleanPath.split('/storage/').last;
+        return '${ApiConstants.storageBaseUrl}$relativePath';
+      }
+      return cleanPath;
     }
-    return cleanPath;
+    return '${ApiConstants.storageBaseUrl}$cleanPath';
   }
-  return '${ApiConstants.storageBaseUrl}$cleanPath'; 
-}
+
   @override
   Widget build(BuildContext context) {
     return AppBackground(
@@ -96,7 +96,6 @@ class _HomeBodyState extends State<HomeBody> {
 
             final String userName = PrefHelper.getString('user_name') ?? 'User';
 
-           
             String? finalPhotoPath;
             final String localCachedImage = PrefHelper.getUserImage();
 
@@ -119,8 +118,7 @@ class _HomeBodyState extends State<HomeBody> {
                 children: [
                   const LangagueThemeWidget(),
                   const Gap(16),
-                  
-                 
+
                   ClipRRect(
                     borderRadius: BorderRadius.circular(
                       widget.userType == 'labourer' ? 45.r : 35.r,
@@ -230,8 +228,7 @@ class _HomeBodyState extends State<HomeBody> {
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(12),
-                  
-                 
+
                   Container(
                     width: 353.w,
                     height: 150.h,
@@ -284,148 +281,270 @@ class _HomeBodyState extends State<HomeBody> {
                   const Gap(20),
 
                   // ---------------- FAVORITES ----------------
-                 favorites.isEmpty
-    ? const Padding(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Text("No favorite providers yet"),
-      )
-    : Wrap(
-        spacing: 8.w,
-        runSpacing: 8.h,
-        children: List.generate(favorites.length, (index) {
-          final provider = favorites[index];
-          final providerImage = _getFullImageUrl(provider.photo);
+                  favorites.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text("No favorite providers yet"),
+                        )
+                      : Wrap(
+                          spacing: 8.w,
+                          runSpacing: 8.h,
+                          children: List.generate(favorites.length, (index) {
+                            final provider = favorites[index];
+                            final providerImage = _getFullImageUrl(provider.photo);
 
-          return SizedBox(
-            width: 150.w,
-            child: GestureDetector(
-              onTap: () {
-                if (provider.providerUserId != null) {
-                  context.push(
-                    AppRouter.kProfileLabourer,
-                    extra: provider.providerUserId,
-                  );
-                }
-              },
-              child: FavoriteProviderCard(
-                providerName: provider.name ?? "Unknown",
-                imageUrl: providerImage,
-                mainService: provider.mainService?.nameEn ?? "Service",
-                subService: provider.subService?.nameEn ?? "Service",
-              ),
-            ),
-          );
-        }),
-      ),
-
-                  const Gap(20),
-                  
-                  // ---------------- ADS ----------------
-                  ads.isEmpty
-                      ? const SizedBox.shrink()
-                      : Column(
-                          children: List.generate(ads.length, (index) {
-                            final ad = ads[index];
-                            final adImage = _getFullImageUrl(ad.adImage);
-
-                            return Container(
-                              width: 353.w,
-                              height: 200.h,
-                              margin: EdgeInsets.only(bottom: 15.h),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                borderRadius: BorderRadius.circular(13.r),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15.w,
-                                        vertical: 20.h,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            ad.providerName ?? "Advertisement",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyles.onCard(
-                                              context,
-                                              TextStyles.font25Blackw700.copyWith(fontSize: 14.sp),
-                                            ),
-                                          ),
-                                          const Gap(14),
-                                          Expanded(
-                                            child: Text(
-                                              ad.description ?? "Description here...",
-                                              maxLines: 4,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyles.onCard(
-                                                context,
-                                                TextStyles.font12PrimaryColorW600,
-                                              ),
-                                            ),
-                                          ),
-                                          const Gap(10),
-                                          CustomButton(
-                                            height: 30.h,
-                                            width: 110.w,
-                                            title: "Go To Profile",
-                                            textstyle: TextStyles.font11WhiteW500,
-                                            onTap: () {
-                                              if (ad.providerUserId != null) {
-                                                context.push(
-                                                  AppRouter.kProfileLabourer,
-                                                  extra: ad.providerUserId,
-                                                );
-                                              }
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 10.w),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                      child: adImage.isNotEmpty
-                                          ? Image.network(
-                                              adImage,
-                                              width: 120.w,
-                                              height: 140.h,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Image.asset(
-                                                  "assets/images/test2.png",
-                                                  width: 120.w,
-                                                  height: 140.h,
-                                                  fit: BoxFit.cover,
-                                                );
-                                              },
-                                            )
-                                          : Image.asset(
-                                              "assets/images/test2.png",
-                                              width: 120.w,
-                                              height: 140.h,
-                                              fit: BoxFit.cover,
-                                            ),
-                                    ),
-                                  ),
-                                ],
+                            return SizedBox(
+                              width: 150.w,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (provider.providerUserId != null) {
+                                 
+                                    await context.push(
+                                      AppRouter.kProfileLabourer,
+                                      extra: provider.providerUserId,
+                                    );
+                                    if (context.mounted) {
+                                      context.read<HomeCubit>().fetchHomeData();
+                                    }
+                                  }
+                                },
+                                child: FavoriteProviderCard(
+                                  providerName: provider.name ?? "Unknown",
+                                  imageUrl: providerImage,
+                                  mainService: provider.mainService?.nameEn ?? "Service",
+                                  subService: provider.subService?.nameEn ?? "Service",
+                                ),
                               ),
                             );
                           }),
                         ),
+
+                  const Gap(20),
+
+                  // // ---------------- ADS ----------------
+                  // ads.isEmpty
+                  //     ? const SizedBox.shrink()
+                  //     : Column(
+                  //         children: List.generate(ads.length, (index) {
+                  //           final ad = ads[index];
+                  //           final adImage = _getFullImageUrl(ad.adImage);
+
+                  //           return Container(
+                  //             width: 353.w,
+                  //             height: 200.h,
+                  //             margin: EdgeInsets.only(bottom: 15.h),
+                  //             decoration: BoxDecoration(
+                  //               color: Theme.of(context).cardColor,
+                  //               borderRadius: BorderRadius.circular(13.r),
+                  //               boxShadow: [
+                  //                 BoxShadow(
+                  //                   color: Colors.black.withOpacity(0.1),
+                  //                   blurRadius: 10,
+                  //                   offset: const Offset(0, 5),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //             child: Row(
+                  //               children: [
+                  //                 Expanded(
+                  //                   child: Padding(
+                  //                     padding: EdgeInsets.symmetric(
+                  //                       horizontal: 15.w,
+                  //                       vertical: 20.h,
+                  //                     ),
+                  //                     child: Column(
+                  //                       crossAxisAlignment: CrossAxisAlignment.start,
+                  //                       children: [
+                  //                         Text(
+                  //                           ad.providerName ?? "Advertisement",
+                  //                           maxLines: 1,
+                  //                           overflow: TextOverflow.ellipsis,
+                  //                           style: TextStyles.onCard(
+                  //                             context,
+                  //                             TextStyles.font25Blackw700.copyWith(fontSize: 14.sp),
+                  //                           ),
+                  //                         ),
+                  //                         const Gap(14),
+                  //                         Expanded(
+                  //                           child: Text(
+                  //                             ad.description ?? "Description here...",
+                  //                             maxLines: 4,
+                  //                             overflow: TextOverflow.ellipsis,
+                  //                             style: TextStyles.onCard(
+                  //                               context,
+                  //                               TextStyles.font12PrimaryColorW600,
+                  //                             ),
+                  //                           ),
+                  //                         ),
+                  //                         const Gap(10),
+                  //                         CustomButton(
+                  //                           height: 30.h,
+                  //                           width: 110.w,
+                  //                           title: "Go To Profile",
+                  //                           textstyle: TextStyles.font11WhiteW500,
+                  //                           onTap: () async {
+                  //                             if (ad.providerUserId != null) {
+                  //                               await context.push(
+                  //                                 AppRouter.kProfileLabourer,
+                  //                                 extra: ad.providerUserId,
+                  //                               );
+                  //                               if (context.mounted) {
+                  //                                 context.read<HomeCubit>().fetchHomeData();
+                  //                               }
+                  //                             }
+                  //                           },
+                  //                         ),
+                  //                       ],
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //                 Padding(
+                  //                   padding: EdgeInsets.only(right: 10.w),
+                  //                   child: ClipRRect(
+                  //                     borderRadius: BorderRadius.circular(12.r),
+                  //                     child: adImage.isNotEmpty
+                  //                         ? Image.network(
+                  //                             adImage,
+                  //                             width: 120.w,
+                  //                             height: 140.h,
+                  //                             fit: BoxFit.cover,
+                  //                             errorBuilder: (context, error, stackTrace) {
+                  //                               return Image.asset(
+                  //                                 "assets/images/test2.png",
+                  //                                 width: 120.w,
+                  //                                 height: 140.h,
+                  //                                 fit: BoxFit.cover,
+                  //                               );
+                  //                             },
+                  //                           )
+                  //                         : Image.asset(
+                  //                             "assets/images/test2.png",
+                  //                             width: 120.w,
+                  //                             height: 140.h,
+                  //                             fit: BoxFit.cover,
+                  //                           ),
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           );
+                  //         }),
+                  //       ),
+                  // ---------------- ADS ----------------
+ads.isEmpty
+    ? const SizedBox.shrink()
+    : Builder(
+        builder: (context) {
+          final displayAds = ads.reversed.toList(); 
+
+          return Column(
+            children: List.generate(displayAds.length, (index) {
+              final ad = displayAds[index];
+              final adImage = _getFullImageUrl(ad.adImage);
+
+              return Container(
+                width: 353.w,
+                height: 200.h,
+                margin: EdgeInsets.only(bottom: 15.h),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(13.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15.w,
+                          vertical: 20.h,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              ad.providerName ?? "Advertisement",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.onCard(
+                                context,
+                                TextStyles.font25Blackw700.copyWith(fontSize: 14.sp),
+                              ),
+                            ),
+                            const Gap(14),
+                            Expanded(
+                              child: Text(
+                                ad.description ?? "Description here...",
+                                maxLines: 4,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyles.onCard(
+                                  context,
+                                  TextStyles.font12PrimaryColorW600,
+                                ),
+                              ),
+                            ),
+                            const Gap(10),
+                            CustomButton(
+                              height: 30.h,
+                              width: 110.w,
+                              title: "Go To Profile",
+                              textstyle: TextStyles.font11WhiteW500,
+                              onTap: () async {
+                                if (ad.providerUserId != null) {
+                                  await context.push(
+                                    AppRouter.kProfileLabourer,
+                                    extra: ad.providerUserId,
+                                  );
+                                  if (context.mounted) {
+                                    context.read<HomeCubit>().fetchHomeData();
+                                  }
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 10.w),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12.r),
+                        child: adImage.isNotEmpty
+                            ? Image.network(
+                                adImage,
+                                width: 120.w,
+                                height: 140.h,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    "assets/images/test2.png",
+                                    width: 120.w,
+                                    height: 140.h,
+                                    fit: BoxFit.cover,
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                "assets/images/test2.png",
+                                width: 120.w,
+                                height: 140.h,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          );
+        },
+      ),
                 ],
               ),
             );

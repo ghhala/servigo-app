@@ -1,5 +1,4 @@
-// lib/features/messaging/chat_room/presentation/views/admin_chat_view.dart
-// شاشة الدردشة مع الأدمن — تُستدعى عند الضغط على أدمن من القائمة
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,8 +12,8 @@ import 'package:servi_go_app/features/messaging/presentation/view_models/admin_c
 import 'package:servi_go_app/features/messaging/presentation/view_models/admin_chat/admin_chat_state.dart';
 
 class AdminChatView extends StatelessWidget {
-  final int adminId;          
-  final int? adminChatId;    
+  final int adminId;
+  final int? adminChatId;
   final String adminName;
   final String? adminPhoto;
 
@@ -32,7 +31,7 @@ class AdminChatView extends StatelessWidget {
     if (path.contains('localhost')) {
       return path.replaceAll('localhost', '192.168.1.13');
     }
-    return 'http://192.168.1.13/servigo/public/$path';
+    return 'http://192.168.1.13/servigo/public/storage/$path';
   }
 
   @override
@@ -63,7 +62,7 @@ class AdminChatView extends StatelessWidget {
                       backgroundImage: imageUrl.isNotEmpty
                           ? NetworkImage(imageUrl)
                           : const AssetImage('assets/images/user_avatar.jpg')
-                              as ImageProvider,
+                                as ImageProvider,
                     ),
                     Gap(10.w),
                     Text(adminName, style: TextStyles.font11WhiteW500),
@@ -72,7 +71,6 @@ class AdminChatView extends StatelessWidget {
               ),
               Gap(10),
 
-           
               Expanded(
                 child: BlocBuilder<AdminChatCubit, AdminChatState>(
                   builder: (context, state) {
@@ -116,15 +114,12 @@ class AdminChatView extends StatelessWidget {
         ),
       ),
 
-   
       bottomNavigationBar: Padding(
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
         ),
         child: MessageInputArea(
           onSendMessage: (content) {
-           
-         
             context.read<AdminChatCubit>().sendMessage(adminId, content);
           },
         ),
