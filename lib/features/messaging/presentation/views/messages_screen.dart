@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/network/api_service.dart';
 import 'package:servi_go_app/core/network/dio_client.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
@@ -35,6 +36,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: AppBackground(
         padding: EdgeInsets.only(top: 110.h),
@@ -44,7 +46,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Messages",
+                l10n.messages,
                 style: TextStyles.font16BlackW700.copyWith(fontSize: 18.sp),
               ),
               Gap(16.h),
@@ -53,7 +55,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   GestureDetector(
                     onTap: () => setState(() => _selectedTab = 0),
                     child: CustomTab(
-                      title: 'Customer',
+                      title: l10n.customerTab,
                       isSelected: _selectedTab == 0,
                     ),
                   ),
@@ -61,7 +63,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   GestureDetector(
                     onTap: () => setState(() => _selectedTab = 1),
                     child: CustomTab(
-                      title: 'Admin',
+                      title: l10n.adminTab,
                       isSelected: _selectedTab == 1,
                     ),
                   ),
@@ -77,6 +79,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Widget _buildCustomerChats() {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<ChatCubit, ChatState>(
       builder: (context, state) {
         if (state.status == ChatStatus.loading) {
@@ -94,14 +97,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    state.errorMessage ?? 'Error loading chats',
+                    state.errorMessage ?? l10n.errorLoadingChats,
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                   Gap(12.h),
                   ElevatedButton(
                     onPressed: () => context.read<ChatCubit>().fetchChatList(),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -110,9 +113,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
         }
 
         if (state.chatList.isEmpty) {
-          return const Padding(
+          return Padding(
             padding: EdgeInsets.only(top: 40),
-            child: Center(child: Text('No conversations yet')),
+            child: Center(child: Text(l10n.noConversationsYet)),
           );
         }
 
@@ -143,6 +146,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Widget _buildAdminChats() {
+    final l10n = AppLocalizations.of(context)!;
     return BlocProvider(
       create: (_) => AdminChatCubit(
         AdminChatRepository(AdminChatRemoteDataSource(ApiService(DioClient()))),
@@ -164,7 +168,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      state.errorMessage ?? 'Error loading admins',
+                      state.errorMessage ?? l10n.errorLoadingAdmins,
                       style: const TextStyle(color: Colors.red),
                       textAlign: TextAlign.center,
                     ),
@@ -172,7 +176,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     ElevatedButton(
                       onPressed: () =>
                           context.read<AdminChatCubit>().fetchAdminList(),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -181,9 +185,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
           }
 
           if (state.adminList.isEmpty) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.only(top: 40),
-              child: Center(child: Text('No admins available')),
+              child: Center(child: Text(l10n.noAdminsAvailable)),
             );
           }
 
@@ -198,8 +202,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 name: admin.adminName,
                 photo: admin.adminPhoto,
                 lastMessage: admin.adminChatId != null
-                    ? 'Tap to continue conversation'
-                    : 'Tap to start conversation',
+                    ? l10n.tapToContinueConversation
+                    : l10n.tapToStartConversation,
                 onTap: () => GoRouter.of(context).push(
                   AppRouter.kAdminChatRoom,
                   extra: {
@@ -281,7 +285,9 @@ class _ChatTileItem extends StatelessWidget {
                             name,
                             style: TextStyles.onCard(
                               context,
-                              TextStyles.font18BlackW500,
+                              TextStyles.font18BlackW500.copyWith(
+                                fontSize: 15.sp,
+                              ),
                             ),
                           ),
                           Icon(

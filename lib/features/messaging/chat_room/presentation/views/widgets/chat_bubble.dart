@@ -96,7 +96,7 @@ class ChatBubble extends StatelessWidget {
                 ),
               ),
 
-            // ✅ نص الرسالة
+           
             if (message.isNotEmpty)
               Text(
                 message,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
 class HolidayDaysWidget extends StatefulWidget {
@@ -52,6 +53,7 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
@@ -170,7 +172,7 @@ class _HolidayDaysWidgetState extends State<HolidayDaysWidget> {
                 ),
                 children: [
                   TextSpan(
-                    text: isArabic ? "الأيام المختارة: " : "Selected Days: ",
+                    text: l10n.selectedDays,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(

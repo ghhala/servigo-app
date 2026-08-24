@@ -53,6 +53,7 @@ dependencies:
   percent_indicator: ^4.2.5
   provider: ^6.1.5+1
   shared_preferences: ^2.5.5
+  translator: ^1.0.4+1
   video_player: ^2.11.1
 
 dev_dependencies:

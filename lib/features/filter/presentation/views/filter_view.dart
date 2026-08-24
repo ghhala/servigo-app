@@ -10,6 +10,7 @@ import 'package:servi_go_app/features/filter/presentation/view_models/filter/fil
 import 'package:servi_go_app/features/filter/presentation/view_models/filter/filter_state.dart';
 import 'package:servi_go_app/features/filter/presentation/views/filter_bottom_sheet.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/provider_card_widget.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import '../../data/models/filter_request_model.dart';
 import '../../data/models/provider_filter_model.dart';
 
@@ -127,7 +128,7 @@ class _FilterViewState extends State<FilterView> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: Text(
-                isFiltered ? 'Results' : 'Top 5 providers',
+                isFiltered ? AppLocalizations.of(context)!.results : AppLocalizations.of(context)!.topProviders,
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
               ),
             ),
@@ -157,7 +158,7 @@ class _FilterViewState extends State<FilterView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            state.errorMessage ?? 'An error occurred',
+                            state.errorMessage ?? AppLocalizations.of(context)!.anErrorOccurred,
                             style: const TextStyle(color: Colors.red),
                             textAlign: TextAlign.center,
                           ),
@@ -169,9 +170,9 @@ class _FilterViewState extends State<FilterView> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF6C5CE7),
                             ),
-                            child: const Text(
-                              'Retry',
-                              style: TextStyle(color: Colors.white),
+                            child: Text(
+                              AppLocalizations.of(context)!.retry,
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ],
@@ -187,8 +188,8 @@ class _FilterViewState extends State<FilterView> {
                 if (currentProviders.isEmpty) {
                   return SizedBox(
                     height: 200.h,
-                    child: const Center(
-                      child: Text("No providers found matching these criteria"),
+                      child: Center(
+                      child: Text(AppLocalizations.of(context)!.noProvidersFound),
                     ),
                   );
                 }
@@ -204,10 +205,10 @@ class _FilterViewState extends State<FilterView> {
 
                     final entity = ProviderEntity(
                       id: item.providerUserId ?? 0,
-                      name: item.name ?? 'No Name',
+                      name: item.name ?? AppLocalizations.of(context)!.noName,
                       photo: item.photo,
                       subServiceName: item.workType ?? '',
-                      locationName: item.locationName ?? 'Unknown',
+                      locationName: item.locationName ?? AppLocalizations.of(context)!.unknown,
                       workType: item.workType ?? 'both',
                       minPrice: item.minPrice?.toDouble() ?? 0.0,
                       maxPrice: item.maxPrice?.toDouble() ?? 0.0,
@@ -262,7 +263,7 @@ class _FilterViewState extends State<FilterView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Sort By:',
+           AppLocalizations.of(context)!.sortBy,
             style: TextStyle(fontSize: 15.sp, color: Colors.black),
           ),
           SizedBox(height: 10.h),
@@ -279,9 +280,9 @@ class _FilterViewState extends State<FilterView> {
                     if (!gotLocation || _userLat == null || _userLng == null) {
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
-                              "Could not get your location. Please enable GPS.",
+                              AppLocalizations.of(context)!.couldNotGetLocation,
                             ),
                             backgroundColor: Colors.orange,
                           ),
@@ -345,7 +346,11 @@ class _FilterViewState extends State<FilterView> {
                     ),
                   ),
                   child: Text(
-                    o['label']!,
+                    value == 'price'
+                        ? AppLocalizations.of(context)!.sortPriceAsc
+                        : value == 'rating'
+                            ? AppLocalizations.of(context)!.sortRatingDesc
+                            : AppLocalizations.of(context)!.sortLocation,
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: isSelected ? Colors.white : Colors.black87,
@@ -385,8 +390,8 @@ class _FilterViewState extends State<FilterView> {
               ? int.tryParse(currentRating!)
               : null,
           initialAvailability: currentAvailability == true
-              ? "Available Now"
-              : "Any",
+              ? 'available_now'
+              : 'any',
           initialWorkType: currentWorkType,
           onApply:
               ({
@@ -404,7 +409,7 @@ class _FilterViewState extends State<FilterView> {
                   currentMinPrice = minPrice;
                   currentMaxPrice = maxPrice;
                   currentRating = rating?.toString();
-                  currentAvailability = availability == "Available Now";
+                  currentAvailability = availability == 'available_now';
                   currentWorkType = workType;
                 });
 

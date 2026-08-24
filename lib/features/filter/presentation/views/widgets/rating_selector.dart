@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class RatingSelector extends StatelessWidget {
   final int? selectedRating;
@@ -12,25 +13,26 @@ class RatingSelector extends StatelessWidget {
 
   static const primary = Color(0xFF6C5CE7);
 
-  final List<Map<String, dynamic>> _ratings = const [
-    {'label': 'Any Rating', 'value': null},
-    {'label': '2 stars & up', 'value': 2},
-    {'label': '3 stars & up', 'value': 3},
-    {'label': '4 stars & up', 'value': 4},
-    {'label': '5 stars only', 'value': 5},
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final ratings = [
+      {'label': l.anyRating, 'value': null},
+      {'label': l.rating2AndUp, 'value': 2},
+      {'label': l.rating3AndUp, 'value': 3},
+      {'label': l.rating4AndUp, 'value': 4},
+      {'label': l.rating5Only, 'value': 5},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Rating',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l.ratingLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        ..._ratings.map((r) {
+        ...ratings.map((r) {
           final value = r['value'] as int?;
           final isSelected = selectedRating == value;
           return GestureDetector(

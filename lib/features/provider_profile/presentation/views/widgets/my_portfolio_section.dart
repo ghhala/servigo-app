@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/features/provider_profile/presentation/views/widgets/video_player_widget.dart';
 
 enum MediaType { image, video }
@@ -96,6 +97,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
   }
 
   void _showAddOptions() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -117,9 +119,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Add to Portfolio',
-                style: TextStyle(
+              Text(
+                l10n.addToPortfolio,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: _textDark,
@@ -128,8 +130,8 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               const SizedBox(height: 16),
               _sheetOption(
                 icon: Icons.photo_library_rounded,
-                label: 'Add Photos',
-                sub: 'Choose one or more images',
+                label: l10n.addPhotos,
+                sub: l10n.chooseOneOrMoreImages,
                 color: _primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -139,8 +141,8 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               const SizedBox(height: 10),
               _sheetOption(
                 icon: Icons.videocam_rounded,
-                label: 'Add Video',
-                sub: 'Choose a video from gallery',
+                label: l10n.addVideo,
+                sub: l10n.chooseVideoFromGallery,
                 color: _secondary,
                 onTap: () {
                   Navigator.pop(context);
@@ -223,6 +225,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
 
   void _editDescription(int index) {
     final ctrl = TextEditingController(text: _items[index].description);
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -233,9 +236,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Add Description',
-                style: TextStyle(
+              Text(
+                l10n.addDescription,
+                style: const TextStyle(
                   color: _textDark,
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -247,7 +250,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                 maxLines: 3,
                 maxLength: 150,
                 decoration: InputDecoration(
-                  hintText: 'Describe this work...',
+                  hintText: l10n.describeThisWork,
                   hintStyle: TextStyle(color: _textMid.withOpacity(0.6)),
                   filled: true,
                   fillColor: _bg,
@@ -267,9 +270,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: _textMid),
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(color: _textMid),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -287,9 +290,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                       _updateParent();
                       Navigator.pop(context);
                     },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(color: Colors.white),
+                    child: Text(
+                      l10n.save,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -443,6 +446,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Container(
@@ -462,9 +466,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'My Portfolio',
-                style: TextStyle(
+              Text(
+                l10n.myPortfolio,
+                style: const TextStyle(
                   color: _textDark,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -472,8 +476,8 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               ),
               Text(
                 _isEmpty
-                    ? 'Add photos & videos of your work'
-                    : '$_totalCount item(s) added',
+                    ? l10n.addPortfolioHint
+                    : l10n.portfolioCountText(_totalCount),
                 style: const TextStyle(color: _textMid, fontSize: 12),
               ),
             ],
@@ -494,14 +498,14 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.add_rounded, color: Colors.white, size: 16),
-                SizedBox(width: 4),
+                const Icon(Icons.add_rounded, color: Colors.white, size: 16),
+                const SizedBox(width: 4),
                 Text(
-                  'Add',
-                  style: TextStyle(
+                  l10n.add,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -516,6 +520,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: _showAddOptions,
       child: Container(
@@ -542,9 +547,9 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'No portfolio items yet.',
-              style: TextStyle(
+            Text(
+              l10n.noPortfolioItemsYet,
+              style: const TextStyle(
                 color: _textMid,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
@@ -552,7 +557,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
             ),
             const SizedBox(height: 2),
             Text(
-              'Tap + to add photos or videos',
+              l10n.tapToAddPortfolio,
               style: TextStyle(color: _textMid.withOpacity(0.6), fontSize: 12),
             ),
           ],
@@ -659,7 +664,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
             ),
             child: Text(
-              item.description.isEmpty ? 'No description' : item.description,
+              item.description.isEmpty ? AppLocalizations.of(context)!.noDescription : item.description,
               style: const TextStyle(
                 fontSize: 11,
                 color: _textDark,
@@ -719,18 +724,18 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.play_arrow_rounded,
                             color: Colors.white,
                             size: 12,
                           ),
-                          SizedBox(width: 2),
+                          const SizedBox(width: 2),
                           Text(
-                            'Video',
-                            style: TextStyle(color: Colors.white, fontSize: 10),
+                            AppLocalizations.of(context)!.video,
+                            style: const TextStyle(color: Colors.white, fontSize: 10),
                           ),
                         ],
                       ),
@@ -779,7 +784,7 @@ class _MyPortfolioSectionState extends State<MyPortfolioSection> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Add description...',
+                          AppLocalizations.of(context)!.addDescriptionHint,
                           style: TextStyle(
                             fontSize: 11,
                             color: _textMid.withOpacity(0.6),
@@ -914,7 +919,7 @@ class _VideoPlayerScreenState extends State<_VideoPlayerScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Video', style: TextStyle(fontSize: 15)),
+        title: Text(AppLocalizations.of(context)!.video, style: const TextStyle(fontSize: 15)),
       ),
       body: Center(
         child: _chewieCtrl != null

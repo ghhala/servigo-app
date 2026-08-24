@@ -15,6 +15,18 @@ import 'package:servi_go_app/features/map/presentation/views/screens/map_view.da
 import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/features/auth/data/models/register_provider_request_body.dart';
 
+class _ServiceCategoryOption {
+  final String id;
+  final String nameAr;
+  final String nameEn;
+
+  const _ServiceCategoryOption({
+    required this.id,
+    required this.nameAr,
+    required this.nameEn,
+  });
+}
+
 class SignUplabourerView extends StatefulWidget {
   final String userType;
 
@@ -36,9 +48,42 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
   TextEditingController locationDetailsController = TextEditingController();
   String? selectedRegion;
   String? selectedService;
+  String? selectedServiceId;
 
   double? selectedLatitude;
   double? selectedLongitude;
+
+  static const List<_ServiceCategoryOption> _serviceCategories = [
+    _ServiceCategoryOption(id: '1', nameAr: 'التنظيف', nameEn: 'Cleaning'),
+    _ServiceCategoryOption(id: '2', nameAr: 'السباكة', nameEn: 'Plumbing'),
+    _ServiceCategoryOption(id: '3', nameAr: 'الكهرباء', nameEn: 'Electrical'),
+  ];
+  static const List<String> _serviceTypeValues = ['Fixed', 'Mobile', 'Both'];
+
+  String _localizedCategoryName(BuildContext context, _ServiceCategoryOption category) {
+    final localeCode = Localizations.localeOf(context).languageCode;
+    return localeCode == 'ar' ? category.nameAr : category.nameEn;
+  }
+
+  String _localizedServiceTypeLabel(AppLocalizations l10n, String serviceTypeValue) {
+    switch (serviceTypeValue) {
+      case 'Fixed':
+        return l10n.serviceTypeFixed;
+      case 'Mobile':
+        return l10n.serviceTypeMobile;
+      case 'Both':
+        return l10n.serviceTypeBoth;
+      default:
+        return serviceTypeValue;
+    }
+  }
+
+  String _serviceTypeValueFromLabel(AppLocalizations l10n, String serviceTypeLabel) {
+    if (serviceTypeLabel == l10n.serviceTypeFixed) return 'Fixed';
+    if (serviceTypeLabel == l10n.serviceTypeMobile) return 'Mobile';
+    if (serviceTypeLabel == l10n.serviceTypeBoth) return 'Both';
+    return serviceTypeLabel;
+  }
 
   
   bool isTermsAccepted = false;
@@ -58,6 +103,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
 
  
   void _showTermsRequiredDialog() {
+    final l10n = AppLocalizations.of(context)!;
     const Color warningColor = Color(0xFFFFA726);
 
     showDialog(
@@ -76,19 +122,19 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                 size: 70,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Notice',
-                style: TextStyle(
+              Text(
+                l10n.notice,
+                style: const TextStyle(
                   color: warningColor,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'You must agree to the Terms and Conditions to create your account.',
+              Text(
+                l10n.mustAcceptTerms,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 15, color: Colors.black87),
+                style: const TextStyle(fontSize: 15, color: Colors.black87),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -103,9 +149,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Ok',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.ok,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -122,6 +168,11 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final serviceItems = _serviceCategories
+        .map((category) => _localizedCategoryName(context, category))
+        .toList();
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: AppBackground(
@@ -235,7 +286,7 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                     Gap(20.h),
                     CustomTextFormFiled(
                       controller: serviceController,
-                      hintText: AppLocalizations.of(context)!.chooseService,
+                      hintText: l10n.selectServiceType,
                       prefixIcon: Padding(
                         padding: EdgeInsets.all(11.w),
                         child: SvgPicture.asset(
@@ -244,18 +295,25 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                       ),
                       isDropdown: true,
                       value: selectedService,
-                      items: const ['Cleaning', 'Plumbing', 'Electrical'],
+                      items: serviceItems,
                       validator: (value) {
-                        if (value == null) {
-                          return AppLocalizations.of(
-                            context,
-                          )!.pleaseSelectService;
+                        if (value == null || value.isEmpty) {
+                          return l10n.pleaseSelectService;
                         }
                         return null;
                       },
                       onChanged: (value) {
+                        if (value == null) return;
+
+                        final matchedCategory = _serviceCategories.firstWhere(
+                          (category) =>
+                              _localizedCategoryName(context, category) == value,
+                          orElse: () => _serviceCategories.first,
+                        );
+
                         setState(() {
                           selectedService = value;
+                          selectedServiceId = matchedCategory.id;
                         });
                       },
                     ),
@@ -270,8 +328,12 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         ),
                       ),
                       isDropdown: true,
-                      value: selectedRegion,
-                      items: const ['Fixed', 'Mobile', 'Both'],
+                      value: selectedRegion == null
+                          ? null
+                          : _localizedServiceTypeLabel(l10n, selectedRegion!),
+                      items: _serviceTypeValues
+                          .map((value) => _localizedServiceTypeLabel(l10n, value))
+                          .toList(),
                       validator: (value) {
                         if (value == null) {
                           return AppLocalizations.of(
@@ -281,8 +343,9 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                         return null;
                       },
                       onChanged: (value) {
+                        if (value == null) return;
                         setState(() {
-                          selectedRegion = value;
+                          selectedRegion = _serviceTypeValueFromLabel(l10n, value);
                         });
                       },
                     ),
@@ -342,10 +405,8 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           if (selectedLatitude == null ||
                               selectedLongitude == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "الرجاء فتح الخريطة وتأكيد موقعك أولاً",
-                                ),
+                              SnackBar(
+                                content: Text(l10n.pleaseConfirmLocationFirst),
                                 backgroundColor: Colors.orange,
                               ),
                             );
@@ -355,10 +416,8 @@ class _SignUplabourerViewState extends State<SignUplabourerView> {
                           String formattedWorkType = selectedRegion!
                               .toLowerCase();
 
-                          String serviceId = "1";
-                          if (selectedService == 'Cleaning') serviceId = "1";
-                          if (selectedService == 'Plumbing') serviceId = "2";
-                          if (selectedService == 'Electrical') serviceId = "3";
+                          final serviceId = selectedServiceId ??
+                              _serviceCategories.first.id;
 
                           final requestBody = RegisterProviderRequestBody(
                             name: fullNameController.text.trim(),

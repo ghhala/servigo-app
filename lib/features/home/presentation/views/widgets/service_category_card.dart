@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
 class ServiceCategoryCard extends StatelessWidget {
-  final String name;
+  final String? name;
+  final String? nameAr;
+  final String? nameEn;
   final String image;
 
   const ServiceCategoryCard({
     super.key,
-    required this.name,
+    this.name,
+    this.nameAr,
+    this.nameEn,
     required this.image,
   });
 
+  String _getLocalizedName(BuildContext context) {
+    final localeCode = Localizations.localeOf(context).languageCode;
+    final resolvedName = localeCode == 'ar'
+        ? (nameAr ?? nameEn ?? name ?? '')
+        : (nameEn ?? nameAr ?? name ?? '');
+
+    return resolvedName.trim().isEmpty
+        ? AppLocalizations.of(context)!.service
+        : resolvedName;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final displayName = _getLocalizedName(context);
+
     return Container(
       width: 100.w,
       margin: EdgeInsets.symmetric(horizontal: 6.w, vertical: 12.h),
@@ -72,7 +90,7 @@ class ServiceCategoryCard extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           Text(
-            name,
+            displayName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,

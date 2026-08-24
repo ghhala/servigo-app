@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class ProfilePhotoWidget extends StatefulWidget {
   // 1. إضافة الـ Callback لتمرير الصورة المخطارة إلى الشاشة الأساسية
@@ -28,6 +29,7 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
   }
 
   void _showImageSourceDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -40,7 +42,6 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle bar
                 Container(
                   width: 40,
                   height: 4,
@@ -50,9 +51,9 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const Text(
-                  'Change Profile Picture',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                Text(
+                  l10n.changeProfilePicture,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
                 Material(
@@ -69,8 +70,8 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
                         color: Color(0xFF6C5CE7),
                       ),
                     ),
-                    title: const Text('Choose from  Gallery'),
-                    subtitle: const Text('open gallery to select a new photo'),
+                    title: Text(l10n.chooseFromGallery),
+                    subtitle: Text(l10n.openGalleryToSelectPhoto),
                     onTap: () {
                       Navigator.pop(context);
                       _pickImage(ImageSource.gallery);
@@ -91,8 +92,8 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
                         color: Color(0xFF6C5CE7),
                       ),
                     ),
-                    title: const Text('Capture Photo'),
-                    subtitle: const Text('Open camera to capture a new photo'),
+                    title: Text(l10n.capturePhoto),
+                    subtitle: Text(l10n.openCameraToCapturePhoto),
                     onTap: () {
                       Navigator.pop(context);
                       _pickImage(ImageSource.camera);
@@ -104,9 +105,9 @@ class _ProfilePhotoWidgetState extends State<ProfilePhotoWidget> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.grey),
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   ),
                 ),

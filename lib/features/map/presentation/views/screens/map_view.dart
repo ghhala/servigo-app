@@ -4,6 +4,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:translator/translator.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class CustomLocation extends StatefulWidget {
   const CustomLocation({super.key});
@@ -17,6 +19,11 @@ class _CustomLocationState extends State<CustomLocation>
   LatLng? selectedLocation;
   LatLng? initialLocation;
   String? placeName;
+
+  final GoogleTranslator _translator = GoogleTranslator();
+  static final RegExp _arabicRegex = RegExp(r'[\u0600-\u06FF]');
+
+  bool _containsArabic(String text) => _arabicRegex.hasMatch(text);
 
   @override
   void initState() {
@@ -57,7 +64,9 @@ class _CustomLocationState extends State<CustomLocation>
     if (permission == LocationPermission.deniedForever) return;
 
     Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
 
     if (mounted) {
@@ -67,15 +76,14 @@ class _CustomLocationState extends State<CustomLocation>
     }
   }
 
-  // ← التعديل هون: بنبني الاسم من الشارع + الحي + المدينة/المحافظة
-  // بدل ما ناخد بس حقل المدينة
-  Future<void> _getPlaceName(LatLng location, String languageCode) async {
+ 
+  Future<void> _getPlaceName(
+      BuildContext context, LatLng location, String languageCode) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       if (mounted) {
         setState(() {
-          placeName = languageCode == 'ar'
-              ? "جارٍ تحديد الموقع..."
-              : "Locating...";
+          placeName = l10n.locating;
         });
       }
 
@@ -84,8 +92,7 @@ class _CustomLocationState extends State<CustomLocation>
         "?lat=${location.latitude}"
         "&lon=${location.longitude}"
         "&format=json"
-        "&addressdetails=1" // ← عشان نضمن رجوع تفاصيل العنوان كاملة
-        "&zoom=18" // ← عشان نضمن مستوى تفصيل الشارع (مو بس المحافظة)
+        "&addressdetails=1" 
         "&accept-language=$languageCode",
       );
 
@@ -100,19 +107,18 @@ class _CustomLocationState extends State<CustomLocation>
 
         final address = data['address'] as Map<String, dynamic>? ?? {};
 
-        // ← عنصر واحد بس للمحافظة/المدينة (نتفادى تكرار "Homs, Homs Governorate")
+       
         final area = address['city'] ??
             address['town'] ??
             address['village'] ??
             address['state'];
 
-        // ← أدق مستوى متوفر: شارع، وإلا حي
+       
         String? street = address['road'] ??
             address['neighbourhood'] ??
             address['suburb'];
 
-        // ← إزالة بادئة نوع العنصر يلي أحياناً بتكون جزء من اسم الـ OSM
-        // نفسه بمناطق سوريا (متل "Neighborhood Wadi Aldahab" بدل "Wadi Aldahab")
+       
         if (street != null) {
           street = street.replaceFirst(
             RegExp(
@@ -123,9 +129,27 @@ class _CustomLocationState extends State<CustomLocation>
           );
         }
 
-        final name = [area, street]
+        String name = [area, street]
             .where((e) => e != null && (e as String).isNotEmpty)
             .join(', ');
+
+        if (name.isEmpty) {
+          name = (data['display_name'] as String?) ?? '';
+        }
+
+      
+        if (languageCode != 'ar' && name.isNotEmpty && _containsArabic(name)) {
+          try {
+            final translation = await _translator
+                .translate(name, from: 'ar', to: languageCode)
+                .timeout(const Duration(seconds: 6));
+            if (translation.text.isNotEmpty) {
+              name = translation.text;
+            }
+          } catch (e) {
+            debugPrint("Translation fallback failed: $e");
+          }
+        }
 
         if (mounted) {
           setState(() {
@@ -153,13 +177,12 @@ class _CustomLocationState extends State<CustomLocation>
 
   @override
   Widget build(BuildContext context) {
-    // ← نحدد لغة التطبيق الحالية من الـ context (ar أو en)
     final String languageCode = Localizations.localeOf(context).languageCode;
-    final bool isArabic = languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isArabic ? "حدد الموقع" : "Select Location"),
+        title: Text(l10n.selectLocation),
       ),
       body: initialLocation == null
           ? const Center(child: CircularProgressIndicator())
@@ -174,13 +197,10 @@ class _CustomLocationState extends State<CustomLocation>
                       if (mounted) {
                         setState(() {
                           selectedLocation = point;
-                          placeName = isArabic
-                              ? "جارٍ تحديد الموقع..."
-                              : "Locating...";
+                          placeName = l10n.locating;
                         });
                       }
-                      // ← مررنا كود اللغة هنا
-                      await _getPlaceName(point, languageCode);
+                      await _getPlaceName(context, point, languageCode);
                       debugPrint("selectedLocation: $selectedLocation");
                       debugPrint("placeName after fetch: $placeName");
                     },
@@ -222,23 +242,22 @@ class _CustomLocationState extends State<CustomLocation>
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 5,
-                            color:
-                                Theme.of(context).shadowColor.withOpacity(0.2),
+                            color: Theme.of(context)
+                                .shadowColor
+                                .withValues(alpha: 0.2),
                           ),
                         ],
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (placeName == "جارٍ تحديد الموقع..." ||
-                              placeName == "Locating...")
+                          if (placeName == l10n.locating)
                             const SizedBox(
                               width: 14,
                               height: 14,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
-                          if (placeName == "جارٍ تحديد الموقع..." ||
-                              placeName == "Locating...")
+                          if (placeName == l10n.locating)
                             const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -258,8 +277,7 @@ class _CustomLocationState extends State<CustomLocation>
                   child: ElevatedButton(
                     onPressed: (selectedLocation != null &&
                             placeName != null &&
-                            placeName != "جارٍ تحديد الموقع..." &&
-                            placeName != "Locating...")
+                            placeName != l10n.locating)
                         ? () {
                             debugPrint("Button pressed!");
                             debugPrint(
@@ -273,7 +291,7 @@ class _CustomLocationState extends State<CustomLocation>
                             });
                           }
                         : null,
-                    child: Text(isArabic ? "تأكيد" : "Confirmation"),
+                    child: Text(l10n.confirmLocation),
                   ),
                 ),
               ],

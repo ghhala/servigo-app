@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:servi_go_app/features/filter/domain/entities/sub_service_entity.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class SubServiceSelector extends StatelessWidget {
   final List<SubServiceEntity> subServices;
@@ -25,9 +26,9 @@ class SubServiceSelector extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
-              'Sub Service',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+            Text(
+              AppLocalizations.of(context)!.subServiceLabel,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             ),
             const SizedBox(width: 6),
             Container(
@@ -37,7 +38,7 @@ class SubServiceSelector extends StatelessWidget {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                'Required',
+                AppLocalizations.of(context)!.requiredLabel,
                 style: TextStyle(fontSize: 10, color: Colors.red.shade700),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/features/home/data/models/home_response_model.dart';
 
@@ -17,21 +18,21 @@ class SubCategoryDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 👈 هنا يتم التحقق ديناميكياً إذا كانت لغة التطبيق الحالية هي العربية
+    final l10n = AppLocalizations.of(context)!;
     final bool isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isArabic ? "اختر الفئة الفرعية :" : "Choose sub category :",
+          isArabic ? l10n.chooseSubCategoryLabel : l10n.chooseSubCategoryLabel,
           style: TextStyles.onCard(context, TextStyles.font14PrimaryColorW700),
         ),
         SizedBox(height: 8.h),
         DropdownButtonFormField<int>(
           value: selectedId,
           hint: Text(
-            isArabic ? "اختر الفئة" : "Choose sub category",
+            l10n.chooseSubCategoryHint,
             style: TextStyle(color: Colors.grey, fontSize: 14.sp),
           ),
           isExpanded: true,

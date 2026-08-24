@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -44,6 +45,8 @@ class UserProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: AppBackground(
         padding: EdgeInsets.only(
@@ -147,7 +150,7 @@ class UserProfileView extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10.h),
                                 Text(
-                                  user.name ?? "No Name ",
+                                  user.name ?? l10n.noName,
                                   style: TextStyles.font18BlackW500.copyWith(
                                     fontSize: 18.sp,
                                   ),
@@ -159,7 +162,7 @@ class UserProfileView extends StatelessWidget {
                                     Icon(Icons.phone, size: 19.sp),
                                     const Gap(5),
                                     Text(
-                                      user.phone ?? "No Phone Number",
+                                      user.phone ?? l10n.noPhoneNumber,
                                       style: TextStyles.font18BlackW500
                                           .copyWith(fontSize: 15.sp),
                                     ),
@@ -172,7 +175,7 @@ class UserProfileView extends StatelessWidget {
                                     Icon(Icons.email, size: 19.sp),
                                     const Gap(5),
                                     Text(
-                                      user.email ?? "No Email",
+                                      user.email ?? l10n.noEmail,
                                       style: TextStyles.font18BlackW500
                                           .copyWith(fontSize: 15.sp),
                                     ),
@@ -189,7 +192,7 @@ class UserProfileView extends StatelessWidget {
                   CustomButton(
                     width: 150.w,
                     height: 40.h,
-                    title: "edit profile",
+                    title: l10n.editProfile,
                     textstyle: TextStyles.font11WhiteW500.copyWith(
                       fontSize: 16.sp,
                     ),
@@ -214,7 +217,7 @@ class UserProfileView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "خطأ: ${state.errorMessage}",
+                      "${l10n.errorLabel}: ${state.errorMessage}",
                       style: const TextStyle(color: Colors.red),
                       textAlign: TextAlign.center,
                     ),
@@ -225,13 +228,13 @@ class UserProfileView extends StatelessWidget {
                           context,
                         ).fetchUserProfile();
                       },
-                      child: const Text("try again"),
+                      child: Text(l10n.tryAgain),
                     ),
                   ],
                 ),
               );
             }
-            return const Center(child: Text("جاري تحضير البيانات..."));
+            return Center(child: Text(l10n.loadingData));
           },
         ),
       ),

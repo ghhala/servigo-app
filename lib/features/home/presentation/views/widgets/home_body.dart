@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/assets.dart';
@@ -55,6 +56,8 @@ class _HomeBodyState extends State<HomeBody> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return AppBackground(
       withScaffold: false,
       padding: EdgeInsets.only(left: 9.w, top: 50.h),
@@ -74,7 +77,7 @@ class _HomeBodyState extends State<HomeBody> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Error: ${state.errorMessage}",
+                    l10n.errorMessage(state.errorMessage),
                     style: const TextStyle(color: Colors.red),
                   ),
                   const Gap(10),
@@ -82,7 +85,7 @@ class _HomeBodyState extends State<HomeBody> {
                     onPressed: () {
                       context.read<HomeCubit>().fetchHomeData();
                     },
-                    child: const Text("Retry"),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -94,7 +97,7 @@ class _HomeBodyState extends State<HomeBody> {
             final favorites = state.homeData.data?.favorites ?? [];
             final ads = state.homeData.data?.ads ?? [];
 
-            final String userName = PrefHelper.getString('user_name') ?? 'User';
+            final String userName = PrefHelper.getString('user_name') ?? l10n.user;
 
             String? finalPhotoPath;
             final String localCachedImage = PrefHelper.getUserImage();
@@ -177,11 +180,11 @@ class _HomeBodyState extends State<HomeBody> {
                   ),
                   const Gap(16),
                   Text(
-                    "Welcome $userName",
+                    l10n.welcomeUser(userName),
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   Text(
-                    "How Can We Help You Today ?",
+                    l10n.homeHelpPrompt,
                     style: TextStyles.font16PrimaryColorW600.copyWith(
                       fontSize: 14.sp,
                     ),
@@ -209,7 +212,7 @@ class _HomeBodyState extends State<HomeBody> {
                         const Gap(5),
                         Expanded(
                           child: Text(
-                            "High Quality and Competitive\nPrices For Your Home Services\nHigh Quality and Competitive\nPrices For Your Home Services",
+                            l10n.homeBannerText,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 4,
                             style: TextStyles.onCard(
@@ -224,7 +227,7 @@ class _HomeBodyState extends State<HomeBody> {
 
                   const Gap(20),
                   Text(
-                    "Choose the service type to begin \n your search :",
+                    l10n.chooseServiceTypePrompt,
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(12),
@@ -244,7 +247,7 @@ class _HomeBodyState extends State<HomeBody> {
                       ],
                     ),
                     child: mainServices.isEmpty
-                        ? const Center(child: Text("No services available"))
+                        ? Center(child: Text(l10n.noServicesAvailable))
                         : ListView.builder(
                             shrinkWrap: true,
                             physics: const ClampingScrollPhysics(),
@@ -254,18 +257,24 @@ class _HomeBodyState extends State<HomeBody> {
                               final service = mainServices[index];
                               final serviceImage = _getFullImageUrl(service.photo);
 
+                              final serviceName = Localizations.localeOf(context).languageCode == 'ar'
+                                  ? (service.nameAr ?? service.nameEn ?? l10n.service)
+                                  : (service.nameEn ?? service.nameAr ?? l10n.service);
+
                               return GestureDetector(
                                 onTap: () {
                                   context.push(
                                     AppRouter.kFilterView,
                                     extra: {
                                       'mainServiceId': service.id ?? 0,
-                                      'mainServiceName': service.nameEn ?? 'Service',
+                                      'mainServiceName': serviceName,
                                     },
                                   );
                                 },
                                 child: ServiceCategoryCard(
-                                  name: service.nameEn ?? 'Service',
+                                  name: service.nameEn ?? service.nameAr ?? l10n.service,
+                                  nameAr: service.nameAr,
+                                  nameEn: service.nameEn,
                                   image: serviceImage,
                                 ),
                               );
@@ -275,16 +284,16 @@ class _HomeBodyState extends State<HomeBody> {
 
                   const Gap(20),
                   Text(
-                    "Favorite Providers :",
+                    l10n.favoriteProviders,
                     style: TextStyles.font16PrimaryColorW600,
                   ),
                   const Gap(20),
 
                   // ---------------- FAVORITES ----------------
                   favorites.isEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text("No favorite providers yet"),
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Text(l10n.noFavoriteProviders),
                         )
                       : Wrap(
                           spacing: 8.w,
@@ -298,7 +307,6 @@ class _HomeBodyState extends State<HomeBody> {
                               child: GestureDetector(
                                 onTap: () async {
                                   if (provider.providerUserId != null) {
-                                 
                                     await context.push(
                                       AppRouter.kProfileLabourer,
                                       extra: provider.providerUserId,
@@ -309,10 +317,12 @@ class _HomeBodyState extends State<HomeBody> {
                                   }
                                 },
                                 child: FavoriteProviderCard(
-                                  providerName: provider.name ?? "Unknown",
+                                  providerName: provider.name ?? l10n.unknownProvider,
                                   imageUrl: providerImage,
-                                  mainService: provider.mainService?.nameEn ?? "Service",
-                                  subService: provider.subService?.nameEn ?? "Service",
+                                  mainService:
+                                      provider.mainService?.nameEn ?? l10n.service,
+                                  subService:
+                                      provider.subService?.nameEn ?? l10n.service,
                                 ),
                               ),
                             );
@@ -321,115 +331,8 @@ class _HomeBodyState extends State<HomeBody> {
 
                   const Gap(20),
 
-                  // // ---------------- ADS ----------------
-                  // ads.isEmpty
-                  //     ? const SizedBox.shrink()
-                  //     : Column(
-                  //         children: List.generate(ads.length, (index) {
-                  //           final ad = ads[index];
-                  //           final adImage = _getFullImageUrl(ad.adImage);
-
-                  //           return Container(
-                  //             width: 353.w,
-                  //             height: 200.h,
-                  //             margin: EdgeInsets.only(bottom: 15.h),
-                  //             decoration: BoxDecoration(
-                  //               color: Theme.of(context).cardColor,
-                  //               borderRadius: BorderRadius.circular(13.r),
-                  //               boxShadow: [
-                  //                 BoxShadow(
-                  //                   color: Colors.black.withOpacity(0.1),
-                  //                   blurRadius: 10,
-                  //                   offset: const Offset(0, 5),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //             child: Row(
-                  //               children: [
-                  //                 Expanded(
-                  //                   child: Padding(
-                  //                     padding: EdgeInsets.symmetric(
-                  //                       horizontal: 15.w,
-                  //                       vertical: 20.h,
-                  //                     ),
-                  //                     child: Column(
-                  //                       crossAxisAlignment: CrossAxisAlignment.start,
-                  //                       children: [
-                  //                         Text(
-                  //                           ad.providerName ?? "Advertisement",
-                  //                           maxLines: 1,
-                  //                           overflow: TextOverflow.ellipsis,
-                  //                           style: TextStyles.onCard(
-                  //                             context,
-                  //                             TextStyles.font25Blackw700.copyWith(fontSize: 14.sp),
-                  //                           ),
-                  //                         ),
-                  //                         const Gap(14),
-                  //                         Expanded(
-                  //                           child: Text(
-                  //                             ad.description ?? "Description here...",
-                  //                             maxLines: 4,
-                  //                             overflow: TextOverflow.ellipsis,
-                  //                             style: TextStyles.onCard(
-                  //                               context,
-                  //                               TextStyles.font12PrimaryColorW600,
-                  //                             ),
-                  //                           ),
-                  //                         ),
-                  //                         const Gap(10),
-                  //                         CustomButton(
-                  //                           height: 30.h,
-                  //                           width: 110.w,
-                  //                           title: "Go To Profile",
-                  //                           textstyle: TextStyles.font11WhiteW500,
-                  //                           onTap: () async {
-                  //                             if (ad.providerUserId != null) {
-                  //                               await context.push(
-                  //                                 AppRouter.kProfileLabourer,
-                  //                                 extra: ad.providerUserId,
-                  //                               );
-                  //                               if (context.mounted) {
-                  //                                 context.read<HomeCubit>().fetchHomeData();
-                  //                               }
-                  //                             }
-                  //                           },
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //                 Padding(
-                  //                   padding: EdgeInsets.only(right: 10.w),
-                  //                   child: ClipRRect(
-                  //                     borderRadius: BorderRadius.circular(12.r),
-                  //                     child: adImage.isNotEmpty
-                  //                         ? Image.network(
-                  //                             adImage,
-                  //                             width: 120.w,
-                  //                             height: 140.h,
-                  //                             fit: BoxFit.cover,
-                  //                             errorBuilder: (context, error, stackTrace) {
-                  //                               return Image.asset(
-                  //                                 "assets/images/test2.png",
-                  //                                 width: 120.w,
-                  //                                 height: 140.h,
-                  //                                 fit: BoxFit.cover,
-                  //                               );
-                  //                             },
-                  //                           )
-                  //                         : Image.asset(
-                  //                             "assets/images/test2.png",
-                  //                             width: 120.w,
-                  //                             height: 140.h,
-                  //                             fit: BoxFit.cover,
-                  //                           ),
-                  //                   ),
-                  //                 ),
-                  //               ],
-                  //             ),
-                  //           );
-                  //         }),
-                  //       ),
+                
+              
                   // ---------------- ADS ----------------
 ads.isEmpty
     ? const SizedBox.shrink()

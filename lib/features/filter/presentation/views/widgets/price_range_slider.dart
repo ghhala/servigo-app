@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class PriceRangeSlider extends StatelessWidget {
   final RangeValues values;
@@ -17,20 +18,20 @@ class PriceRangeSlider extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'price (SYP)',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          AppLocalizations.of(context)!.priceLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${values.start.toInt()} SYP',
+              '${values.start.toInt()} ${AppLocalizations.of(context)!.syp}',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             Text(
-              '${values.end.toInt()} SYP',
+              '${values.end.toInt()} ${AppLocalizations.of(context)!.syp}',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
           ],

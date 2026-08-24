@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
-// ✅ عنصر شهادة موجود بالفعل على السيرفر
+
 class ExistingCertificateItem {
   final int id;
   final String fileUrl;
@@ -115,13 +116,14 @@ class _CertificatesSectionState extends State<CertificatesSection> {
   }
 
   Widget _buildHeader() {
+    final l10n = AppLocalizations.of(context)!;
     return Row(children: [
       Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(gradient: const LinearGradient(colors: [_primary, _secondary]), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.photo_library_rounded, color: Colors.white, size: 18)),
       const SizedBox(width: 10),
       Expanded(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('My Certificates', style: TextStyle(color: _textDark, fontWeight: FontWeight.bold, fontSize: 16)),
-          Text(_isEmpty ? 'Add certificates to showcase your skills and qualifications.' : '$_totalCount certificate(s) added', style: const TextStyle(color: _textMid, fontSize: 12)),
+          Text(l10n.myCertificates, style: const TextStyle(color: _textDark, fontWeight: FontWeight.bold, fontSize: 16)),
+          Text(_isEmpty ? l10n.addCertificatesHint : l10n.certificateCountText(_totalCount), style: const TextStyle(color: _textMid, fontSize: 12)),
         ]),
       ),
       GestureDetector(
@@ -129,13 +131,14 @@ class _CertificatesSectionState extends State<CertificatesSection> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(gradient: const LinearGradient(colors: [_primary, _secondary]), borderRadius: BorderRadius.circular(20), boxShadow: [BoxShadow(color: _primary.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))]),
-          child: const Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.add_rounded, color: Colors.white, size: 16), SizedBox(width: 4), Text('Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13))]),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.add_rounded, color: Colors.white, size: 16), const SizedBox(width: 4), Text(l10n.add, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13))]),
         ),
       ),
     ]);
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: _pickImages,
       child: Container(
@@ -144,9 +147,9 @@ class _CertificatesSectionState extends State<CertificatesSection> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: _primary.withOpacity(0.08), shape: BoxShape.circle), child: Icon(Icons.cloud_upload_outlined, color: _primary.withOpacity(0.6), size: 30)),
           const SizedBox(height: 10),
-          const Text('No certificates added yet.', style: TextStyle(color: _textMid, fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(l10n.noCertificatesAddedYet, style: const TextStyle(color: _textMid, fontSize: 13, fontWeight: FontWeight.w500)),
           const SizedBox(height: 2),
-          Text('Tap + to add your certificates', style: TextStyle(color: _textMid.withOpacity(0.6), fontSize: 12)),
+          Text(l10n.tapToAddCertificates, style: TextStyle(color: _textMid.withOpacity(0.6), fontSize: 12)),
         ]),
       ),
     );

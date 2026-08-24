@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class CustomTimePicker extends StatefulWidget {
   final Function(int startHour, String startPeriod, int endHour, String endPeriod) onTimeChanged;
@@ -47,10 +48,11 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── العنوان يتحدث تلقائياً ──
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: RichText(
@@ -61,7 +63,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 color: Colors.black,
               ),
               children: [
-                const TextSpan(text: 'Set working hours : '),
+                TextSpan(text: '${l10n.setWorkingHoursLabel} '),
                 TextSpan(
                   text: '${_formatTime(_startHour, _startPeriod)}  -  ${_formatTime(_endHour, _endPeriod)}',
                   style: TextStyle(color: _primaryDarkColor),
@@ -76,11 +78,10 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // ── وقت البداية ──
             Column(
               children: [
                 Text(
-                  'From',
+                  l10n.fromLabel,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: _primaryDarkColor.withOpacity(0.6),
@@ -128,7 +129,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
             Column(
               children: [
                 Text(
-                  'To',
+                  l10n.toLabel,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: _primaryDarkColor.withOpacity(0.6),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
 import 'package:servi_go_app/features/messaging/chat_room/presentation/views/widgets/chat_bubble.dart';
@@ -37,6 +38,7 @@ class AdminChatView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageUrl = _buildImageUrl(adminPhoto);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -82,15 +84,15 @@ class AdminChatView extends StatelessWidget {
                     if (state.status == AdminChatStatus.error) {
                       return Center(
                         child: Text(
-                          state.errorMessage ?? 'Error loading messages',
+                          state.errorMessage ?? l10n.errorLoadingMessages,
                           style: const TextStyle(color: Colors.red),
                         ),
                       );
                     }
 
                     if (state.messages.isEmpty) {
-                      return const Center(
-                        child: Text('No messages yet. Say hello! 👋'),
+                      return Center(
+                        child: Text(l10n.noMessagesYetSayHello),
                       );
                     }
 

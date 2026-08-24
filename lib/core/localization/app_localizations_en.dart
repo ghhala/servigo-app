@@ -72,6 +72,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get send => 'Send';
 
   @override
+  String get errorLoadingMessages => 'Error loading messages';
+
+  @override
+  String get noMessagesYetSayHello => 'No messages yet. Say hello! 👋';
+
+  @override
+  String get typeMessageHint => 'Type a message...';
+
+  @override
+  String get photoLabel => 'Photo';
+
+  @override
+  String get videoLabel => 'Video';
+
+  @override
+  String get customerTab => 'Customer';
+
+  @override
+  String get adminTab => 'Admin';
+
+  @override
+  String get errorLoadingChats => 'Error loading chats';
+
+  @override
+  String get errorLoadingAdmins => 'Error loading admins';
+
+  @override
+  String get noConversationsYet => 'No conversations yet';
+
+  @override
+  String get noAdminsAvailable => 'No admins available';
+
+  @override
+  String get tapToContinueConversation => 'Tap to continue conversation';
+
+  @override
+  String get tapToStartConversation => 'Tap to start conversation';
+
+  @override
   String get welcomeBack => 'Welcome back! ';
 
   @override
@@ -179,7 +218,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseService => 'Choose The Service';
 
   @override
-  String get workType => 'work_type';
+  String get workType => 'Work Type';
 
   @override
   String get createLabourerAccount => 'Create a labourer account ';
@@ -256,4 +295,512 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pleaseSelectLocationFromMap =>
       'Please select your location from the map';
+
+  @override
+  String get selectServiceType => 'Select Service Type';
+
+  @override
+  String get notice => 'Notice';
+
+  @override
+  String get mustAcceptTerms =>
+      'You must agree to the Terms and Conditions to create your account.';
+
+  @override
+  String get pleaseConfirmLocationFirst =>
+      'Please open the map and confirm your location first';
+
+  @override
+  String welcomeUser(Object userName) {
+    return 'Welcome $userName';
+  }
+
+  @override
+  String get userName => 'User Name';
+
+  @override
+  String get accountInfo => 'Account Info';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get updateInfo => 'Update Info';
+
+  @override
+  String get noName => 'No Name';
+
+  @override
+  String get noPhoneNumber => 'No Phone Number';
+
+  @override
+  String get noEmail => 'No Email';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get loadingData => 'Preparing your data...';
+
+  @override
+  String get errorLabel => 'Error';
+
+  @override
+  String get dataUpdatedSuccessfully => 'Data updated successfully';
+
+  @override
+  String get uploadPhotoSuccessfully => 'Photo uploaded successfully';
+
+  @override
+  String failedToUploadPhoto(Object errorMessage) {
+    return 'Failed to upload photo: $errorMessage';
+  }
+
+  @override
+  String get pleaseFillRequiredFields => 'Please fill in all required fields';
+
+  @override
+  String get homeHelpPrompt => 'How Can We Help You Today ?';
+
+  @override
+  String get homeBannerText =>
+      'High Quality and Competitive\nPrices For Your Home Services';
+
+  @override
+  String get chooseServiceTypePrompt =>
+      'Choose the service type to begin \n your search :';
+
+  @override
+  String get noServicesAvailable => 'No services available';
+
+  @override
+  String get favoriteProviders => 'Favorite Providers :';
+
+  @override
+  String get noFavoriteProviders => 'No favorite providers yet';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String errorMessage(Object errorMessage) {
+    return 'Error: $errorMessage';
+  }
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get service => 'Service';
+
+  @override
+  String get unknownProvider => 'Unknown';
+
+  @override
+  String get completeYourProfile => 'Complete your profile';
+
+  @override
+  String get completeYourProfileDetails =>
+      'Complete your profile details to\nbe able to post about your\nservice, it is complete:';
+
+  @override
+  String get completeProfile => 'Complete profile';
+
+  @override
+  String get locationDescription => 'Location description';
+
+  @override
+  String get aboutMe => 'About me';
+
+  @override
+  String get enterLocationDescription =>
+      'Enter a description of your location to help customers find you';
+
+  @override
+  String get describeYourself => 'Describe yourself in a few words';
+
+  @override
+  String get failedToLoadSubServices => 'Failed to load sub services';
+
+  @override
+  String get setPriceForServices => 'Set the price for the services :';
+
+  @override
+  String get specifyHolidayDays => 'Specify the holiday days :';
+
+  @override
+  String get fillProviderRequiredFields =>
+      'Please fill in location, about me, select a sub category, and upload your profile photo';
+
+  @override
+  String get updateProfileSuccessfully => 'Profile updated successfully';
+
+  @override
+  String updateProfileFailed(Object error) {
+    return 'Failed to update profile: $error';
+  }
+
+  @override
+  String get sessionExpired => 'Session expired. Please log in again.';
+
+  @override
+  String get workingHours => 'Working Hours';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get min => 'Min';
+
+  @override
+  String get max => 'Max';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get fixed => 'Fixed';
+
+  @override
+  String get mobile => 'Mobile';
+
+  @override
+  String get both => 'Both';
+
+  @override
+  String get serviceTypeFixed => 'Fixed';
+
+  @override
+  String get serviceTypeMobile => 'Mobile';
+
+  @override
+  String get serviceTypeBoth => 'Both';
+
+  @override
+  String get changeProfilePicture => 'Change Profile Picture';
+
+  @override
+  String get openGalleryToSelectPhoto => 'Open gallery to select a new photo';
+
+  @override
+  String get capturePhoto => 'Capture Photo';
+
+  @override
+  String get openCameraToCapturePhoto => 'Open camera to capture a new photo';
+
+  @override
+  String get chooseSubCategoryLabel => 'Choose sub category :';
+
+  @override
+  String get chooseSubCategoryHint => 'Choose sub category';
+
+  @override
+  String get setWorkingHoursLabel => 'Set working hours :';
+
+  @override
+  String get fromLabel => 'From';
+
+  @override
+  String get toLabel => 'To';
+
+  @override
+  String get myCertificates => 'My Certificates';
+
+  @override
+  String get addCertificatesHint =>
+      'Add certificates to showcase your skills and qualifications.';
+
+  @override
+  String certificateCountText(Object count) {
+    return '$count certificate(s) added';
+  }
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get noCertificatesAddedYet => 'No certificates added yet.';
+
+  @override
+  String get tapToAddCertificates => 'Tap + to add your certificates';
+
+  @override
+  String get addToPortfolio => 'Add to Portfolio';
+
+  @override
+  String get addPhotos => 'Add Photos';
+
+  @override
+  String get chooseOneOrMoreImages => 'Choose one or more images';
+
+  @override
+  String get addVideo => 'Add Video';
+
+  @override
+  String get chooseVideoFromGallery => 'Choose a video from gallery';
+
+  @override
+  String get myPortfolio => 'My Portfolio';
+
+  @override
+  String get addPortfolioHint => 'Add photos & videos of your work';
+
+  @override
+  String portfolioCountText(Object count) {
+    return '$count item(s) added';
+  }
+
+  @override
+  String get video => 'VIDEO';
+
+  @override
+  String get project => 'Project';
+
+  @override
+  String get failedToLoadVideo => 'Failed to load video';
+
+  @override
+  String get noDescription => 'No description';
+
+  @override
+  String get addDescriptionHint => 'Add description...';
+
+  @override
+  String get noPortfolioItemsYet => 'No portfolio items yet.';
+
+  @override
+  String get tapToAddPortfolio => 'Tap + to add photos or videos';
+
+  @override
+  String get addDescription => 'Add Description';
+
+  @override
+  String get describeThisWork => 'Describe this work...';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get avgRating => 'Avg rating';
+
+  @override
+  String get bothFixedMobile => 'Both(Fixed & Mobile)';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get unavailable => 'Unavailable';
+
+  @override
+  String overnightYesNo(Object value) {
+    return 'Overnight: $value';
+  }
+
+  @override
+  String get workingHoursAndDays => 'Working Hours and Days';
+
+  @override
+  String get allDays => 'All Days';
+
+  @override
+  String get aboutHim => 'About him';
+
+  @override
+  String get aboutMeEmptyOwner => 'You haven\'t written a bio yet.';
+
+  @override
+  String get aboutMeEmptyProvider => 'No info written by provider.';
+
+  @override
+  String get noReviewsYet => 'No reviews yet';
+
+  @override
+  String get customerReviewsAndRatings => 'Customer Reviews and Ratings';
+
+  @override
+  String get addReview => '+ Add Review';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get sendComplaint => 'Send complaint';
+
+  @override
+  String get writeComplaint => 'Write the complaint...';
+
+  @override
+  String get complaintSentSuccessfully => 'Complaint sent successfully';
+
+  @override
+  String get failedToSendComplaint => 'Failed to send complaint';
+
+  @override
+  String get reportReview => 'Report review';
+
+  @override
+  String get reportReviewReason => 'Why are you reporting this review?';
+
+  @override
+  String get reviewReportedSuccessfully => 'Review reported successfully';
+
+  @override
+  String get failedToReportReview => 'Failed to report review';
+
+  @override
+  String get deleteReview => 'Delete review';
+
+  @override
+  String get deleteReviewConfirm =>
+      'Are you sure you want to delete your review? This action cannot be undone.';
+
+  @override
+  String get failedToDeleteReview => 'Failed to delete review';
+
+  @override
+  String get addReviewDialog => 'Add Review';
+
+  @override
+  String get writeYourReview => 'Write your review...';
+
+  @override
+  String get reviewAddedSuccessfully => 'Review added successfully';
+
+  @override
+  String failedToSubmitReview(Object error) {
+    return 'Failed to submit review: $error';
+  }
+
+  @override
+  String get editReview => 'Edit Review';
+
+  @override
+  String get reviewUpdatedSuccessfully => 'Review updated successfully';
+
+  @override
+  String failedToUpdateReview(Object error) {
+    return 'Failed to update review: $error';
+  }
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get selectedDays => 'Selected Days: ';
+
+  @override
+  String get noPhone => 'No Phone';
+
+  @override
+  String get favoriteToggleFailed => 'Failed to update favorites';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get selectLocation => 'Select Location';
+
+  @override
+  String get locating => 'Locating...';
+
+  @override
+  String get confirmLocation => 'Confirm';
+
+  @override
+  String get searchPlace => 'Search place';
+
+  @override
+  String get filterTitle => 'Filter';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get applyFilter => 'Apply Filter';
+
+  @override
+  String get noProvidersFound => 'No providers found matching these criteria';
+
+  @override
+  String get sortBy => 'Sort By:';
+
+  @override
+  String get sortPriceAsc => 'Price ↑';
+
+  @override
+  String get sortRatingDesc => 'Rating ↓';
+
+  @override
+  String get sortLocation => 'Location';
+
+  @override
+  String get couldNotGetLocation =>
+      'Could not get your location. Please enable GPS.';
+
+  @override
+  String get results => 'Results';
+
+  @override
+  String get topProviders => 'Top 5 providers';
+
+  @override
+  String get anErrorOccurred => 'An error occurred';
+
+  @override
+  String get subServiceLabel => 'Sub Service';
+
+  @override
+  String get requiredLabel => 'Required';
+
+  @override
+  String get pleaseSelectSubServiceFirst => 'Please select a sub service first';
+
+  @override
+  String get ratingLabel => 'Rating';
+
+  @override
+  String get anyRating => 'Any Rating';
+
+  @override
+  String get rating2AndUp => '2 stars & up';
+
+  @override
+  String get rating3AndUp => '3 stars & up';
+
+  @override
+  String get rating4AndUp => '4 stars & up';
+
+  @override
+  String get rating5Only => '5 stars only';
+
+  @override
+  String get availabilityLabel => 'Availability';
+
+  @override
+  String get availableNow => 'Available Now';
+
+  @override
+  String get any => 'Any';
+
+  @override
+  String get priceLabel => 'price (SYP)';
+
+  @override
+  String get syp => 'SYP';
 }

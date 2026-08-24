@@ -8,6 +8,7 @@ import 'package:servi_go_app/features/filter/presentation/views/widgets/price_ra
 import 'package:servi_go_app/features/filter/presentation/views/widgets/rating_selector.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/sub_service_selector.dart';
 import 'package:servi_go_app/features/filter/presentation/views/widgets/work_type_selector.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import '../../domain/entities/sub_service_entity.dart';
 
 class FilterBottomSheet extends StatefulWidget {
@@ -95,13 +96,13 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Filter',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                Text(
+                  AppLocalizations.of(context)!.filterTitle,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
                 TextButton(
                   onPressed: _resetAll,
-                  child: const Text('Reset', style: TextStyle(color: primary)),
+                  child: Text(AppLocalizations.of(context)!.reset, style: const TextStyle(color: primary)),
                 ),
               ],
             ),
@@ -134,7 +135,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           state.status == FilterStatus.error) {
                         return Center(
                           child: Text(
-                            state.errorMessage ?? 'Failed to load sub-services',
+                            state.errorMessage ?? AppLocalizations.of(context)!.anErrorOccurred,
                             style: const TextStyle(color: Colors.red),
                           ),
                         );
@@ -192,9 +193,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text(
-                            'Reset',
-                            style: TextStyle(color: primary),
+                          child: Text(
+                            AppLocalizations.of(context)!.reset,
+                            style: const TextStyle(color: primary),
                           ),
                         ),
                       ),
@@ -210,9 +211,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text(
-                            'Apply Filter',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.applyFilter,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w500,
                             ),
@@ -244,8 +245,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   void _applyFilter() {
     if (selectedSubServiceId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('يرجى اختيار نوع الخدمة الفرعية أولاً'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectSubServiceFirst),
           backgroundColor: Colors.red,
         ),
       );

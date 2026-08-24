@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class WorkTypeSelector extends StatelessWidget {
   final String? selectedValue;
@@ -12,24 +13,26 @@ class WorkTypeSelector extends StatelessWidget {
 
   static const primary = Color(0xFF6C5CE7);
 
-  final List<Map<String, String>> _options = const [
-    {'label': 'Fixed', 'value': 'fixed'},
-    {'label': 'Mobile', 'value': 'mobile'},
-    {'label': 'Both', 'value': 'both'},
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final options = [
+      {'label': l.serviceTypeFixed, 'value': 'fixed'},
+      {'label': l.serviceTypeMobile, 'value': 'mobile'},
+      {'label': l.serviceTypeBoth, 'value': 'both'},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Work Type',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l.workType,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Row(
-          children: _options.map((o) {
+          children: options.map((o) {
             final value = o['value']!;
             final isSelected = selectedValue == value;
             return GestureDetector(

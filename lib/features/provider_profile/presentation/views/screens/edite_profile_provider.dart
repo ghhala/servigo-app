@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/app_colors.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 import 'package:servi_go_app/core/widgets/app_background.dart';
@@ -173,9 +174,10 @@ Future<void> _updateProfile() async {
     await cubit.fetchProviderProfile();
 
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("update profile successfully"),
+      SnackBar(
+        content: Text(l10n.updateProfileSuccessfully),
         backgroundColor: Colors.green,
       ),
     );
@@ -184,9 +186,10 @@ Future<void> _updateProfile() async {
     if (mounted) Navigator.pop(context, true);
   } catch (e) {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text("فشل تحديث البروفايل: $e"),
+        content: Text(l10n.updateProfileFailed(e.toString())),
         backgroundColor: Colors.red,
       ),
     );
@@ -196,6 +199,8 @@ Future<void> _updateProfile() async {
 }
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: AppBackground(
@@ -226,7 +231,7 @@ Future<void> _updateProfile() async {
                         onPressed: () => context
                             .read<ProviderProfileCubit>()
                             .fetchProviderProfile(),
-                        child: const Text("Retry"),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -261,18 +266,18 @@ Future<void> _updateProfile() async {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionTitle('Account Info'),
+                  _sectionTitle(l10n.accountInfo),
                   Gap(10.h),
 
                   CustomTextFormFiled(
-                    hintText: 'Full Name',
+                    hintText: l10n.fullName,
                     prefixIcon: const Icon(Icons.person_outline),
                     controller: nameController,
                   ),
                   Gap(10.h),
 
                   CustomTextFormFiled(
-                    hintText: 'Email',
+                    hintText: l10n.email,
                     prefixIcon: const Icon(Icons.email_outlined),
                     controller: emailController,
                     readOnly: true,
@@ -281,7 +286,7 @@ Future<void> _updateProfile() async {
                   Gap(10.h),
 
                   CustomTextFormFiled(
-                    hintText: 'Phone Number',
+                    hintText: l10n.phoneNumber,
                     prefixIcon: const Icon(Icons.phone_outlined),
                     controller: phoneController,
                     textInputType: TextInputType.phone,
@@ -291,14 +296,14 @@ Future<void> _updateProfile() async {
                   const Divider(),
                   Gap(16.h),
 
-                  _sectionTitle('Location'),
+                  _sectionTitle(l10n.location),
                   Gap(10.h),
 
                   GestureDetector(
                     onTap: _openMap,
                     child: AbsorbPointer(
                       child: CustomTextFormFiled(
-                        hintText: 'Location',
+                        hintText: l10n.location,
                         prefixIcon: const Icon(Icons.location_on_outlined),
                         controller: locationController,
                         readOnly: true,
@@ -308,7 +313,7 @@ Future<void> _updateProfile() async {
                   Gap(10.h),
 
                   CustomTextFormFiled(
-                    hintText: 'Location Details',
+                    hintText: l10n.locationDetails,
                     prefixIcon: const Icon(Icons.edit_location_alt_outlined),
                     controller: locationDetailsController,
                   ),
@@ -317,11 +322,11 @@ Future<void> _updateProfile() async {
                   const Divider(),
                   Gap(16.h),
 
-                  _sectionTitle('About Me'),
+                  _sectionTitle(l10n.aboutMe),
                   Gap(10.h),
 
                   CustomTextFormFiled(
-                    hintText: 'Describe yourself in a few words',
+                    hintText: l10n.describeYourself,
                     controller: aboutMeController,
                     height: 70.h,
                   ),
@@ -329,7 +334,7 @@ Future<void> _updateProfile() async {
                   const Divider(),
                   Gap(10.h),
 
-                  _sectionTitle('Work Type'),
+                  _sectionTitle(l10n.workType),
                   Gap(10.h),
                   _buildWorkTypeSelector(),
 
@@ -337,7 +342,7 @@ Future<void> _updateProfile() async {
                   const Divider(),
                   Gap(16.h),
 
-                  _sectionTitle('Working Hours'),
+                  _sectionTitle(l10n.workingHours),
                   Gap(10.h),
 
                   Row(
@@ -376,14 +381,14 @@ Future<void> _updateProfile() async {
                   const Divider(),
                   Gap(16.h),
 
-                  _sectionTitle('Price'),
+                  _sectionTitle(l10n.price),
                   Gap(10.h),
 
                   Row(
                     children: [
                       Expanded(
                         child: CustomTextFormFiled(
-                          hintText: 'Min',
+                          hintText: l10n.min,
                           controller: minPriceController,
                           textInputType: TextInputType.number,
                           width: double.infinity,
@@ -394,7 +399,7 @@ Future<void> _updateProfile() async {
                       Gap(10.w),
                       Expanded(
                         child: CustomTextFormFiled(
-                          hintText: 'Max',
+                          hintText: l10n.max,
                           controller: maxPriceController,
                           textInputType: TextInputType.number,
                           width: double.infinity,
@@ -442,7 +447,7 @@ Future<void> _updateProfile() async {
                     width: double.infinity,
                     height: 48.h,
                     onTap: _isSaving ? null : () => _updateProfile(),
-                    title: _isSaving ? 'Saving...' : 'Update Info',
+                    title: _isSaving ? l10n.saving : l10n.updateInfo,
                     textstyle: TextStyles.font15WhiteColorW500,
                   ),
 
@@ -461,8 +466,13 @@ Future<void> _updateProfile() async {
   }
 
   Widget _buildWorkTypeSelector() {
+    final l10n = AppLocalizations.of(context)!;
     final options = ['fixed', 'mobile', 'both'];
-    final labels = {'fixed': 'Fixed', 'mobile': 'Mobile', 'both': 'Both'};
+    final labels = {
+      'fixed': l10n.fixed,
+      'mobile': l10n.mobile,
+      'both': l10n.both,
+    };
 
     return Row(
       children: options.map((option) {

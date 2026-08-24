@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class AvailabilitySelector extends StatelessWidget {
   final String? selectedValue;
@@ -12,22 +13,23 @@ class AvailabilitySelector extends StatelessWidget {
 
   static const primary = Color(0xFF6C5CE7);
 
-  final List<Map<String, String>> _options = const [
-    {'label': 'Available Now', 'value': 'available_now'},
-    {'label': 'Any', 'value': 'any'},
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final options = [
+      {'label': l.availableNow, 'value': 'available_now'},
+      {'label': l.any, 'value': 'any'},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Availability',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        Text(
+          l.availabilityLabel,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        ..._options.map((o) {
+        ...options.map((o) {
           final value = o['value']!;
           final isSelected = selectedValue == value;
           return GestureDetector(

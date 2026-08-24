@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
 
 class FavoriteProviderCard extends StatelessWidget {
@@ -23,6 +24,9 @@ class FavoriteProviderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final displayName = providerName.trim().isEmpty ? l10n.unknownProvider : providerName;
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
@@ -75,7 +79,7 @@ class FavoriteProviderCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  providerName,
+                  displayName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyles.onCard(

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/pref_halper.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_cubit.dart';
 import 'package:servi_go_app/features/user_profile/presentation/view_models/edit_profile/edit_profile_state.dart';
@@ -79,6 +80,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String cachedImageUrl = PrefHelper.getUserImage();
     String formattedUrl = _formatImageUrl(cachedImageUrl);
 
@@ -98,8 +100,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      state.responseModel.message ??
-                          " data updated successfully",
+                      state.responseModel.message ?? l10n.dataUpdatedSuccessfully,
                     ),
                     backgroundColor: Colors.green,
                   ),
@@ -108,7 +109,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
               } else if (state is EditProfileFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text("خطأ: ${state.errorMessage}"),
+                    content: Text("${l10n.errorLabel}: ${state.errorMessage}"),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -123,8 +124,8 @@ class _EditProfileUserState extends State<EditProfileUser> {
                   _isImageLoading = false;
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("upload photo successfully"),
+                  SnackBar(
+                    content: Text(l10n.uploadPhotoSuccessfully),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -135,7 +136,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      "Failed to upload photo: ${state.errorMessage}",
+                      l10n.failedToUploadPhoto(state.errorMessage),
                     ),
                     backgroundColor: Colors.red,
                   ),
@@ -222,7 +223,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                           child: Row(
                             children: [
                               Text(
-                                "Account Info",
+                                l10n.accountInfo,
                                 style: TextStyles.font16BlackW700,
                               ),
                               Gap(12.w),
@@ -238,30 +239,30 @@ class _EditProfileUserState extends State<EditProfileUser> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Full Name",
+                                l10n.fullName,
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "Full Name",
+                                hintText: l10n.fullName,
                                 controller: _nameController,
                               ),
                               const Gap(30),
                               Text(
-                                "Email",
+                                l10n.email,
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "user@servigo.com",
+                                hintText: 'user@servigo.com',
                                 controller: _emailController,
                                 readOnly: true,
                               ),
                               const Gap(30),
                               Text(
-                                "Phone Number",
+                                l10n.phoneNumber,
                                 style: TextStyles.font16PrimaryColorW600,
                               ),
                               CustomTextFormFiled(
-                                hintText: "Phone Number",
+                                hintText: l10n.phoneNumber,
                                 controller: _phoneController,
                               ),
                             ],
@@ -283,7 +284,7 @@ class _EditProfileUserState extends State<EditProfileUser> {
                         textstyle: TextStyles.font11WhiteW500.copyWith(
                           fontSize: 16.sp,
                         ),
-                        title: "Update Info",
+                        title: l10n.updateInfo,
                         onTap: () {
                           if (_nameController.text.trim().isNotEmpty &&
                               _phoneController.text.trim().isNotEmpty) {
@@ -293,10 +294,8 @@ class _EditProfileUserState extends State<EditProfileUser> {
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "please fill in all required fields",
-                                ),
+                              SnackBar(
+                                content: Text(l10n.pleaseFillRequiredFields),
                               ),
                             );
                           }

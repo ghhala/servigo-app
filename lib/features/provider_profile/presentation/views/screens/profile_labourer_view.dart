@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/core/utils/app_router.dart';
 import 'package:servi_go_app/core/utils/styles.dart';
@@ -95,7 +96,9 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
           child: BlocConsumer<ProviderProfileCubit, ProviderProfileState>(
             listener: (context, state) {},
             builder: (context, state) {
-              // ── Loading ──
+               final l10n = AppLocalizations.of(context)!;
+
+               // ── Loading ──
               if (state is ProviderProfileLoading) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height,
@@ -121,7 +124,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                           const Gap(16),
                           Text(
                             state.errorMessage.contains("unauthorized")
-                                ? "Session expired. Please log in again."
+                                ? l10n.sessionExpired
                                 : state.errorMessage,
                             style: const TextStyle(
                               fontSize: 14,
@@ -140,9 +143,9 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   .read<ProviderProfileCubit>()
                                   .fetchProviderProfile();
                             },
-                            child: const Text(
-                              "Retry",
-                              style: TextStyle(color: Colors.black),
+                            child: Text(
+                              l10n.retry,
+                              style: const TextStyle(color: Colors.black),
                             ),
                           ),
                         ],
@@ -332,9 +335,9 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
-                                              const SnackBar(
+                                              SnackBar(
                                                 content: Text(
-                                                  "فشل تحديث المفضلة",
+                                                  l10n.favoriteToggleFailed,
                                                 ),
                                                 backgroundColor: Colors.red,
                                               ),
@@ -367,7 +370,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                               ),
                               Gap(10.h),
                               Text(
-                                user?.name ?? "No Name",
+                                user?.name ?? l10n.noName,
                                 style: TextStyles.onCard(
                                   context,
                                   TextStyles.font16PrimaryColorW600.copyWith(
@@ -382,7 +385,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                               buildServiceLine(),
                               Gap(4.h),
                               Text(
-                                user?.phone ?? "No Phone",
+                                user?.phone ?? l10n.noPhone,
                                 style: TextStyles.onCard(
                                   context,
                                   TextStyles.font12PrimaryColorW600,
@@ -410,7 +413,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   children: [
                                     ContainerWidget(
                                       image: "assets/images/star_icon.png",
-                                      text: "avg rating",
+                                      text: l10n.avgRating,
                                       number: finalRating,
                                     ),
                                     Gap(10.w),
@@ -419,7 +422,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                         image: "assets/images/pin.png",
                                         text:
                                             provider?.workType ??
-                                            "Both(Fixed & Mobile)",
+                                            l10n.bothFixedMobile,
                                       ),
                                     ),
                                   ],
@@ -438,16 +441,19 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                         image:
                                             "assets/images/convenience (1).png",
                                         text: provider?.isAvailable == 1
-                                            ? "Available"
-                                            : "Unavailable",
+                                            ? l10n.available
+                                            : l10n.unavailable,
                                       ),
                                     ),
                                     Gap(10.w),
                                     Expanded(
                                       child: ContainerWidget(
                                         image: "assets/images/moon.png",
-                                        text:
-                                            "Overnight: ${provider?.overnight == true ? 'Yes' : 'No'}",
+                                        text: l10n.overnightYesNo(
+                                          provider?.overnight == true
+                                              ? l10n.yes
+                                              : l10n.no,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -465,7 +471,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                       Expanded(
                                         child: CustomButton(
                                           height: 40.h,
-                                          title: "Contact",
+                                          title: l10n.contact,
                                           textstyle: TextStyles.font11WhiteW500,
                                         onTap: () async {
   final providerId = widget.providerId;
@@ -538,7 +544,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   ),
                                   Gap(5.w),
                                   Text(
-                                    isOwner ? "About me" : "About him",
+                                    isOwner ? l10n.aboutMe : l10n.aboutHim,
                                     style: TextStyles.onCard(
                                       context,
                                       TextStyles.font12PrimaryColorW600,
@@ -553,8 +559,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                               child: Text(
                                 provider?.aboutMe ??
                                     (isOwner
-                                        ? "You haven't written a bio yet."
-                                        : "No info written by provider."),
+                                        ? l10n.aboutMeEmptyOwner
+                                        : l10n.aboutMeEmptyProvider),
                                 style: TextStyle(fontSize: 12.sp),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -578,7 +584,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Working Hours and Days",
+                                l10n.workingHoursAndDays,
                                 style: TextStyles.onCard(
                                   context,
                                   TextStyles.font12PrimaryColorW600,
@@ -592,7 +598,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   Expanded(
                                     child: Text(
                                       workingDays.isEmpty
-                                          ? "All Days"
+                                          ? l10n.allDays
                                           : workingDays,
                                       style: TextStyles.onCard(
                                         context,
@@ -640,7 +646,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   ),
                                   Gap(5.w),
                                   Text(
-                                    "Price",
+                                    l10n.price,
                                     style: TextStyles.onCard(
                                       context,
                                       TextStyles.font12PrimaryColorW600,
@@ -714,7 +720,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   Image.asset("assets/images/reviews_icon.png"),
                                   Expanded(
                                     child: Text(
-                                      " Customer Reviews and Ratings",
+                                      l10n.customerReviewsAndRatings,
                                       style: TextStyles.onCard(
                                         context,
                                         TextStyles.font12PrimaryColorW600,
@@ -725,7 +731,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                     CustomButton(
                                       width: 90.w,
                                       height: 28.h,
-                                      title: "+ Add Review",
+                                      title: l10n.addReview,
                                       textstyle: TextStyles.font11WhiteW500,
                                       onTap: () =>
                                           _showAddReviewDialog(context),
@@ -738,7 +744,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                   ? Padding(
                                       padding: EdgeInsets.only(top: 15.h),
                                       child: Text(
-                                        "No reviews yet",
+                                        l10n.noReviewsYet,
                                         style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 12.sp,
@@ -782,7 +788,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                       children: [
                                                         Text(
                                                           r.customerName ??
-                                                              "Unknown",
+                                                              l10n.unknown,
                                                           style: TextStyles.onCard(
                                                             context,
                                                             TextStyles
@@ -836,7 +842,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                 CustomButton(
                                                   width: 50.w,
                                                   height: 23.h,
-                                                  title: "Report",
+                                                  title: l10n.report,
                                                   textstyle: TextStyles
                                                       .font11WhiteW500
                                                       .copyWith(
@@ -864,7 +870,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                     CustomButton(
                                                       width: 50.w,
                                                       height: 23.h,
-                                                      title: "Edit",
+                                                      title: l10n.edit,
                                                       textstyle: TextStyles
                                                           .font11WhiteW500
                                                           .copyWith(
@@ -883,7 +889,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                                                     CustomButton(
                                                       width: 50.w,
                                                       height: 23.h,
-                                                      title: "Delete",
+                                                      title: l10n.delete,
                                                       textstyle: TextStyles
                                                           .font11WhiteW500
                                                           .copyWith(
@@ -926,19 +932,20 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
   void _showComplaintDialog(BuildContext context) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text("send complaint"),
+        title: Text(l10n.sendComplaint),
         content: TextField(
           controller: controller,
           maxLines: 3,
-          decoration: const InputDecoration(hintText: "write the complaint..."),
+          decoration: InputDecoration(hintText: l10n.writeComplaint),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text("Cancel"),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -954,22 +961,22 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 );
                 if (!mounted) return;
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text("send complaint successfully"),
+                  SnackBar(
+                    content: Text(l10n.complaintSentSuccessfully),
                     backgroundColor: Colors.green,
                   ),
                 );
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Failed to send complaint"),
+                  SnackBar(
+                    content: Text(l10n.failedToSendComplaint),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: const Text("Send"),
+            child: Text(l10n.send),
           ),
         ],
       ),
@@ -980,21 +987,22 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
   void _showReportReviewDialog(BuildContext context, int ratingId) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
     final controller = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text("Report review"),
+        title: Text(l10n.reportReview),
         content: TextField(
           controller: controller,
           maxLines: 3,
-          decoration: const InputDecoration(
-            hintText: "Why are you reporting this review?",
+          decoration: InputDecoration(
+            hintText: l10n.reportReviewReason,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text("Cancel"),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -1010,42 +1018,40 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 );
                 if (!mounted) return;
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Review reported successfully"),
+                  SnackBar(
+                    content: Text(l10n.reviewReportedSuccessfully),
                     backgroundColor: Colors.green,
                   ),
                 );
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Failed to report review"),
+                  SnackBar(
+                    content: Text(l10n.failedToReportReview),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: const Text("Report", style: TextStyle(color: Colors.red)),
+            child: Text(l10n.report, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
   }
 
-
   void _confirmDeleteReview(BuildContext context, int ratingId) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text("Delete review"),
-        content: const Text(
-          "Are you sure you want to delete your review? This action cannot be undone.",
-        ),
+        title: Text(l10n.deleteReview),
+        content: Text(l10n.deleteReviewConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text("Cancel"),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -1055,14 +1061,14 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Failed to delete review"),
+                  SnackBar(
+                    content: Text(l10n.failedToDeleteReview),
                     backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -1071,6 +1077,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
 
   void _showAddReviewDialog(BuildContext context) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
+    final l10n = AppLocalizations.of(context)!;
 
     int selectedRating = 5;
     final reviewController = TextEditingController();
@@ -1080,7 +1087,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setStateDialog) {
           return AlertDialog(
-            title: const Text("Add Review"),
+            title: Text(l10n.addReviewDialog),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1106,8 +1113,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 TextField(
                   controller: reviewController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    hintText: "Write your review...",
+                  decoration: InputDecoration(
+                    hintText: l10n.writeYourReview,
                   ),
                 ),
               ],
@@ -1115,7 +1122,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text("Cancel"),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () async {
@@ -1130,8 +1137,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     );
                     if (!mounted) return;
                     ScaffoldMessenger.of(this.context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Review added successfully"),
+                      SnackBar(
+                        content: Text(l10n.reviewAddedSuccessfully),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -1140,13 +1147,13 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     if (!mounted) return;
                     ScaffoldMessenger.of(this.context).showSnackBar(
                       SnackBar(
-                        content: Text("Failed to submit review: $e"),
+                        content: Text(l10n.failedToSubmitReview(e.toString())),
                         backgroundColor: Colors.red,
                       ),
                     );
                   }
                 },
-                child: const Text("send"),
+                child: Text(l10n.send),
               ),
             ],
           );
@@ -1158,6 +1165,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
  
   void _showEditReviewDialog(BuildContext context, RatingModel currentRating) {
     final providerProfileCubit = context.read<ProviderProfileCubit>();
+    final l10n = AppLocalizations.of(context)!;
 
     int selectedRating = currentRating.rating ?? 5;
     final reviewController =
@@ -1168,7 +1176,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setStateDialog) {
           return AlertDialog(
-            title: const Text("Edit Review"),
+            title: Text(l10n.editReview),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1194,8 +1202,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                 TextField(
                   controller: reviewController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
-                    hintText: "Write your review...",
+                  decoration: InputDecoration(
+                    hintText: l10n.writeYourReview,
                   ),
                 ),
               ],
@@ -1203,7 +1211,7 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text("Cancel"),
+                child: Text(l10n.cancel),
               ),
               TextButton(
                 onPressed: () async {
@@ -1220,8 +1228,8 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     );
                     if (!mounted) return;
                     ScaffoldMessenger.of(this.context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Review updated successfully"),
+                      SnackBar(
+                        content: Text(l10n.reviewUpdatedSuccessfully),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -1229,13 +1237,13 @@ class _ProfileLabourerViewState extends State<ProfileLabourerView> {
                     if (!mounted) return;
                     ScaffoldMessenger.of(this.context).showSnackBar(
                       SnackBar(
-                        content: Text("Failed to update review: $e"),
+                        content: Text(l10n.failedToUpdateReview(e.toString())),
                         backgroundColor: Colors.red,
                       ),
                     );
                   }
                 },
-                child: const Text("Save"),
+                child: Text(l10n.save),
               ),
             ],
           );

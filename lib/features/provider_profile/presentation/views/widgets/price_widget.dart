@@ -29,12 +29,10 @@ class PriceWidget extends StatelessWidget {
 
     return Row(
       children: [
-        // ── حقل السعر الأدنى (Minimum Price) ──
         CustomTextFormFiled(
-          hintText: "10000", // 👈 تعديل الـ Hint ليصبح رقماً صحيحاً بدون نقطة ليفهم المستخدم التنسيق
+          hintText: '10000',
           hintStyle: TextStyles.font12PrimaryColorW600,
           textInputType: TextInputType.number,
-          // 👇 هذا الفلتر يمنع كتابة أي شيء عدا الأرقام (يمنع الفاصلة والنقطة تماماً)
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
@@ -44,27 +42,25 @@ class PriceWidget extends StatelessWidget {
           borderSide: borderSide,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
           onChanged: (value) {
-            _currentMin = value ?? ''; 
+            _currentMin = value ?? '';
             onPriceChanged(_currentMin, _currentMax);
           },
         ),
         const Gap(2),
         Text(
-          "SYP",
+          'SYP',
           style: labelStyle,
         ),
         const Gap(5),
         Text(
-          "-",
+          '-',
           style: TextStyle(color: textColor),
         ),
         const Gap(8),
-       
         CustomTextFormFiled(
-          hintText: "20000", 
+          hintText: '20000',
           hintStyle: TextStyles.font12PrimaryColorW600,
           textInputType: TextInputType.number,
-        
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
@@ -74,13 +70,13 @@ class PriceWidget extends StatelessWidget {
           borderSide: borderSide,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
           onChanged: (value) {
-            _currentMax = value ?? ''; 
+            _currentMax = value ?? '';
             onPriceChanged(_currentMin, _currentMax);
           },
         ),
         const Gap(5),
         Text(
-          "SYP",
+          'SYP',
           style: labelStyle,
         ),
       ],

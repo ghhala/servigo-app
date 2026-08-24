@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:servi_go_app/core/utils/api_constants.dart';
 import 'package:servi_go_app/features/filter/domain/entities/provider_entity.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class ProviderCardWidget extends StatelessWidget {
   final ProviderEntity provider;
@@ -50,7 +51,7 @@ class ProviderCardWidget extends StatelessWidget {
             _buildAvatar(),
             const SizedBox(width: 12),
           
-            Expanded(child: _buildInfo()),
+            Expanded(child: _buildInfo(context)),
           ],
         ),
       ),
@@ -79,7 +80,7 @@ class ProviderCardWidget extends StatelessWidget {
   }
 
   // ── Info ──
-  Widget _buildInfo() {
+  Widget _buildInfo(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,14 +99,14 @@ class ProviderCardWidget extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            _buildAvailabilityBadge(),
+            _buildAvailabilityBadge(context),
           ],
         ),
         const SizedBox(height: 3),
 
         // الخدمة الفرعية + نوع العمل
         Text(
-          '${provider.subServiceName} · ${_workTypeLabel(provider.workType)}',
+                  '${provider.subServiceName} · ${_workTypeLabel(context, provider.workType)}',
           style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -113,7 +114,7 @@ class ProviderCardWidget extends StatelessWidget {
         const SizedBox(height: 6),
 
         // التقييم + السعر
-        Row(children: [_buildRating(), const Spacer(), _buildPrice()]),
+        Row(children: [_buildRating(), const Spacer(), _buildPrice(context)]),
         const SizedBox(height: 4),
 
         // الموقع
@@ -140,7 +141,7 @@ class ProviderCardWidget extends StatelessWidget {
   }
 
   // ── Availability Badge ──
-  Widget _buildAvailabilityBadge() {
+  Widget _buildAvailabilityBadge(BuildContext context) {
     final isAvailable = provider.isAvailable;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
@@ -151,7 +152,7 @@ class ProviderCardWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        isAvailable ? 'Available' : 'Not Available',
+        isAvailable ? AppLocalizations.of(context)!.available : AppLocalizations.of(context)!.unavailable,
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w500,
@@ -176,11 +177,11 @@ class ProviderCardWidget extends StatelessWidget {
   }
 
   // ── Price ──
-  Widget _buildPrice() {
+  Widget _buildPrice(BuildContext context) {
     final min = _formatPrice(provider.minPrice);
     final max = _formatPrice(provider.maxPrice);
     return Text(
-      '$min — $max SYP',
+      '$min — $max ${AppLocalizations.of(context)!.syp}',
       style: const TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w500,
@@ -190,14 +191,15 @@ class ProviderCardWidget extends StatelessWidget {
   }
 
   // ── Helpers ──
-  String _workTypeLabel(String workType) {
+  String _workTypeLabel(BuildContext context, String workType) {
+    final l = AppLocalizations.of(context)!;
     switch (workType.toLowerCase()) {
       case 'mobile':
-        return 'Mobile';
+        return l.serviceTypeMobile;
       case 'fixed':
-        return 'Fixed';
+        return l.serviceTypeFixed;
       case 'both':
-        return 'Both';
+        return l.serviceTypeBoth;
       default:
         return workType;
     }

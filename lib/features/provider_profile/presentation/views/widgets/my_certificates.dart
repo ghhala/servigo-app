@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:servi_go_app/core/localization/app_localizations.dart';
 
 class MyCertificates extends StatelessWidget {
   // استقبال مصفوفة الشهادات الجاهزة من الـ API
@@ -10,6 +11,7 @@ class MyCertificates extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: 353.w,
       decoration: BoxDecoration(
@@ -34,17 +36,16 @@ class MyCertificates extends StatelessWidget {
                 Icon(Icons.card_membership, size: 20.sp, color: Theme.of(context).primaryColor),
                 Gap(6.w),
                 Text(
-                  "My Certificates",
+                  l10n.myCertificates,
                   style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
             Gap(12.h),
-            
             certificatesList.isEmpty
                 ? Center(
                     child: Text(
-                      "No certificates uploaded yet.",
+                      l10n.noCertificatesAddedYet,
                       style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                     ),
                   )
